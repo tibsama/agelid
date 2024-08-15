@@ -270,7 +270,7 @@
             <label for="customer-address" class="floating-label">urgence</label>
         </div>
         <div class="input-wrapper">
-            <input type="tel" id="taskInput4" class="animated-input" placeholder=" " required>
+            <input type="date" id="taskInput4" class="animated-input" placeholder=" " required>
             <label for="customer-phone" class="floating-label">date</label>
         </div>
     </div>
@@ -358,6 +358,19 @@
                 checkbox.checked = task.checked;
                 checkbox.onchange = function() {
                     task.checked = checkbox.checked; // Update task's checked state
+
+const xhr = new XMLHttpRequest();
+            xhr.open("PUT", `https://api.jsonbin.io/v3/b/${binId}`, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("X-Master-Key", apiKey);
+            xhr.onreadystatechange = function () {
+           //     if (xhr.readyState === 4 && xhr.status === 200) {
+             //       alert("Tasks saved to cloud!");
+              //  }
+            };
+            xhr.send(JSON.stringify({ tasks }));
+        
+                    
                 };
                 column.appendChild(checkbox);
 
