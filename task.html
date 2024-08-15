@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
-    <style>
+        <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -54,9 +54,23 @@
             background-color: #218838;
         }
 
+        .input-container button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .input-container button:hover {
+            background-color: #218838;
+        }
+
         .columns {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 10px;
         }
 
@@ -68,6 +82,13 @@
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-right: 1px solid #ddd; /* Bordure droite pour la séparation */
+            margin-right: 10px; /* Ajouter un espace entre les colonnes */
+        }
+
+        .column:last-child {
+            border-right: none; /* Enlever la bordure droite pour la dernière colonne */
+            margin-right: 0; /* Enlever l'espace pour la dernière colonne */
         }
 
         .column input[type="checkbox"] {
@@ -91,7 +112,7 @@
             display: none;
         }
 
- .carousel {
+        .carousel {
             perspective: 1000px;
             position: relative;
             width: 100%;
@@ -248,8 +269,8 @@
                 font-size: 12px;
                 padding: 8px;
             }
-
-    </style>
+        }
+            </style>
 </head>
 <body>
     <div class="container">
