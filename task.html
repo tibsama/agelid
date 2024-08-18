@@ -248,12 +248,33 @@ h1 {
         font-size: 12px;
         padding: 8px;
     }
+ .spinner-container {
+            margin-left: 20px 0;
+        }
+        .spinner-label {
+            margin-left: 10px;
+        }
 }
             </style>
 </head>
 <body>
     <div class="container">
-        <h1>Liste des tâches - Zone de triage</h1>
+
+ <div class="spinner-container">
+        <label for="spinner" class="spinner-label">plan:</label>
+        <select id="spinner" onchange="changeVariable()">
+            <option value="1">plan preventif</option>
+            <option value="2">plan graissage</option>
+            <option value="3">piece a changer</option>
+            <option value="4">pannes</option>
+        </select>
+    </div>
+
+    <div>
+        <p>S 1<span id="selectedVariable"></span></p>
+    </div>
+
+        <h1>Liste des tâches</h1>
         <div class="input-container">
 
            <div class="order-form">
@@ -275,31 +296,39 @@ h1 {
         </div>
     </div>
 
-            <button onclick="addTask()">Ajouter tâche</button>
+            <button onclick="addTask()">Ajouter</button>
             <input type="file" id="fileInput" class="file-input" accept=".json" onchange="loadTasks(event)">
         </div>
         <div id="tasksList" class="columns"></div>
     </div>
+
+
     <script>
         const tasks = [];
         const apiKey = "$2a$10$Ro4u7k0o7xdL5C3Guu/RmOH2p0kVyZTtdQfjXe0gqUk.HEKxtdLxi";
         const binId = "66bd10b3e41b4d34e4207244";
 
+     loadTasksFromCloud();
 
-    const xhr = new XMLHttpRequest();
-            xhr.open("GET", `https://api.jsonbin.io/v3/b/${binId}/latest`, true);
-            xhr.setRequestHeader("X-Master-Key", apiKey);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    tasks.length = 0;
-                    tasks.push(...response.record.tasks);
-                    renderTasks();
-                }
-            };
-            xhr.send();
+   let selectedVariable = "1";
+        function changeVariable() {
+            const spinner = document.getElementById("spinner");
+            selectedVariable = spinner.options[spinner.selectedIndex].text;
+            document.getElementById("selectedVariable").textContent = selectedVariable;
+       
 
-
+const placeholders = {
+            1: ["Numero de ligne", "Designation", "Urgence", "Date"],
+            2: ["Plan Name", "Location", "Frequency", "Last Checked"],
+            3: ["Piece Name", "Model", "Replacement Date", "Cost"],
+            4: ["Panne Type", "Impact", "Detection Date", "Resolution"]
+       };
+        
+        const inputLabels = placeholders[spinner.value];
+        inputLabels.forEach((label, index) => {
+            document.querySelectorAll('.floating-label')[index].textContent = label;
+        });
+renderTasks();  }
 
         function addTask() {
             const inputs = [
@@ -317,6 +346,7 @@ h1 {
             const task = {
                 text: inputs,
                 checked: false, // Initial checkbox state
+                category: selectedVariable,
                 id: new Date().getTime()
             };
             tasks.push(task);
@@ -325,25 +355,15 @@ h1 {
                 document.getElementById("taskInput" + (index + 1)).value = "";
             });
 
- const xhr = new XMLHttpRequest();
-            xhr.open("PUT", `https://api.jsonbin.io/v3/b/${binId}`, true);
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.setRequestHeader("X-Master-Key", apiKey);
-            xhr.onreadystatechange = function () {
-             //   if (xhr.readyState === 4 && xhr.status === 200) {
-              //      alert("Tasks saved to cloud!");
-               // }
-            };
-            xhr.send(JSON.stringify({ tasks }));
-
-
+             saveTasksToCloud();
         }
 
         function renderTasks() {
             const tasksList = document.getElementById("tasksList");
             tasksList.innerHTML = "";
 
-            tasks.forEach(task => {
+               tasks.forEach(task => {
+//tasks.filter(task => task.category === selectedVariable).forEach(task => {
                 const column = document.createElement("div");
                 column.className = "column";
                 
@@ -359,17 +379,7 @@ h1 {
                 checkbox.onchange = function() {
                     task.checked = checkbox.checked; // Update task's checked state
 
-const xhr = new XMLHttpRequest();
-            xhr.open("PUT", `https://api.jsonbin.io/v3/b/${binId}`, true);
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.setRequestHeader("X-Master-Key", apiKey);
-            xhr.onreadystatechange = function () {
-           //     if (xhr.readyState === 4 && xhr.status === 200) {
-             //       alert("Tasks saved to cloud!");
-              //  }
-            };
-            xhr.send(JSON.stringify({ tasks }));
-        
+                saveTasksToCloud();
                     
                 };
                 column.appendChild(checkbox);
@@ -392,17 +402,7 @@ const xhr = new XMLHttpRequest();
                 tasks.splice(index, 1);
             }
             renderTasks();
-
-const xhr = new XMLHttpRequest();
-            xhr.open("PUT", `https://api.jsonbin.io/v3/b/${binId}`, true);
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.setRequestHeader("X-Master-Key", apiKey);
-            xhr.onreadystatechange = function () {
-           //     if (xhr.readyState === 4 && xhr.status === 200) {
-             //       alert("Tasks saved to cloud!");
-              //  }
-            };
-            xhr.send(JSON.stringify({ tasks }));
+            saveTasksToCloud();
         }
 
 
@@ -412,9 +412,9 @@ const xhr = new XMLHttpRequest();
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.setRequestHeader("X-Master-Key", apiKey);
             xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    alert("Tasks saved to cloud!");
-                }
+             //   if (xhr.readyState === 4 && xhr.status === 200) {
+               //     alert("Tasks saved to cloud!");
+              //  }
             };
             xhr.send(JSON.stringify({ tasks }));
         }
