@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buttons with Text and Images</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        .top-left-text {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .header-container {
+            text-align: center;
+            margin-top: 60px; /* Space between top text and header container */
+        }
+
+        .header-container img {
+            width: 100px; /* Set the width of the image */
+            height: auto; /* Maintain aspect ratio */
+            margin-bottom: 20px; /* Space between image and heading */
+        }
+
+        .header-container h1 {
+            font-size: 24px;
+            color: #007BFF;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 columns for a square layout */
+            gap: 20px; /* Space between buttons */
+            justify-content: center; /* Center the buttons horizontally */
+            margin-top: 40px; /* Space between heading and buttons */
+        }
+
+        .image-button {
+            background-color: #fff;
+            border: 2px solid #007BFF;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+            text-decoration: none; /* Remove underline from links */
+            color: inherit; /* Inherit text color */
+        }
+
+        .image-button img {
+            width: 80px;  /* Set the width of the images */
+            height: 80px; /* Set the height of the images */
+            border-radius: 5px;
+            display: block;
+            margin: 0 auto; /* Center the image */
+        }
+
+        .image-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-text {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .full-width-images {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px; /* Space between buttons and images */
+        }
+
+        .full-width-images a {
+            display: block;
+            width: 100%;
+            margin-bottom: 20px; /* Space between images */
+        }
+
+        .full-width-images img {
+            width: 100%;
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+    <div class="top-left-text">Mot de pass niveau 0</div>
+
+    <div class="header-container">
+        <img src="https://tibsama.github.io/agelid/download (2).jpeg" alt="Header Image"> <!-- Replace with your image URL -->
+        <h1>Plan maintenance se SARL Corso Ceram</h1>
+    </div>
+
+    <div class="button-container">
+        <a href="https://example.com/gressage" class="image-button">
+            <div class="button-text">Gressage</div>
+            <img src="https://tibsama.github.io/agelid/images%20(30).jpeg" alt="Image 1">
+        </a>
+
+        <a href="https://tibsama.github.io/agelid/task.html" class="image-button">
+            <div class="button-text">Entretien</div>
+            <img src="https://tibsama.github.io/agelid/images%20(9).png" alt="Image 2">
+        </a>
+
+        <a href="https://example.com/piece" class="image-button">
+            <div class="button-text">Pièce à changer</div>
+            <img src="https://tibsama.github.io/agelid/images%20(31).jpeg" alt="Image 3">
+        </a>
+
+        <a href="https://example.com/panne" class="image-button">
+            <div class="button-text">Panne</div>
+            <img src="https://tibsama.github.io/agelid/images%20(32).jpeg" alt="Image 4">
+        </a>
+    </div>
+
+    <div class="full-width-images">
+        <a href="https://example.com/image1">
+            <img src="https://tibsama.github.io/agelid/images%20(10).png" alt="Full Width Image 1"> <!-- Replace with your image URL -->
+        </a>
+        <a href="https://example.com/image2">
+            <img src="https://via.placeholder.com/1200x600" alt="Full Width Image 2"> <!-- Replace with your image URL -->
+        </a>
+        <a href="https://example.com/image3">
+            <img src="https://via.placeholder.com/1200x600" alt="Full Width Image 3"> <!-- Replace with your image URL -->
+        </a>
+    </div>
+</body>
+</html>
