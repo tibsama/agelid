@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Calendar</title>
     <style>
+        /* The same CSS styles as before */
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -153,6 +154,30 @@
         .task-manager button.add-task:hover {
             background-color: #0056b3;
         }
+
+        .task-manager button.save, .task-manager button.load {
+            background-color: #28a745;
+            border: none;
+            color: #fff;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 48%;
+            margin: 5px 1%;
+            text-align: center;
+        }
+
+        .task-manager button.load {
+            background-color: #17a2b8;
+        }
+
+        .task-manager button.save:hover {
+            background-color: #218838;
+        }
+
+        .task-manager button.load:hover {
+            background-color: #138496;
+        }
     </style>
 </head>
 <body>
@@ -182,6 +207,8 @@
         <ul id="task-list"></ul>
         <input type="text" id="task-input" placeholder="Add a new task">
         <button class="add-task" id="add-task">Add Task</button>
+        <button class="save" id="save-tasks">Save Tasks</button>
+        <button class="load" id="load-tasks">Load Tasks</button>
     </div>
 
     <script>
@@ -193,6 +220,8 @@
         const taskInput = document.getElementById('task-input');
         const taskList = document.getElementById('task-list');
         const addTaskButton = document.getElementById('add-task');
+        const saveTasksButton = document.getElementById('save-tasks');
+        const loadTasksButton = document.getElementById('load-tasks');
 
         let currentDate = new Date();
         let selectedDate = null;
@@ -245,38 +274,74 @@
 
         function renderTasks() {
             const dateKey = selectedDate.toISOString().split('T')[0];
+            const dateTasks = tasks[dateKey] || [];
+
             taskList.innerHTML = '';
-            if (tasks[dateKey]) {
-                tasks[dateKey].forEach((task, index) => {
-                    const li = document.createElement('li');
-                    li.textContent = task;
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Delete';
-                    deleteButton.addEventListener('click', () => {
-                        tasks[dateKey].splice(index, 1);
-                        renderTasks();
-                    });
-                    li.appendChild(deleteButton);
-                    taskList.appendChild(li);
+
+            dateTasks.forEach((task, index) => {
+                const taskItem = document.createElement('li');
+                taskItem.innerText = task;
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Delete';
+                deleteButton.addEventListener('click', () => {
+                    dateTasks.splice(index, 1);
+                    tasks[dateKey] = dateTasks;
+                    renderTasks();
                 });
-            }
+
+                taskItem.appendChild(deleteButton);
+                taskList.appendChild(taskItem);
+            });
         }
 
         addTaskButton.addEventListener('click', () => {
-            const task = taskInput.value.trim();
-            if (task && selectedDate) {
+            const taskText = taskInput.value.trim();
+            if (taskText !== '') {
                 const dateKey = selectedDate.toISOString().split('T')[0];
                 if (!tasks[dateKey]) {
                     tasks[dateKey] = [];
                 }
-                tasks[dateKey].push(task);
+                tasks[dateKey].push(taskText);
                 taskInput.value = '';
                 renderTasks();
             }
         });
 
+        saveTasksButton.addEventListener('click', () => {
+            const tasksJSON = JSON.stringify(tasks);
+            const blob = new Blob([tasksJSON], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tasks.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        loadTasksButton.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const loadedTasks = JSON.parse(e.target.result);
+                        tasks = loadedTasks;
+                        if (selectedDate) {
+                            renderTasks();
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            });
+            input.click();
+        });
+
         prevMonth.addEventListener('click', () => {
-                       currentDate.setMonth(currentDate.getMonth() - 1);
+            currentDate.setMonth(currentDate.getMonth() - 1);
             renderCalendar(currentDate);
         });
 
