@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Line Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Full width for responsiveness */
+            max-width: 1000px; /* Limit max width for larger screens */
+        }
+
+        .day-switcher {
+            margin-bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .day-switcher button {
+            flex: 1;
+            padding: 10px;
+            margin: 0 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .day-switcher button:hover {
+            background-color: #0056b3;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1200px; /* Ensure table is wider than the screen */
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px; /* Smaller text for better fit on mobile */
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            height: 40px;
+        }
+
+        .line-cell {
+            font-weight: bold;
+            background-color: #f7f7f7;
+        }
+
+        @media (max-width: 600px) {
+            th, td {
+                padding: 5px;
+                font-size: 10px; /* Further reduce font size for small screens */
+            }
+
+            .day-switcher button {
+                padding: 8px;
+                margin: 0 5px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <!-- Day Switcher Buttons -->
+        <div class="day-switcher">
+            <button onclick="previousDay()">Previous Day</button>
+            <button onclick="nextDay()">Next Day</button>
+        </div>
+
+        <!-- Calendar Table Wrapper -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Production Line</th>
+                        <th>00:00</th>
+                        <th>01:00</th>
+                        <th>02:00</th>
+                        <th>03:00</th>
+                        <th>04:00</th>
+                        <th>05:00</th>
+                        <th>06:00</th>
+                        <th>07:00</th>
+                        <th>08:00</th>
+                        <th>09:00</th>
+                        <th>10:00</th>
+                        <th>11:00</th>
+                        <th>12:00</th>
+                        <th>13:00</th>
+                        <th>14:00</th>
+                        <th>15:00</th>
+                        <th>16:00</th>
+                        <th>17:00</th>
+                        <th>18:00</th>
+                        <th>19:00</th>
+                        <th>20:00</th>
+                        <th>21:00</th>
+                        <th>22:00</th>
+                        <th>23:00</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="line-cell">Line 1</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td class="line-cell">Line 2</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td class="line-cell">Line 3</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td class="line-cell">Line 4</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td class="line-cell">Line 5</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function previousDay() {
+            // Functionality to load the previous day's data
+            alert("Previous day data loaded.");
+        }
+
+        function nextDay() {
+            // Functionality to load the next day's data
+            alert("Next day data loaded.");
+        }
+    </script>
+</body>
+</html>
