@@ -120,7 +120,7 @@
 <body>
     <!-- Header Displaying Line Number and Date from URL -->
     <div class="header">
-        Line Number: <span id="line-number"></span> | Date: <span id="date-from-url"></span>
+        Ligne N°: <span id="line-number"></span> | Date: <span id="date-from-url"></span>
     </div>
 
     <div class="calendar-container">
@@ -209,8 +209,8 @@
         function parseURL() {
             var txt = window.location.href;
             var n = txt.indexOf("html#") + 5; // +5 to move past "html#"
-            var d = txt.indexOf("&date=") + 5;
-            var str = txt.substring(n, d-5);
+            var d = txt.indexOf("&date=") + 6;
+            var str = txt.substring(n, d-6);
             document.getElementById("line-number").textContent = str;
             var str = txt.substring(d);
             document.getElementById('date-from-url').textContent = str;
