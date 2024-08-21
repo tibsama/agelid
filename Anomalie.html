@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zone Schedule Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Full width for responsiveness */
+            max-width: 1000px; /* Limit max width for larger screens */
+        }
+
+        .day-switcher {
+            margin: 20px 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .day-switcher button {
+            flex: 1;
+            padding: 10px;
+            margin: 0 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .day-switcher button:hover {
+            background-color: #218838;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1200px; /* Ensure table is wider than the screen */
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px; /* Smaller text for better fit on mobile */
+        }
+
+        th {
+            background-color: #28a745;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            height: 40px;
+            cursor: pointer; /* Pointer cursor to indicate clickable rows */
+        }
+
+        tr:hover td {
+            background-color: #f0f0f0; /* Highlight row on hover */
+        }
+
+        .zone-cell {
+            font-weight: bold;
+            background-color: #f7f7f7;
+            cursor: pointer; /* Pointer cursor to indicate clickable rows */
+        }
+
+        @media (max-width: 600px) {
+            th, td {
+                padding: 5px;
+                font-size: 10px; /* Further reduce font size for small screens */
+            }
+
+            .day-switcher button {
+                padding: 8px;
+                margin: 0 5px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Spider Header Showing Current Day -->
+    <div class="header">
+        <span id="current-day"></span>
+    </div>
+
+    <div class="calendar-container">
+        <!-- Day Switcher Buttons -->
+        <div class="day-switcher">
+            <button onclick="previousDay()">Previous Day</button>
+            <button onclick="nextDay()">Next Day</button>
+        </div>
+
+        <!-- Calendar Table Wrapper -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Zone</th>
+                        <th>00:00</th>
+                        <th>01:00</th>
+                        <th>02:00</th>
+                        <th>03:00</th>
+                        <th>04:00</th>
+                        <th>05:00</th>
+                        <th>06:00</th>
+                        <th>07:00</th>
+                        <th>08:00</th>
+                        <th>09:00</th>
+                        <th>10:00</th>
+                        <th>11:00</th>
+                        <th>12:00</th>
+                        <th>13:00</th>
+                        <th>14:00</th>
+                        <th>15:00</th>
+                        <th>16:00</th>
+                        <th>17:00</th>
+                        <th>18:00</th>
+                        <th>19:00</th>
+                        <th>20:00</th>
+                        <th>21:00</th>
+                        <th>22:00</th>
+                        <th>23:00</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr onclick="goToZone(1)">
+                        <td class="zone-cell">Zone 1</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr onclick="goToZone(2)">
+                        <td class="zone-cell">Zone 2</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr onclick="goToZone(3)">
+                        <td class="zone-cell">Zone 3</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr onclick="goToZone(4)">
+                        <td class="zone-cell">Zone 4</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr onclick="goToZone(5)">
+                        <td class="zone-cell">Zone 5</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+
+        function displayCurrentDay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = currentDate.toLocaleDateString(undefined, options);
+            document.getElementById('current-day').textContent = formattedDate;
+        }
+
+        function previousDay() {
+            currentDate.setDate(currentDate.getDate() - 1);
+            displayCurrentDay();
+        }
+
+        function nextDay() {
+            currentDate.setDate(currentDate.getDate() + 1);
+            displayCurrentDay();
+        }
+
+        function goToZone(zoneNumber) {
+            const url = `https://example.com/zone?number=${zoneNumber}&date=${currentDate.toISOString().split('T')[0]}`;
+            window.location.href = url;
+        }
+
+        displayCurrentDay();
+    </script>
+</body>
+</html>
