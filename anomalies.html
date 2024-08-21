@@ -78,11 +78,17 @@
 
         td {
             height: 40px;
+            cursor: pointer; /* Pointer cursor to indicate clickable rows */
+        }
+
+        tr:hover td {
+            background-color: #f0f0f0; /* Highlight row on hover */
         }
 
         .line-cell {
             font-weight: bold;
             background-color: #f7f7f7;
+            cursor: pointer; /* Pointer cursor to indicate clickable rows */
         }
 
         @media (max-width: 600px) {
@@ -140,31 +146,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr onclick="goToLine(1)">
                         <td class="line-cell">Line 1</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr>
+                    <tr onclick="goToLine(2)">
                         <td class="line-cell">Line 2</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr>
+                    <tr onclick="goToLine(3)">
                         <td class="line-cell">Line 3</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr>
+                    <tr onclick="goToLine(4)">
                         <td class="line-cell">Line 4</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr>
+                    <tr onclick="goToLine(5)">
                         <td class="line-cell">Line 5</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
@@ -184,6 +190,12 @@
         function nextDay() {
             // Functionality to load the next day's data
             alert("Next day data loaded.");
+        }
+
+        function goToLine(lineNumber) {
+            // Redirect to a specific URL with the line number as a query parameter
+            const url = `https://example.com/line?number=${lineNumber}`;
+            window.location.href = url;
         }
     </script>
 </body>
