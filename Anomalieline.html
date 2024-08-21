@@ -207,11 +207,12 @@
     <script>
         // Function to get the date and line number from the URL
         function parseURL() {
-            const urlParams = new URLSearchParams(window.location.hash.substring(1));
-            const lineNumber = urlParams.get('');
-            const date = urlParams.get('date');
-
-           \\ document.getElementById('line-number').textContent = html# ? lineNumber : 'Unknown';
+            var txt = window.location.href;
+            var n = txt.indexOf("html#") + 5; // +5 to move past "html#"
+            var d = txt.indexOf("&date=") + 5;
+            var str = txt.substring(n, d-5);
+            document.getElementById("line-number").textContent = str;
+            
             document.getElementById('date-from-url').textContent = date ? date : 'Unknown';
         }
 
