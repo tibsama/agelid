@@ -199,30 +199,29 @@
     </div>
 
     <script>
-        // Function to display the current day in the header
+        let currentDate = new Date();
+
         function displayCurrentDay() {
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const today = new Date().toLocaleDateString(undefined, options);
-            document.getElementById('current-day').textContent = today;
+            const formattedDate = currentDate.toLocaleDateString(undefined, options);
+            document.getElementById('current-day').textContent = formattedDate;
         }
 
         function previousDay() {
-            // Functionality to load the previous day's data
-            alert("Previous day data loaded.");
+            currentDate.setDate(currentDate.getDate() - 1);
+            displayCurrentDay();
         }
 
         function nextDay() {
-            // Functionality to load the next day's data
-            alert("Next day data loaded.");
+            currentDate.setDate(currentDate.getDate() + 1);
+            displayCurrentDay();
         }
 
         function goToLine(lineNumber) {
-            // Redirect to a specific URL with the line number as a query parameter
-            const url = `https://example.com/line?number=${lineNumber}`;
+            const url = `https://example.com/line?number=${lineNumber}&date=${currentDate.toISOString().split('T')[0]}`;
             window.location.href = url;
         }
 
-        // Display the current day when the page loads
         displayCurrentDay();
     </script>
 </body>
