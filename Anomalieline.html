@@ -118,9 +118,9 @@
     </style>
 </head>
 <body>
-    <!-- Header Displaying Current Day and Number from URL Fragment -->
+    <!-- Header Displaying Line Number and Date from URL -->
     <div class="header">
-        <span id="current-day"></span> | Number <span id="number-from-url"></span>
+        Line Number: <span id="line-number"></span> | Date: <span id="date-from-url"></span>
     </div>
 
     <div class="calendar-container">
@@ -205,37 +205,26 @@
     </div>
 
     <script>
-        let currentDate = new Date();
+        // Function to get the date and line number from the URL
+        function parseURL() {
+            const hash = window.location.hash.substring(1);
+            const urlParts = window.location.href.split('#');
+            const lineNumber = hash.split('-')[0];
+            const date = urlParts[1] ? urlParts[1].split('-')[1] : 'Unknown';
 
-        function displayCurrentDay() {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const formattedDate = currentDate.toLocaleDateString(undefined, options);
-            document.getElementById('current-day').textContent = formattedDate;
-        }
-
-        function previousDay() {
-            currentDate.setDate(currentDate.getDate() - 1);
-            displayCurrentDay();
-        }
-
-        function nextDay() {
-            currentDate.setDate(currentDate.getDate() + 1);
-            displayCurrentDay();
+            document.getElementById('line-number').textContent = lineNumber ? lineNumber : 'Unknown';
+            document.getElementById('date-from-url').textContent = date ? date : 'Unknown';
         }
 
         function goToZone(zoneName) {
-            const lineNumber = window.location.hash.substring(1);
-            window.location.href = `https://example.com/zone/${zoneName}#${lineNumber}`;
+            const lineNumber = window.location.hash.split('-')[0];
+            const date = window.location.hash.split('-')[1];
+            window.location.href = `https://example.com/zone/${zoneName}#${lineNumber}-${date}`;
         }
 
-        function displayLineNumber() {
-            const hash = window.location.hash.substring(1);
-            document.getElementById('number-from-url').textContent = hash ? hash : 'Unknown';
-        }
-
-        // Initialize page with current day and line number
-        displayCurrentDay();
-        displayLineNumber();
+        // Initial page load
+        parseURL();
     </script>
 </body>
-</html>
+                                                                    </html>
+                                                                    
