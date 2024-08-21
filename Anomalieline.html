@@ -9,7 +9,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
+            background-color: #e0f7fa; /* Light green background */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -19,7 +19,7 @@
 
         .header {
             width: 100%;
-            background-color: #007BFF;
+            background-color: #4caf50; /* Green background */
             color: white;
             text-align: center;
             padding: 10px 0;
@@ -49,7 +49,7 @@
             flex: 1;
             padding: 10px;
             margin: 0 10px;
-            background-color: #007BFF;
+            background-color: #4caf50; /* Green background */
             color: white;
             border: none;
             border-radius: 5px;
@@ -58,7 +58,7 @@
         }
 
         .day-switcher button:hover {
-            background-color: #0056b3;
+            background-color: #388e3c; /* Darker green */
         }
 
         .table-wrapper {
@@ -82,7 +82,7 @@
         }
 
         th {
-            background-color: #007BFF;
+            background-color: #4caf50; /* Green background */
             color: white;
             position: sticky;
             top: 0;
@@ -118,7 +118,7 @@
     </style>
 </head>
 <body>
-    <!-- Header Displaying Current Day and Line Number -->
+    <!-- Header Displaying Current Day and Number from URL Fragment -->
     <div class="header">
         <span id="current-day"></span> | Number <span id="number-from-url"></span>
     </div>
@@ -224,14 +224,13 @@
         }
 
         function goToZone(zoneName) {
-            const lineNumber = window.location.pathname.split('/').pop().replace('index', '').replace('.html', '');
-            window.location.href = `https://example.com/zone/${zoneName}?line=${lineNumber}`;
+            const lineNumber = window.location.hash.substring(1);
+            window.location.href = `https://example.com/zone/${zoneName}#${lineNumber}`;
         }
 
         function displayLineNumber() {
-            const path = window.location.pathname;
-            const lineNumber = path.split('/').pop().replace('index', '').replace('.html', '');
-            document.getElementById('number-from-url').textContent = lineNumber ? lineNumber : 'Unknown';
+            const hash = window.location.hash.substring(1);
+            document.getElementById('number-from-url').textContent = hash ? hash : 'Unknown';
         }
 
         // Initialize page with current day and line number
