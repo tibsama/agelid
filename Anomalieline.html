@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Line Calendar</title>
+    <title>Production Zone Calendar</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,8 +33,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%; /* Full width for responsiveness */
-            max-width: 1000px; /* Limit max width for larger screens */
+            width: 100%;
+            max-width: 1200px;
         }
 
         .day-switcher {
@@ -63,13 +63,13 @@
 
         .table-wrapper {
             width: 100%;
-            overflow-x: auto; /* Enable horizontal scrolling */
+            overflow-x: auto;
         }
 
         table {
             border-collapse: collapse;
             width: 100%;
-            min-width: 1200px; /* Ensure table is wider than the screen */
+            min-width: 1200px;
             background-color: #fff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
@@ -78,7 +78,7 @@
             border: 1px solid #ddd;
             padding: 8px;
             text-align: center;
-            font-size: 12px; /* Smaller text for better fit on mobile */
+            font-size: 12px;
         }
 
         th {
@@ -90,23 +90,23 @@
 
         td {
             height: 40px;
-            cursor: pointer; /* Pointer cursor to indicate clickable rows */
+            cursor: pointer;
         }
 
         tr:hover td {
-            background-color: #f0f0f0; /* Highlight row on hover */
+            background-color: #f0f0f0;
         }
 
-        .line-cell {
+        .zone-cell {
             font-weight: bold;
             background-color: #f7f7f7;
-            cursor: pointer; /* Pointer cursor to indicate clickable rows */
+            cursor: pointer;
         }
 
         @media (max-width: 600px) {
             th, td {
                 padding: 5px;
-                font-size: 10px; /* Further reduce font size for small screens */
+                font-size: 10px;
             }
 
             .day-switcher button {
@@ -118,9 +118,9 @@
     </style>
 </head>
 <body>
-    <!-- Spider Header Showing Current Day and Line Number -->
+    <!-- Header Displaying Current Day and Line Number -->
     <div class="header">
-        <span id="current-day"></span> | Line <span id="line-number"></span>
+        <span id="current-day"></span> | Number <span id="number-from-url"></span>
     </div>
 
     <div class="calendar-container">
@@ -135,7 +135,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Production Line</th>
+                        <th>Zone</th>
                         <th>00:00</th>
                         <th>01:00</th>
                         <th>02:00</th>
@@ -163,32 +163,38 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr onclick="goToLine(1)">
-                        <td class="line-cell">Line 1</td>
+                    <tr onclick="goToZone('PMP')">
+                        <td class="zone-cell">PMP</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr onclick="goToLine(2)">
-                        <td class="line-cell">Line 2</td>
+                    <tr onclick="goToZone('Presse')">
+                        <td class="zone-cell">Presse</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr onclick="goToLine(3)">
-                        <td class="line-cell">Line 3</td>
+                    <tr onclick="goToZone('Ligne d\'émaillage')">
+                        <td class="zone-cell">Ligne d'émaillage</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr onclick="goToLine(4)">
-                        <td class="line-cell">Line 4</td>
+                    <tr onclick="goToZone('Kerajet')">
+                        <td class="zone-cell">Kerajet</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr onclick="goToLine(5)">
-                        <td class="line-cell">Line 5</td>
+                    <tr onclick="goToZone('Four')">
+                        <td class="zone-cell">Four</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr onclick="goToZone('Triage')">
+                        <td class="zone-cell">Triage</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
@@ -217,20 +223,20 @@
             displayCurrentDay();
         }
 
-        function goToLine(lineNumber) {
-            const url = `https://example.com/line?number=${lineNumber}&date=${currentDate.toISOString().split('T')[0]}`;
-            window.location.href = url;
+        function goToZone(zoneName) {
+            const lineNumber = window.location.pathname.split('/').pop().replace('index', '').replace('.html', '');
+            window.location.href = `https://example.com/zone/${zoneName}?line=${lineNumber}`;
         }
 
-        function getLineNumber() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const lineNumber = urlParams.get('html');
-            document.getElementById('line-number').textContent = lineNumber ? lineNumber : 'Unknown';
+        function displayLineNumber() {
+            const path = window.location.pathname;
+            const lineNumber = path.split('/').pop().replace('index', '').replace('.html', '');
+            document.getElementById('number-from-url').textContent = lineNumber ? lineNumber : 'Unknown';
         }
 
         // Initialize page with current day and line number
         displayCurrentDay();
-        getLineNumber();
+        displayLineNumber();
     </script>
 </body>
 </html>
