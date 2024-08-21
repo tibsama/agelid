@@ -17,6 +17,18 @@
             height: 100vh;
         }
 
+        .header {
+            width: 100%;
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
         .calendar-container {
             display: flex;
             flex-direction: column;
@@ -26,7 +38,7 @@
         }
 
         .day-switcher {
-            margin-bottom: 20px;
+            margin: 20px 0;
             width: 100%;
             display: flex;
             justify-content: space-between;
@@ -106,6 +118,11 @@
     </style>
 </head>
 <body>
+    <!-- Spider Header Showing Current Day -->
+    <div class="header">
+        <span id="current-day"></span>
+    </div>
+
     <div class="calendar-container">
         <!-- Day Switcher Buttons -->
         <div class="day-switcher">
@@ -182,6 +199,13 @@
     </div>
 
     <script>
+        // Function to display the current day in the header
+        function displayCurrentDay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date().toLocaleDateString(undefined, options);
+            document.getElementById('current-day').textContent = today;
+        }
+
         function previousDay() {
             // Functionality to load the previous day's data
             alert("Previous day data loaded.");
@@ -197,6 +221,9 @@
             const url = `https://example.com/line?number=${lineNumber}`;
             window.location.href = url;
         }
+
+        // Display the current day when the page loads
+        displayCurrentDay();
     </script>
 </body>
 </html>
