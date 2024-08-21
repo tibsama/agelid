@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zone Schedule Calendar</title>
+    <title>Production Line Calendar</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,7 +19,7 @@
 
         .header {
             width: 100%;
-            background-color: #28a745;
+            background-color: #007BFF;
             color: white;
             text-align: center;
             padding: 10px 0;
@@ -49,7 +49,7 @@
             flex: 1;
             padding: 10px;
             margin: 0 10px;
-            background-color: #28a745;
+            background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 5px;
@@ -58,7 +58,7 @@
         }
 
         .day-switcher button:hover {
-            background-color: #218838;
+            background-color: #0056b3;
         }
 
         .table-wrapper {
@@ -82,7 +82,7 @@
         }
 
         th {
-            background-color: #28a745;
+            background-color: #007BFF;
             color: white;
             position: sticky;
             top: 0;
@@ -97,7 +97,7 @@
             background-color: #f0f0f0; /* Highlight row on hover */
         }
 
-        .zone-cell {
+        .line-cell {
             font-weight: bold;
             background-color: #f7f7f7;
             cursor: pointer; /* Pointer cursor to indicate clickable rows */
@@ -118,9 +118,9 @@
     </style>
 </head>
 <body>
-    <!-- Spider Header Showing Current Day -->
+    <!-- Spider Header Showing Current Day and Line Number -->
     <div class="header">
-        <span id="current-day"></span>
+        <span id="current-day"></span> | Line <span id="line-number"></span>
     </div>
 
     <div class="calendar-container">
@@ -135,7 +135,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Zone</th>
+                        <th>Production Line</th>
                         <th>00:00</th>
                         <th>01:00</th>
                         <th>02:00</th>
@@ -163,32 +163,32 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr onclick="goToZone(1)">
-                        <td class="zone-cell">Zone 1</td>
+                    <tr onclick="goToLine(1)">
+                        <td class="line-cell">Line 1</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr onclick="goToZone(2)">
-                        <td class="zone-cell">Zone 2</td>
+                    <tr onclick="goToLine(2)">
+                        <td class="line-cell">Line 2</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr onclick="goToZone(3)">
-                        <td class="zone-cell">Zone 3</td>
+                    <tr onclick="goToLine(3)">
+                        <td class="line-cell">Line 3</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr onclick="goToZone(4)">
-                        <td class="zone-cell">Zone 4</td>
+                    <tr onclick="goToLine(4)">
+                        <td class="line-cell">Line 4</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr onclick="goToZone(5)">
-                        <td class="zone-cell">Zone 5</td>
+                    <tr onclick="goToLine(5)">
+                        <td class="line-cell">Line 5</td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                         <td></td><td></td><td></td><td></td>
@@ -217,12 +217,20 @@
             displayCurrentDay();
         }
 
-        function goToZone(zoneNumber) {
-            const url = `https://example.com/zone?number=${zoneNumber}&date=${currentDate.toISOString().split('T')[0]}`;
+        function goToLine(lineNumber) {
+            const url = `https://example.com/line?number=${lineNumber}&date=${currentDate.toISOString().split('T')[0]}`;
             window.location.href = url;
         }
 
+        function getLineNumber() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const lineNumber = urlParams.get('html');
+            document.getElementById('line-number').textContent = lineNumber ? lineNumber : 'Unknown';
+        }
+
+        // Initialize page with current day and line number
         displayCurrentDay();
+        getLineNumber();
     </script>
 </body>
 </html>
