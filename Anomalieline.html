@@ -212,8 +212,8 @@
             var d = txt.indexOf("&date=") + 5;
             var str = txt.substring(n, d-5);
             document.getElementById("line-number").textContent = str;
-            
-            document.getElementById('date-from-url').textContent = date ? date : 'Unknown';
+            var str = txt.substring(d);
+            document.getElementById('date-from-url').textContent = str;
         }
 
         // Function to navigate to the previous day
