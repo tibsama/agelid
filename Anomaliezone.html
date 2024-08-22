@@ -159,10 +159,18 @@
                 return;
             }
 
+            const urlParams = new URLSearchParams(window.location.search);
+            const date = urlParams.get('date');
+            const line = urlParams.get('line');
+            const zone = urlParams.get('zone');
+
             const task = {
                 taskInput1,
                 taskInput2,
-                taskInput3
+                taskInput3,
+                date,
+                line,
+                zone
             };
 
             tasks.push(task);
