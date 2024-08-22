@@ -365,20 +365,6 @@ const spinner2Options = {
         { text: "Sub Option 4-3", link: "https://example.com/plan4/sub3" }
     ]
 
-            const pdfUrl = "https://tibsama.github.io/agelid/SCHEMAS NEW TCHECK.pdf"; // Replace with your PDF URL
-
-            // Create an anchor element and simulate a click to download the PDF
-            const a = document.createElement("a");
-            a.href = pdfUrl;
-            a.download = "filename.pdf"; // Optional: specify the download filename
-            a.target = "_blank"; // Open the PDF in a new tab
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            // Alternatively, you can directly open the PDF in a new tab without download
-            window.open(pdfUrl, '_blank');
-
     
 };
 
