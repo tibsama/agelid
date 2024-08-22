@@ -240,7 +240,8 @@
 
         // Function to navigate to a specific zone
         function goToZone(zoneName) {
-            window.location.href = `https://tibsama.github.io/agelid/Anomaliezone.html#`+n+`date:`+d;
+            const url = `https://tibsama.github.io/agelid/Anomaliezone.html#${n}&date=${d}`;
+            window.location.href = url;
             document.getElementById('date-from-url').textContent = `gsyj`;
         }
 
