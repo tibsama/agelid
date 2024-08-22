@@ -261,7 +261,7 @@ h1 {
     <div class="container">
         
 <div class="spinner-container">
-    <label for="spinner1" class="spinner-label">Plan 1:</label>
+    <label for="spinner1" class="spinner-label">Zone:</label>
     <select id="spinner1" onchange="updateSpinner2()">
         <option value="1">PMP</option>
             <option value="2">presse</option>
@@ -273,15 +273,11 @@ h1 {
 </div>
 
 <div class="spinner-container">
-    <label for="spinner2" class="spinner-label">Plan 2:</label>
+    <label for="spinner2" class="spinner-label">Schema:</label>
     <select id="spinner2" onchange="redirectToLink()">
         <!-- Options will be dynamically populated based on spinner1 -->
     </select>
 </div>
-        
-    <div>
-        <p>S 1<span id="selectedVariable"></span></p>
-    </div>
 
         <h1>Liste des tâches</h1>
         <div class="input-container">
@@ -319,17 +315,6 @@ h1 {
 
      loadTasksFromCloud();
 
-   let selectedVariable = "1";
-        function changeVariable() {
-            const spinner = document.getElementById("spinner");
-            selectedVariable = spinner.options[spinner.selectedIndex].text;
-            document.getElementById("selectedVariable").textContent = selectedVariable;
-        
-        const inputLabels = placeholders[spinner.value];
-        inputLabels.forEach((label, index) => {
-            document.querySelectorAll('.floating-label')[index].textContent = label;
-        });
-renderTasks();  }
 
         // Mapping of spinner1 options to spinner2 options
 const spinner2Options = {
