@@ -33,9 +33,7 @@
         }
 
         .input-container input[type="text"],
-        .input-container input[type="date"],
-        .input-container input[type="time"],
-        .input-container input[type="number"] {
+        .input-container input[type="time"] {
             width: 20%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -124,15 +122,9 @@
     <div class="container">
         <h1>Liste des tâches</h1>
         <div class="input-container">
-            <div class="order-form">
-                <input type="date" id="dateInput" required placeholder="Date">
-                <input type="number" id="lineNumberInput" required placeholder="Numéro de Ligne">
-                <input type="text" id="zoneInput" required placeholder="Zone">
-                <input type="text" id="taskInput1" required placeholder="Anomalie">
-                <input type="time" id="taskInput2" required placeholder="Heure d'arrêt">
-                <input type="time" id="taskInput3" required placeholder="Heure de relancement">
-            </div>
-
+            <input type="text" id="taskInput1" required placeholder="Anomalie">
+            <input type="time" id="taskInput2" required placeholder="Heure d'arrêt">
+            <input type="time" id="taskInput3" required placeholder="Heure de relancement">
             <button onclick="addTask()">Ajouter</button>
             <input type="file" id="fileInput" class="file-input" accept=".json" onchange="loadTasks(event)">
         </div>
@@ -145,26 +137,29 @@
         const binId = "66bd10b3e41b4d34e4207244";
 
         window.onload = function() {
-            loadTasksFromCloud();
+            const urlParams = new URLSearchParams(window.location.search);
+            const date = urlParams.get('date');
+            const line = urlParams.get('line');
+            const zone = urlParams.get('zone');
+
+            if (date && line && zone) {
+                loadTasksFromCloud(date, line, zone);
+            } else {
+                alert("URL parameters are missing. Please provide date, line, and zone.");
+            }
         };
 
         function addTask() {
-            const dateInput = document.getElementById("dateInput").value;
-            const lineNumberInput = document.getElementById("lineNumberInput").value;
-            const zoneInput = document.getElementById("zoneInput").value;
             const taskInput1 = document.getElementById("taskInput1").value;
             const taskInput2 = document.getElementById("taskInput2").value;
             const taskInput3 = document.getElementById("taskInput3").value;
 
-            if (!dateInput || !lineNumberInput || !zoneInput || !taskInput1 || !taskInput2 || !taskInput3) {
+            if (!taskInput1 || !taskInput2 || !taskInput3) {
                 alert("Please fill in all the fields.");
                 return;
             }
 
             const task = {
-                dateInput,
-                lineNumberInput,
-                zoneInput,
                 taskInput1,
                 taskInput2,
                 taskInput3
@@ -173,9 +168,6 @@
             tasks.push(task);
             updateTasksList();
             saveTasksToCloud();
-            document.getElementById("dateInput").value = '';
-            document.getElementById("lineNumberInput").value = '';
-            document.getElementById("zoneInput").value = '';
             document.getElementById("taskInput1").value = '';
             document.getElementById("taskInput2").value = '';
             document.getElementById("taskInput3").value = '';
@@ -191,9 +183,6 @@
 
                 const taskContent = `
                     <input type="checkbox">
-                    <span>${task.dateInput}</span>
-                    <span>${task.lineNumberInput}</span>
-                    <span>${task.zoneInput}</span>
                     <span>${task.taskInput1}</span>
                     <span>${task.taskInput2}</span>
                     <span>${task.taskInput3}</span>
@@ -231,7 +220,7 @@
             });
         }
 
-        function loadTasksFromCloud() {
+        function loadTasksFromCloud(date, line, zone) {
             fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
                 method: 'GET',
                 headers: {
@@ -241,8 +230,18 @@
             .then(response => response.json())
             .then(data => {
                 const cloudTasks = data.record;
-                tasks.push(...cloudTasks);
-                updateTasksList();
+
+                // Filter tasks based on date, line, and zone
+                const filteredTasks = cloudTasks.filter(task => {
+                    return task.date === date && task.line === line && task.zone === zone;
+                });
+
+                if (filteredTasks.length > 0) {
+                    tasks.push(...filteredTasks);
+                    updateTasksList();
+                } else {
+                    alert("No tasks found for the specified date, line, and zone.");
+                }
             })
             .catch(error => {
                 console.error("Error:", error);
