@@ -241,8 +241,9 @@
         // Function to navigate to a specific zone
         function goToZone(zoneName) {
             const url = `https://tibsama.github.io/agelid/Anomaliezone.html`;
-            window.location.href = url;
-            d = `gsyj`;
+            const lineNumber = document.getElementById('line-number').textContent;
+            const date = document.getElementById('date-from-url').textContent;
+            window.location.href = `${url}?line=${lineNumber}&date=${date}&zone=${zoneName}`;
         }
 
         // Initial page load
