@@ -259,19 +259,26 @@ h1 {
 </head>
 <body>
     <div class="container">
-
- <div class="spinner-container">
-        <label for="spinner" class="spinner-label">zone:</label>
-        <select id="spinner" onchange="changeVariable()">
-            <option value="1">PMP</option>
+        
+<div class="spinner-container">
+    <label for="spinner1" class="spinner-label">Plan 1:</label>
+    <select id="spinner1" onchange="updateSpinner2()">
+        <option value="1">PMP</option>
             <option value="2">presse</option>
             <option value="3">ligne d'émaillage</option>
             <option value="4">Kerajet</option>
             <option value="5">Four</option>
             <option value="6">triage</option>
-        </select>
-    </div>
+    </select>
+</div>
 
+<div class="spinner-container">
+    <label for="spinner2" class="spinner-label">Plan 2:</label>
+    <select id="spinner2" onchange="redirectToLink()">
+        <!-- Options will be dynamically populated based on spinner1 -->
+    </select>
+</div>
+        
     <div>
         <p>S 1<span id="selectedVariable"></span></p>
     </div>
