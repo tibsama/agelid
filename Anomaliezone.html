@@ -32,7 +32,10 @@
             margin-bottom: 20px;
         }
 
-        .input-container input[type="text"] {
+        .input-container input[type="text"],
+        .input-container input[type="date"],
+        .input-container input[type="time"],
+        .input-container input[type="number"] {
             width: 20%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -91,142 +94,9 @@
             display: none;
         }
 
-        .carousel {
-            perspective: 1000px;
-            position: relative;
-            width: 100%;
-            max-width: 300px;
-            height: 200px;
-        }
-
-        .carousel-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            transform: rotateY(0deg);
-            transition: transform 1s cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-
-        .carousel-item {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-        }
-
-        .carousel-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .controls {
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .button-container button {
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: #fff;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .button-container button:hover {
-            background-color: #0056b3;
-        }
-
-        .input-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 300px;
-            margin: 10px auto;
-        }
-
-        .input-wrapper + .input-wrapper {
-            margin-top: 15px;
-        }
-
-        .animated-input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-            background-color: #fff;
-            transition: all 0.3s ease;
-        }
-
-        .animated-input:focus,
-        .animated-input:not(:placeholder-shown) {
-            border-color: #007bff;
-            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
-        }
-
-        .floating-label {
-            position: absolute;
-            top: 50%;
-            left: 12px;
-            font-size: 14px;
-            color: #999;
-            pointer-events: none;
-            transform: translateY(-50%);
-            transition: all 0.3s ease;
-        }
-
-        .animated-input:focus + .floating-label,
-        .animated-input:not(:placeholder-shown) + .floating-label {
-            top: -10px;
-            left: 8px;
-            font-size: 12px;
-            color: #007bff;
-        }
-
-        .order-form {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .order-form input, .order-form button {
-            padding: 10px;
-            margin: 10px auto;
-            font-size: 14px;
-            border: 2px solid #007bff;
-            border-radius: 4px;
-            background-color: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: block;
-        }
-
-        .order-form button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-        }
-
-        .order-form button:hover {
-            background-color: #0056b3;
-        }
-
         @media (max-width: 600px) {
             body {
                 padding: 10px;
-            }
-
-            .carousel {
-                height: 180px;
             }
 
             .button-container button {
@@ -247,48 +117,20 @@
                 font-size: 12px;
                 padding: 8px;
             }
-
-            .spinner-container {
-                margin-left: 20px 0;
-            }
-
-            .spinner-label {
-                margin-left: 10px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="spinner-container">
-            <label for="spinner" class="spinner-label">plan:</label>
-            <select id="spinner" onchange="changeVariable()">
-                <option value="1">plan preventif</option>
-                <option value="2">plan graissage</option>
-                <option value="3">piece a changer</option>
-                <option value="4">pannes</option>
-            </select>
-        </div>
-
-        <div>
-            <p>S 1<span id="selectedVariable"></span></p>
-        </div>
-
         <h1>Liste des tâches</h1>
         <div class="input-container">
             <div class="order-form">
-                <div class="input-wrapper">
-                    <input type="tel" id="taskInput1" class="animated-input" placeholder=" " required>
-                    <label for="taskInput1" class="floating-label">anomalie</label>
-                </div>
-                <div class="input-wrapper">
-                    <input type="time" id="taskInput2" class="animated-input" placeholder=" " required>
-                    <label for="taskInput2" class="floating-label">heure d'arrêt</label>
-                </div>
-                <div class="input-wrapper">
-                    <input type="time" id="taskInput3" class="animated-input" placeholder=" " required>
-                    <label for="taskInput3" class="floating-label">heure de relancement</label>
-                </div>
+                <input type="date" id="dateInput" required placeholder="Date">
+                <input type="number" id="lineNumberInput" required placeholder="Numéro de Ligne">
+                <input type="text" id="zoneInput" required placeholder="Zone">
+                <input type="text" id="taskInput1" required placeholder="Anomalie">
+                <input type="time" id="taskInput2" required placeholder="Heure d'arrêt">
+                <input type="time" id="taskInput3" required placeholder="Heure de relancement">
             </div>
 
             <button onclick="addTask()">Ajouter</button>
@@ -302,39 +144,27 @@
         const apiKey = "$2a$10$Ro4u7k0o7xdL5C3Guu/RmOH2p0kVyZTtdQfjXe0gqUk.HEKxtdLxi";
         const binId = "66bd10b3e41b4d34e4207244";
 
-        loadTasksFromCloud();
-
-        let selectedVariable = "1";
-        function changeVariable() {
-            const spinner = document.getElementById("spinner");
-            selectedVariable = spinner.options[spinner.selectedIndex].text;
-            document.getElementById("selectedVariable").textContent = selectedVariable;
-
-            const placeholders = {
-                1: ["Anomalie", "Heure d'arrêt", "Heure de relancement"],
-                2: ["Plan Name", "Location", "Frequency", "Last Checked"],
-                3: ["Piece Name", "Model", "Replacement Date", "Cost"],
-                4: ["Panne Type", "Issue Date", "Resolution Date", "Technician"]
-            };
-
-            const labels = placeholders[selectedVariable];
-            const inputs = document.querySelectorAll('.input-wrapper .floating-label');
-            inputs.forEach((label, index) => {
-                label.textContent = labels[index];
-            });
-        }
+        window.onload = function() {
+            loadTasksFromCloud();
+        };
 
         function addTask() {
+            const dateInput = document.getElementById("dateInput").value;
+            const lineNumberInput = document.getElementById("lineNumberInput").value;
+            const zoneInput = document.getElementById("zoneInput").value;
             const taskInput1 = document.getElementById("taskInput1").value;
             const taskInput2 = document.getElementById("taskInput2").value;
             const taskInput3 = document.getElementById("taskInput3").value;
 
-            if (!taskInput1 || !taskInput2 || !taskInput3) {
+            if (!dateInput || !lineNumberInput || !zoneInput || !taskInput1 || !taskInput2 || !taskInput3) {
                 alert("Please fill in all the fields.");
                 return;
             }
 
             const task = {
+                dateInput,
+                lineNumberInput,
+                zoneInput,
                 taskInput1,
                 taskInput2,
                 taskInput3
@@ -343,6 +173,9 @@
             tasks.push(task);
             updateTasksList();
             saveTasksToCloud();
+            document.getElementById("dateInput").value = '';
+            document.getElementById("lineNumberInput").value = '';
+            document.getElementById("zoneInput").value = '';
             document.getElementById("taskInput1").value = '';
             document.getElementById("taskInput2").value = '';
             document.getElementById("taskInput3").value = '';
@@ -358,6 +191,9 @@
 
                 const taskContent = `
                     <input type="checkbox">
+                    <span>${task.dateInput}</span>
+                    <span>${task.lineNumberInput}</span>
+                    <span>${task.zoneInput}</span>
                     <span>${task.taskInput1}</span>
                     <span>${task.taskInput2}</span>
                     <span>${task.taskInput3}</span>
@@ -427,16 +263,6 @@
                 reader.readAsText(file);
             }
         }
-
-        function downloadTasks() {
-            const blob = new Blob([JSON.stringify(tasks)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'tasks.json';
-            link.click();
-        }
     </script>
 </body>
-      </html>
-
+</html>
