@@ -9,7 +9,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #e0f7fa; /* Light green background */
+            background-color: #e0f7fa;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -19,7 +19,7 @@
 
         .header {
             width: 100%;
-            background-color: #4caf50; /* Green background */
+            background-color: #4caf50;
             color: white;
             text-align: center;
             padding: 10px 0;
@@ -49,7 +49,7 @@
             flex: 1;
             padding: 10px;
             margin: 0 10px;
-            background-color: #4caf50; /* Green background */
+            background-color: #4caf50;
             color: white;
             border: none;
             border-radius: 5px;
@@ -58,7 +58,7 @@
         }
 
         .day-switcher button:hover {
-            background-color: #388e3c; /* Darker green */
+            background-color: #388e3c;
         }
 
         .table-wrapper {
@@ -82,25 +82,35 @@
         }
 
         th {
-            background-color: #4caf50; /* Green background */
+            background-color: #4caf50;
             color: white;
             position: sticky;
             top: 0;
         }
 
-        td {
-            height: 40px;
-            cursor: pointer;
-        }
-
-        tr:hover td {
-            background-color: #f0f0f0;
-        }
-
-        .zone-cell {
+        /* Style for Zone column */
+        td.zone-cell, th {
+            background-color: #4caf50; /* Green background for the Zone column */
+            color: white;
             font-weight: bold;
-            background-color: #f7f7f7;
-            cursor: pointer;
+        }
+
+        /* General style for all other cells */
+        td.default-cell {
+            background-color: lightblue; /* Light blue background for all other cells */
+            color: white;
+        }
+
+        /* Styles for Presse Zone */
+        .presse-cell {
+            background-color: blue;
+            color: white;
+        }
+
+        /* Styles for Presse Zone change between 10:00 and 12:45 */
+        .presse-cell-gray {
+            background-color: gray;
+            color: white;
         }
 
         @media (max-width: 600px) {
@@ -118,19 +128,16 @@
     </style>
 </head>
 <body>
-    <!-- Header Displaying Line Number and Date from URL -->
     <div class="header">
         Ligne N°: <span id="line-number"></span> | Date: <span id="date-from-url"></span>
     </div>
 
     <div class="calendar-container">
-        <!-- Day Switcher Buttons -->
         <div class="day-switcher">
             <button onclick="previousDay()">Previous Day</button>
             <button onclick="nextDay()">Next Day</button>
         </div>
 
-        <!-- Calendar Table Wrapper -->
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -165,39 +172,69 @@
                 <tbody>
                     <tr onclick="goToZone('PMP')">
                         <td class="zone-cell">PMP</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                     </tr>
                     <tr onclick="goToZone('Presse')">
                         <td class="zone-cell">Presse</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="presse-cell-gray"></td><td class="presse-cell-gray"></td>
+                        <td class="presse-cell-gray"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
                     </tr>
                     <tr onclick="goToZone('Ligne d\'émaillage')">
                         <td class="zone-cell">Ligne d'émaillage</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                     </tr>
                     <tr onclick="goToZone('Kerajet')">
                         <td class="zone-cell">Kerajet</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                     </tr>
                     <tr onclick="goToZone('Four')">
                         <td class="zone-cell">Four</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                     </tr>
                     <tr onclick="goToZone('Triage')">
                         <td class="zone-cell">Triage</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td></td><td></td><td></td><td></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                     </tr>
                 </tbody>
             </table>
@@ -205,10 +242,10 @@
     </div>
 
     <script>
-        // Function to get the date and line number from the URL
+        // JavaScript functions remain unchanged
         function parseURL() {
             var txt = window.location.href;
-            var n = txt.indexOf("html#") + 5; // +5 to move past "html#"
+            var n = txt.indexOf("html#") + 5;
             var d = txt.indexOf("&date=") + 6;
             n = txt.substring(n, d-6);
             document.getElementById("line-number").textContent = n;
@@ -216,29 +253,25 @@
             document.getElementById('date-from-url').textContent = d;
         }
 
-        // Function to navigate to the previous day
         function previousDay() {
             const currentDate = new Date(document.getElementById('date-from-url').textContent);
             currentDate.setDate(currentDate.getDate() - 1);
             updateDateInURL(currentDate);
         }
 
-        // Function to navigate to the next day
         function nextDay() {
             const currentDate = new Date(document.getElementById('date-from-url').textContent);
             currentDate.setDate(currentDate.getDate() + 1);
             updateDateInURL(currentDate);
         }
 
-        // Update the date in the URL
         function updateDateInURL(date) {
             const formattedDate = date.toISOString().split('T')[0];
             const lineNumber = document.getElementById('line-number').textContent;
             window.location.hash = `${lineNumber}&date=${formattedDate}`;
-            parseURL(); // Update the displayed date
+            parseURL();
         }
 
-        // Function to navigate to a specific zone
         function goToZone(zoneName) {
             const url = `https://tibsama.github.io/agelid/Anomaliezone.html`;
             const lineNumber = document.getElementById('line-number').textContent;
@@ -246,7 +279,6 @@
             window.location.href = `${url}?line=${lineNumber}&date=${date}&zone=${zoneName}`;
         }
 
-        // Initial page load
         parseURL();
     </script>
 </body>
