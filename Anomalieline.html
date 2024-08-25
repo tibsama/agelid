@@ -193,12 +193,12 @@
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
-                        <td class="default-cell"></td><td class="presse-cell-gray"></td><td class="presse-cell-gray"></td>
-                        <td class="presse-cell-gray"></td><td class="presse-cell"></td><td class="presse-cell"></td>
-                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
-                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
-                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
-                    </tr>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        </tr>
                     <tr onclick="goToZone('Ligne d\'émaillage')">
                         <td class="zone-cell">Ligne d'émaillage</td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
@@ -260,15 +260,15 @@
     </div>
 
     <script>
-      const firebaseConfig = {
-            apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
-            authDomain: "herher-d121a.firebaseapp.com",
-            databaseURL: "https://herher-d121a.firebaseio.com",
-            projectId: "herher-d121a",
-            storageBucket: "herher-d121a.appspot.com",
-            messagingSenderId: "626438737297",
-            appId: "1:626438737297:web:bf6524275291ec695fde30"
-        };                       
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            databaseURL: "YOUR_DATABASE_URL"
+        };
 
         // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
@@ -335,6 +335,7 @@
         function goToZone(zone) {
             console.log("Navigating to zone: " + zone);
         }
+
 function cellscolor() {
     // Select the table body
     const tbody = document.querySelector('tbody');
@@ -351,7 +352,7 @@ function cellscolor() {
         const cellElement = row.children[cell.col];
 
         // Change the background color
-        cellElement.style.backgroundColor = '#ffeb3b'; // Yellow color
+        cellElement.style.backgroundColor = 'gray'; // Yellow color
     });
 }
     </script>
