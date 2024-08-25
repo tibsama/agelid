@@ -103,7 +103,7 @@
 
         /* Styles for Presse Zone */
         .presse-cell {
-            background-color: lightblue;
+            background-color: blue;
             color: white;
         }
 
@@ -130,6 +130,10 @@
 <body>
     <div class="header">
         Ligne N°: <span id="line-number"></span> | Date: <span id="date-from-url"></span>
+    </div>
+
+<div class="input-container">
+        <button onclick="cellscolor()">Change Cell Color</button>
     </div>
 
     <div class="calendar-container">
@@ -280,6 +284,30 @@
         }
 
         parseURL();
+
+function cellscolor() {
+    // Select the table body
+    const tbody = document.querySelector('tbody');
+
+    // Define the cell coordinates to change (rowIndex, cellIndex)
+    const cellsToChange = [
+        { row: 2, col: 3 }, // Cell (2, 3)
+        { row: 4, col: 4 }  // Cell (4, 4)
+    ];
+
+    cellsToChange.forEach(cell => {
+        // Select the row and cell
+        const row = tbody.children[cell.row - 1];
+        const cellElement = row.children[cell.col];
+
+        // Change the background color
+        cellElement.style.backgroundColor = '#ffeb3b'; // Yellow color
+    });
+}
+
+
+
     </script>
 </body>
-</html>
+                                                                                        </html>
+    
