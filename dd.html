@@ -3,273 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager</title>
+    <title>Production Zone Calendar</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            background-color: #e0f7fa;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            box-sizing: border-box;
+            justify-content: center;
+            height: 100vh;
         }
 
-        .container {
+        .header {
+            width: 100%;
+            background-color: #4caf50;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
             max-width: 1200px;
         }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .input-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .input-container input[type="text"],
-        .input-container input[type="time"] {
-            width: 20%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            margin: 0 5px;
-        }
-
-        .input-container button {
-            padding: 10px 15px;
-            border: none;
-            background-color: #28a745;
-            color: white;
-            border-radius: 3px;
-            cursor: pointer;
-            margin: 5px;
-        }
-
-        .input-container button:hover {
-            background-color: #218838;
-        }
-
-        .columns {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .column {
+        .day-switcher {
+            margin: 20px 0;
+            width: 100%;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            background-color: #fff;
+            padding: 0 20px;
+        }
+
+        .day-switcher button {
+            flex: 1;
             padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .column input[type="checkbox"] {
-            margin-right: 10px;
-        }
-
-        .remove-button {
-            background-color: #dc3545;
-            border: none;
-            padding: 5px 10px;
+            margin: 0 10px;
+            background-color: #4caf50;
             color: white;
-            border-radius: 3px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
 
-        .remove-button:hover {
-            background-color: #c82333;
+        .day-switcher button:hover {
+            background-color: #388e3c;
         }
 
-        .file-input {
-            display: none;
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1200px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        th {
+            background-color: #4caf50;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        /* Style for Zone column */
+        td.zone-cell, th {
+            background-color: #4caf50; /* Green background for the Zone column */
+            color: white;
+            font-weight: bold;
+        }
+
+        /* General style for all other cells */
+        td.default-cell {
+            background-color: lightblue; /* Light blue background for all other cells */
+            color: white;
+        }
+
+        /* Styles for Presse Zone */
+        .presse-cell {
+            background-color: blue;
+            color: white;
+        }
+
+        /* Styles for Presse Zone change between 10:00 and 12:45 */
+        .presse-cell-gray {
+            background-color: gray;
+            color: white;
         }
 
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
+            th, td {
+                padding: 5px;
+                font-size: 10px;
             }
 
-            .button-container button {
+            .day-switcher button {
                 padding: 8px;
+                margin: 0 5px;
                 font-size: 12px;
-            }
-
-            .animated-input {
-                padding: 10px;
-                font-size: 12px;
-            }
-
-            .floating-label {
-                font-size: 12px;
-            }
-
-            .order-form input, .order-form button {
-                font-size: 12px;
-                padding: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Liste des tâches</h1>
-        <div class="input-container">
-            <input type="text" id="taskInput1" required placeholder="Anomalie">
-            <input type="time" id="taskInput2" required placeholder="Heure d'arrêt">
-            <input type="time" id="taskInput3" required placeholder="Heure de relancement">
-            <button onclick="addTask()">Ajouter</button>
-            <input type="file" id="fileInput" class="file-input" accept=".json" onchange="loadTasks(event)">
+    <div class="header">
+        Ligne N°: <span id="line-number"></span> | Date: <span id="date-from-url"></span>
+    </div>
+
+<div class="input-container">
+        <button onclick="cellscolor()">Change Cell Color</button>
+    </div>
+
+    <div class="calendar-container">
+        <div class="day-switcher">
+            <button onclick="previousDay()">Previous Day</button>
+            <button onclick="nextDay()">Next Day</button>
         </div>
-        <div id="tasksList" class="columns"></div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Zone</th>
+                        <th>00:00</th>
+                        <th>01:00</th>
+                        <th>02:00</th>
+                        <th>03:00</th>
+                        <th>04:00</th>
+                        <th>05:00</th>
+                        <th>06:00</th>
+                        <th>07:00</th>
+                        <th>08:00</th>
+                        <th>09:00</th>
+                        <th>10:00</th>
+                        <th>11:00</th>
+                        <th>12:00</th>
+                        <th>13:00</th>
+                        <th>14:00</th>
+                        <th>15:00</th>
+                        <th>16:00</th>
+                        <th>17:00</th>
+                        <th>18:00</th>
+                        <th>19:00</th>
+                        <th>20:00</th>
+                        <th>21:00</th>
+                        <th>22:00</th>
+                        <th>23:00</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr onclick="goToZone('PMP')">
+                        <td class="zone-cell">PMP</td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                    </tr>
+                    <tr onclick="goToZone('Presse')">
+                        <td class="zone-cell">Presse</td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="presse-cell-gray"></td><td class="presse-cell-gray"></td>
+                        <td class="presse-cell-gray"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                    </tr>
+                    <tr onclick="goToZone('Ligne d\'émaillage')">
+                        <td class="zone-cell">Ligne d'émaillage</td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                    </tr>
+                    <tr onclick="goToZone('Kerajet')">
+                        <td class="zone-cell">Kerajet</td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                    </tr>
+                    <tr onclick="goToZone('Four')">
+                        <td class="zone-cell">Four</td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                    </tr>
+                    <tr onclick="goToZone('Triage')">
+                        <td class="zone-cell">Triage</td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        const tasks = [];
-        const apiKey = "$2a$10$Ro4u7k0o7xdL5C3Guu/RmOH2p0kVyZTtdQfjXe0gqUk.HEKxtdLxi";
-        const binId = "66bd10b3e41b4d34e4207244";
-
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const date = urlParams.get('date');
-            const line = urlParams.get('line');
-            const zone = urlParams.get('zone');
-
-            if (date && line && zone) {
-                loadTasksFromCloud(date, line, zone);
-            } else {
-                alert("URL parameters are missing. Please provide date, line, and zone.");
-            }
-        };
-
-        function addTask() {
-            const taskInput1 = document.getElementById("taskInput1").value;
-            const taskInput2 = document.getElementById("taskInput2").value;
-            const taskInput3 = document.getElementById("taskInput3").value;
-
-            if (!taskInput1 || !taskInput2 || !taskInput3) {
-                alert("Please fill in all the fields.");
-                return;
-            }
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const date = urlParams.get('date');
-            const line = urlParams.get('line');
-            const zone = urlParams.get('zone');
-
-            const task = {
-                taskInput1,
-                taskInput2,
-                taskInput3,
-                date,
-                line,
-                zone
-            };
-
-            tasks.push(task);
-            updateTasksList();
-            saveTasksToCloud();
-            document.getElementById("taskInput1").value = '';
-            document.getElementById("taskInput2").value = '';
-            document.getElementById("taskInput3").value = '';
+        // JavaScript functions remain unchanged
+        function parseURL() {
+            var txt = window.location.href;
+            var n = txt.indexOf("html#") + 5;
+            var d = txt.indexOf("&date=") + 6;
+            n = txt.substring(n, d-6);
+            document.getElementById("line-number").textContent = n;
+            d = txt.substring(d);
+            document.getElementById('date-from-url').textContent = d;
         }
 
-        function updateTasksList() {
-            const tasksList = document.getElementById("tasksList");
-            tasksList.innerHTML = '';
-
-            tasks.forEach((task, index) => {
-                const taskElement = document.createElement("div");
-                taskElement.className = "column";
-
-                const taskContent = `
-                    <input type="checkbox">
-                    <span>${task.taskInput1}</span>
-                    <span>${task.taskInput2}</span>
-                    <span>${task.taskInput3}</span>
-                    <button class="remove-button" onclick="removeTask(${index})">X</button>
-                `;
-                taskElement.innerHTML = taskContent;
-                tasksList.appendChild(taskElement);
-            });
+        function previousDay() {
+            const currentDate = new Date(document.getElementById('date-from-url').textContent);
+            currentDate.setDate(currentDate.getDate() - 1);
+            updateDateInURL(currentDate);
         }
 
-        function removeTask(index) {
-            tasks.splice(index, 1);
-            updateTasksList();
-            saveTasksToCloud();
+        function nextDay() {
+            const currentDate = new Date(document.getElementById('date-from-url').textContent);
+            currentDate.setDate(currentDate.getDate() + 1);
+            updateDateInURL(currentDate);
         }
 
-        function saveTasksToCloud() {
-            fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': apiKey
-                },
-                body: JSON.stringify(tasks)
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log("Tasks saved to the cloud.");
-                } else {
-                    console.error("Failed to save tasks to the cloud.");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
+        function updateDateInURL(date) {
+            const formattedDate = date.toISOString().split('T')[0];
+            const lineNumber = document.getElementById('line-number').textContent;
+            window.location.hash = `${lineNumber}&date=${formattedDate}`;
+            parseURL();
         }
 
-        function loadTasksFromCloud(date, line, zone) {
-            fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-                method: 'GET',
-                headers: {
-                    'X-Master-Key': apiKey
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const cloudTasks = data.record;
-
-                // Filter tasks based on date, line, and zone
-                const filteredTasks = cloudTasks.filter(task => {
-                    return task.date === date && task.line === line && task.zone === zone;
-                });
-
-                if (filteredTasks.length > 0) {
-                    tasks.push(...filteredTasks);
-                    updateTasksList();
-                } else {
-                    alert("No tasks found for the specified date, line, and zone.");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
+        function goToZone(zoneName) {
+            const url = `https://tibsama.github.io/agelid/Anomaliezone.html`;
+            const lineNumber = document.getElementById('line-number').textContent;
+            const date = document.getElementById('date-from-url').textContent;
+            window.location.href = `${url}?line=${lineNumber}&date=${date}&zone=${zoneName}`;
         }
 
-        function loadTasks(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const json = e.target.result;
-                    const loadedTasks = JSON.parse(json);
-                    tasks.push(...loadedTasks);
-                    updateTasksList();
-                    saveTasksToCloud();
-                };
-                reader.readAsText(file);
-            }
-        }
+        parseURL();
+
+function cellscolor() {
+    // Select the table body
+    const tbody = document.querySelector('tbody');
+
+    // Define the cell coordinates to change (rowIndex, cellIndex)
+    const cellsToChange = [
+        { row: 2, col: 3 }, // Cell (2, 3)
+        { row: 4, col: 4 }  // Cell (4, 4)
+    ];
+
+    cellsToChange.forEach(cell => {
+        // Select the row and cell
+        const row = tbody.children[cell.row - 1];
+        const cellElement = row.children[cell.col];
+
+        // Change the background color
+        cellElement.style.backgroundColor = '#ffeb3b'; // Yellow color
+    });
+}
+
+
+
     </script>
 </body>
-</html>
+                                                                                        </html>
+    
