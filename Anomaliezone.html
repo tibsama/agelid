@@ -211,11 +211,6 @@
             const tasksList = document.getElementById("tasksList");
             tasksList.innerHTML = '';
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const date = urlParams.get('date');
-            const line = urlParams.get('line');
-            const zone = urlParams.get('zone');
-
             tasks.forEach(task => {
                 const taskElement = document.createElement("div");
                 taskElement.className = "column";
