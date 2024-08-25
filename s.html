@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-container input[type="text"],
+        .input-container input[type="time"] {
+            width: 20%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+
+        .input-container button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .input-container button:hover {
+            background-color: #218838;
+        }
+
+        .columns {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .column {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .column input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .remove-button {
+            background-color: #dc3545;
+            border: none;
+            padding: 5px 10px;
+            color: white;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .remove-button:hover {
+            background-color: #c82333;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .button-container button {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .animated-input {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .floating-label {
+                font-size: 12px;
+            }
+
+            .order-form input, .order-form button {
+                font-size: 12px;
+                padding: 8px;
+            }
+        }
+    </style>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Liste des tâches</h1>
+        <div class="input-container">
+            <input type="text" id="taskInput1" required placeholder="Anomalie">
+            <input type="time" id="taskInput2" required placeholder="Heure d'arrêt">
+            <input type="time" id="taskInput3" required placeholder="Heure de relancement">
+            <button onclick="addTask()">Ajouter</button>
+            <input type="file" id="fileInput" class="file-input" accept=".json" onchange="loadTasks(event)">
+        </div>
+        <div id="tasksList" class="columns"></div>
+    </div>
+
+    <script>
+        // Firebase configuration object
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
+            authDomain: "herher-d121a.firebaseapp.com",
+            databaseURL: "https://herher-d121a.firebaseio.com",
+            projectId: "herher-d121a",
+            storageBucket: "herher-d121a.appspot.com",
+            messagingSenderId: "626438737297",
+            appId: "1:626438737297:web:bf6524275291ec695fde30"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+
+        const tasks = [];
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const date = urlParams.get('date');
+            const line = urlParams.get('line');
+            const zone = urlParams.get('zone');
+
+            if (date && line && zone) {
+                loadTasksFromCloud(date, line, zone);
+            } else {
+                alert("URL parameters are missing. Please provide date, line, and zone.");
+            }
+        };
+
+        function addTask() {
+            const taskInput1 = document.getElementById("taskInput1").value;
+            const taskInput2 = document.getElementById("taskInput2").value;
+            const taskInput3 = document.getElementById("taskInput3").value;
+
+            if (!taskInput1 || !taskInput2 || !taskInput3) {
+                alert("Please fill in all the fields.");
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const date = urlParams.get('date');
+            const line = urlParams.get('line');
+            const zone = urlParams.get('zone');
+
+            const task = {
+                taskInput1,
+                taskInput2,
+                taskInput3,
+                date,
+                line,
+                zone
+            };
+
+            // Add the task to Firestore
+            db.collection("tasks").add(task)
+                .then(() => {
+                    tasks.push(task);
+                    updateTasksList();
+                    console.log("Task successfully added!");
+                })
+                .catch(error => {
+                    console.error("Error adding task: ", error);
+                });
+
+            document.getElementById("taskInput1").value = '';
+            document.getElementById("taskInput2").value = '';
+            document.getElementById("taskInput3").value = '';
+        }
+
+        function updateTasksList() {
+            const tasksList = document.getElementById("tasksList");
+            tasksList.innerHTML = '';
+
+            tasks.forEach((task, index) => {
+                const taskElement = document.createElement("div");
+                taskElement.className = "column";
+
+                const taskContent = `
+                    <input type="checkbox">
+                    <span>${task.taskInput1}</span>
+                    <span>${task.taskInput2}</span>
+                    <span>${task.taskInput3}</span>
+                    <button class="remove-button" onclick="removeTask(${index})">X</button>
+                `;
+                taskElement.innerHTML = taskContent;
+                tasksList.appendChild(taskElement);
+            });
+        }
+
+        function removeTask(index) {
+            const task = tasks[index];
+            const taskRef = db.collection("tasks").where("taskInput1", "==", task.taskInput1)
+                .where("taskInput2", "==", task.taskInput2)
+                .where("taskInput3", "==", task.taskInput3)
+                .where("date", "==", task.date)
+                .where("line", "==", task.line)
+                .where("zone", "==", task.zone);
+
+            taskRef.get().then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    doc.ref.delete().then(() => {
+                        console.log("Document successfully deleted!");
+                    }).catch(error => {
+                        console.error("Error removing document: ", error);
+                    });
+                });
+            });
+
+            tasks.splice(index, 1);
+            updateTasksList();
+        }
+
+        function loadTasksFromCloud(date, line, zone) {
+            db.collection("tasks")
+                .where("date", "==", date)
+                .where("line", "==", line)
+                .where("zone", "==", zone)
+                .get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        tasks.push(doc.data());
+                    });
+                    updateTasksList();
+                    if (tasks.length === 0) {
+                        alert("No tasks found for the specified date, line, and zone.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error getting tasks: ", error);
+                });
+        }
+
+        function loadTasks(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const json = e.target.result;
+                    const loadedTasks = JSON.parse(json);
+                    tasks.push(...loadedTasks);
+                    updateTasksList();
+                };
+                reader.readAsText(file);
+            }
+        }
+    </script>
+</body>
+</html>
