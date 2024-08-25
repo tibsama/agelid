@@ -164,12 +164,7 @@
             const line = urlParams.get('line');
             const zone = urlParams.get('zone');
 
-            if (!date || !line || !zone) {
-                alert("Missing URL parameters: date, line, or zone.");
-                return;
-            }
-
-            const key = `${line}:${zone}:${date}`;
+            const key = ${line}:${zone}:${date};
 
             const task = {
                 taskInput1,
@@ -180,7 +175,7 @@
             database.ref('tasks').child(key).push(task)
                 .then(() => {
                     console.log("Task successfully added!");
-                    loadTasksFromCloud(); // Reload tasks to include the new one
+                    loadTasksFromCloud(date, line, zone); // Reload tasks to include the new one
                 })
                 .catch(error => {
                     console.error("Error adding task: ", error);
@@ -191,18 +186,8 @@
             document.getElementById("taskInput3").value = '';
         }
 
-        function loadTasksFromCloud() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const date = urlParams.get('date');
-            const line = urlParams.get('line');
-            const zone = urlParams.get('zone');
-
-            if (!date || !line || !zone) {
-                alert("Missing URL parameters: date, line, or zone.");
-                return;
-            }
-
-            const key = `${line}:${zone}:${date}`;
+        function loadTasksFromCloud(date, line, zone) {
+            const key = ${line}:${zone}:${date};
 
             database.ref('tasks').child(key).once('value', snapshot => {
                 const tasks = [];
@@ -224,44 +209,27 @@
             const tasksList = document.getElementById("tasksList");
             tasksList.innerHTML = '';
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const date = urlParams.get('date');
-            const line = urlParams.get('line');
-            const zone = urlParams.get('zone');
-
             tasks.forEach(task => {
                 const taskElement = document.createElement("div");
                 taskElement.className = "column";
 
-                const taskContent = `
+                const taskContent = 
                     <input type="checkbox">
                     <span>${task.taskInput1}</span>
                     <span>${task.taskInput2}</span>
                     <span>${task.taskInput3}</span>
                     <button class="remove-button" onclick="removeTask('${task.key}')">X</button>
-                `;
+                ;
                 taskElement.innerHTML = taskContent;
                 tasksList.appendChild(taskElement);
             });
         }
 
         function removeTask(taskKey) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const date = urlParams.get('date');
-            const line = urlParams.get('line');
-            const zone = urlParams.get('zone');
-
-            if (!date || !line || !zone) {
-                alert("Missing URL parameters: date, line, or zone.");
-                return;
-            }
-
-            const key = `${line}:${zone}:${date}`;
-
-            database.ref('tasks').child(key).child(taskKey).remove()
+            database.ref('tasks').child(taskKey).remove()
                 .then(() => {
                     console.log("Task successfully removed!");
-                    loadTasksFromCloud(); // Reload tasks to reflect the removal
+                    loadTasksFromCloud(date, line, zone); // Reload tasks to reflect the removal
                 })
                 .catch(error => {
                     console.error("Error removing task: ", error);
@@ -274,4 +242,26 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const json = e.target.result;
-                    const loadedTasks = JSON
+                    const loadedTasks = JSON.parse(json);
+                    tasks.push(...loadedTasks);
+                    updateTasksList(tasks);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const date = urlParams.get('date');
+            const line = urlParams.get('line');
+            const zone = urlParams.get('zone');
+
+            if (date && line && zone) {
+                loadTasksFromCloud(date, line, zone);
+            } else {
+                alert("URL parameters are missing. Please provide date, line, and zone.");
+            }
+        };
+    </script>
+</body>
+</html>
