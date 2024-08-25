@@ -117,9 +117,8 @@
             }
         }
     </style>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
 </head>
 <body>
     <div class="container">
@@ -147,23 +146,8 @@
         };
 
         // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(app);
-
-        const tasks = [];
-
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const date = urlParams.get('date');
-            const line = urlParams.get('line');
-            const zone = urlParams.get('zone');
-
-            if (date && line && zone) {
-                loadTasksFromCloud(date, line, zone);
-            } else {
-                alert("URL parameters are missing. Please provide date, line, and zone.");
-            }
-        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
         function addTask() {
             const taskInput1 = document.getElementById("taskInput1").value;
@@ -180,21 +164,18 @@
             const line = urlParams.get('line');
             const zone = urlParams.get('zone');
 
+            const key = `${line}:${zone}:${date}`;
+
             const task = {
                 taskInput1,
                 taskInput2,
-                taskInput3,
-                date,
-                line,
-                zone
+                taskInput3
             };
 
-            // Add the task to Firestore
-            db.collection("tasks").add(task)
+            database.ref('tasks').child(key).push(task)
                 .then(() => {
-                    tasks.push(task);
-                    updateTasksList();
                     console.log("Task successfully added!");
+                    loadTasksFromCloud(date, line, zone); // Reload tasks to include the new one
                 })
                 .catch(error => {
                     console.error("Error adding task: ", error);
@@ -205,11 +186,30 @@
             document.getElementById("taskInput3").value = '';
         }
 
-        function updateTasksList() {
+        function loadTasksFromCloud(date, line, zone) {
+            const key = `${line}:${zone}:${date}`;
+
+            database.ref('tasks').child(key).once('value', snapshot => {
+                const tasks = [];
+                snapshot.forEach(childSnapshot => {
+                    const task = childSnapshot.val();
+                    task.key = childSnapshot.key; // Add the key to the task object
+                    tasks.push(task);
+                });
+                updateTasksList(tasks);
+                if (tasks.length === 0) {
+                    alert("No tasks found for the specified date, line, and zone.");
+                }
+            }).catch(error => {
+                console.error("Error getting tasks: ", error);
+            });
+        }
+
+        function updateTasksList(tasks) {
             const tasksList = document.getElementById("tasksList");
             tasksList.innerHTML = '';
 
-            tasks.forEach((task, index) => {
+            tasks.forEach(task => {
                 const taskElement = document.createElement("div");
                 taskElement.className = "column";
 
@@ -218,53 +218,21 @@
                     <span>${task.taskInput1}</span>
                     <span>${task.taskInput2}</span>
                     <span>${task.taskInput3}</span>
-                    <button class="remove-button" onclick="removeTask(${index})">X</button>
+                    <button class="remove-button" onclick="removeTask('${task.key}')">X</button>
                 `;
                 taskElement.innerHTML = taskContent;
                 tasksList.appendChild(taskElement);
             });
         }
 
-        function removeTask(index) {
-            const task = tasks[index];
-            const taskRef = db.collection("tasks").where("taskInput1", "==", task.taskInput1)
-                .where("taskInput2", "==", task.taskInput2)
-                .where("taskInput3", "==", task.taskInput3)
-                .where("date", "==", task.date)
-                .where("line", "==", task.line)
-                .where("zone", "==", task.zone);
-
-            taskRef.get().then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    doc.ref.delete().then(() => {
-                        console.log("Document successfully deleted!");
-                    }).catch(error => {
-                        console.error("Error removing document: ", error);
-                    });
-                });
-            });
-
-            tasks.splice(index, 1);
-            updateTasksList();
-        }
-
-        function loadTasksFromCloud(date, line, zone) {
-            db.collection("tasks")
-                .where("date", "==", date)
-                .where("line", "==", line)
-                .where("zone", "==", zone)
-                .get()
-                .then(querySnapshot => {
-                    querySnapshot.forEach(doc => {
-                        tasks.push(doc.data());
-                    });
-                    updateTasksList();
-                    if (tasks.length === 0) {
-                        alert("No tasks found for the specified date, line, and zone.");
-                    }
+        function removeTask(taskKey) {
+            database.ref('tasks').child(taskKey).remove()
+                .then(() => {
+                    console.log("Task successfully removed!");
+                    loadTasksFromCloud(date, line, zone); // Reload tasks to reflect the removal
                 })
                 .catch(error => {
-                    console.error("Error getting tasks: ", error);
+                    console.error("Error removing task: ", error);
                 });
         }
 
@@ -276,11 +244,24 @@
                     const json = e.target.result;
                     const loadedTasks = JSON.parse(json);
                     tasks.push(...loadedTasks);
-                    updateTasksList();
+                    updateTasksList(tasks);
                 };
                 reader.readAsText(file);
             }
         }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const date = urlParams.get('date');
+            const line = urlParams.get('line');
+            const zone = urlParams.get('zone');
+
+            if (date && line && zone) {
+                loadTasksFromCloud(date, line, zone);
+            } else {
+                alert("URL parameters are missing. Please provide date, line, and zone.");
+            }
+        };
     </script>
 </body>
 </html>
