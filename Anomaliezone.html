@@ -124,6 +124,9 @@
     <div class="container">
         <h1>Liste des tâches</h1>
         <div class="input-container">
+            <input type="text" id="line" required placeholder="Ligne">
+            <input type="text" id="zone" required placeholder="Zone">
+            <input type="text" id="date" required placeholder="Date (YYYY-MM-DD)">
             <input type="text" id="taskInput1" required placeholder="Anomalie">
             <input type="time" id="taskInput2" required placeholder="Heure d'arrêt">
             <input type="time" id="taskInput3" required placeholder="Heure de relancement">
@@ -150,21 +153,17 @@
         const database = firebase.database();
 
         function addTask() {
+            const line = document.getElementById("line").value;
+            const zone = document.getElementById("zone").value;
+            const date = document.getElementById("date").value;
             const taskInput1 = document.getElementById("taskInput1").value;
             const taskInput2 = document.getElementById("taskInput2").value;
             const taskInput3 = document.getElementById("taskInput3").value;
 
-            if (!taskInput1 || !taskInput2 || !taskInput3) {
-                alert("Please fill in all the fields.");
+            if (!line || !zone || !date || !taskInput1 || !taskInput2 || !taskInput3) {
+                alert("Please fill in all fields.");
                 return;
             }
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const date = urlParams.get('date');
-            const line = urlParams.get('line');
-            const zone = urlParams.get('zone');
-
-            const key = `${line}:${zone}:${date}`;
 
             const task = {
                 taskInput1,
@@ -172,21 +171,37 @@
                 taskInput3
             };
 
+            // Store task under the compound key format line:zone:date
+            const key = `${line}:${zone}:${date}`;
+
             database.ref('tasks').child(key).push(task)
                 .then(() => {
                     console.log("Task successfully added!");
-                    loadTasksFromCloud(date, line, zone); // Reload tasks to include the new one
+                    loadTasksFromCloud(); // Reload tasks to include the new one
                 })
                 .catch(error => {
                     console.error("Error adding task: ", error);
                 });
 
+            // Clear input fields
+            document.getElementById("line").value = '';
+            document.getElementById("zone").value = '';
+            document.getElementById("date").value = '';
             document.getElementById("taskInput1").value = '';
             document.getElementById("taskInput2").value = '';
             document.getElementById("taskInput3").value = '';
         }
 
-        function loadTasksFromCloud(date, line, zone) {
+        function loadTasksFromCloud() {
+            const line = document.getElementById("line").value;
+            const zone = document.getElementById("zone").value;
+            const date = document.getElementById("date").value;
+
+            if (!line || !zone || !date) {
+                alert("Please enter line, zone, and date to filter tasks.");
+                return;
+            }
+
             const key = `${line}:${zone}:${date}`;
 
             database.ref('tasks').child(key).once('value', snapshot => {
@@ -226,10 +241,21 @@
         }
 
         function removeTask(taskKey) {
-            database.ref('tasks').child(taskKey).remove()
+            const line = document.getElementById("line").value;
+            const zone = document.getElementById("zone").value;
+            const date = document.getElementById("date").value;
+
+            if (!line || !zone || !date) {
+                alert("Please enter line, zone, and date to remove tasks.");
+                return;
+            }
+
+            const key = `${line}:${zone}:${date}`;
+
+            database.ref('tasks').child(key).child(taskKey).remove()
                 .then(() => {
                     console.log("Task successfully removed!");
-                    loadTasksFromCloud(date, line, zone); // Reload tasks to reflect the removal
+                    loadTasksFromCloud(); // Reload tasks to reflect the removal
                 })
                 .catch(error => {
                     console.error("Error removing task: ", error);
@@ -243,25 +269,11 @@
                 reader.onload = function(e) {
                     const json = e.target.result;
                     const loadedTasks = JSON.parse(json);
-                    tasks.push(...loadedTasks);
-                    updateTasksList(tasks);
+                    updateTasksList(loadedTasks);
                 };
                 reader.readAsText(file);
             }
         }
-
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const date = urlParams.get('date');
-            const line = urlParams.get('line');
-            const zone = urlParams.get('zone');
-
-            if (date && line && zone) {
-                loadTasksFromCloud(date, line, zone);
-            } else {
-                alert("URL parameters are missing. Please provide date, line, and zone.");
-            }
-        };
     </script>
 </body>
 </html>
