@@ -274,6 +274,8 @@
             document.getElementById('date-from-url').textContent = d;
         }
 
+        loadTasksFromCloud();
+
         function previousDay() {
             const currentDate = new Date(document.getElementById('date-from-url').textContent);
             currentDate.setDate(currentDate.getDate() - 1);
@@ -322,7 +324,53 @@ function cellscolor() {
     });
 }
 
+ function loadTasksFromCloud() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const date = urlParams.get('date');
+            const line = urlParams.get('line');
 
+          //  if (!date || !line ) {
+             //   alert("Missing URL parameters: date, line.");
+             //  return;
+          //  }
+
+            const key = `${line}:${date}`;
+
+            database.ref('tasks').child(key).once('value', snapshot => {
+                const tasks = [];
+                snapshot.forEach(childSnapshot => {
+                    const task = childSnapshot.val();
+                    task.key = childSnapshot.key; // Add the key to the task object
+                    tasks.push(task);
+                });
+                updateTasksList(tasks);
+               // if (tasks.length === 0) {
+                   // alert("No tasks found for the specified date, line, and zone.");
+              //  }
+            }).catch(error => {
+                console.error("Error getting tasks: ", error);
+            });
+        }
+
+        function updateTasksList(tasks) {
+            const tasksList = document.getElementById("tasksList");
+            tasksList.innerHTML = '';
+
+            tasks.forEach(task => {
+                const taskElement = document.createElement("div");
+                taskElement.className = "column";
+
+                const taskContent = `
+                    <input type="checkbox">
+                    <span>${task.taskInput1}</span>
+                    <span>${task.taskInput2}</span>
+                    <span>${task.taskInput3}</span>
+                    <button class="remove-button" onclick="removeTask('${task.key}')">X</button>
+                `;
+                taskElement.innerHTML = taskContent;
+                tasksList.appendChild(taskElement);
+            });
+        }
 
     </script>
 </body>
