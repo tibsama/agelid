@@ -247,6 +247,11 @@
         </div>
     </div>
 
+    <div id="allTasks">
+    <h3>All Tasks from Database:</h3>
+    <div id="tasksList"></div>
+</div>
+
     <script>
 // Firebase configuration object
         const firebaseConfig = {
@@ -274,7 +279,7 @@
             document.getElementById('date-from-url').textContent = d;
         }
 
-        loadTasksFromCloud();
+        
 
         function previousDay() {
             const currentDate = new Date(document.getElementById('date-from-url').textContent);
@@ -326,43 +331,35 @@ function cellscolor() {
 
 
 
-function loadTasksFromCloud() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const date = urlParams.get('date');
-    const line = urlParams.get('line');
 
-    if (!date || !line) {
-        alert("Missing URL parameters: date or line.");
-        return;
-    }
+function loadAllTasksFromCloud() {
+    const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
 
-    // Use the line and date to filter tasks, ignoring the zone
-    const ref = database.ref('tasks');
-    ref.once('value', (snapshot) => {
-        const tasks = [];
+    ref.once('value', (snapshot) => {  // Fetch all data once
+        const tasksList = document.getElementById("tasksList");
+        tasksList.innerHTML = '';  // Clear the list before adding new tasks
+
         snapshot.forEach((childSnapshot) => {
-            const key = childSnapshot.key;
+            const key = childSnapshot.key;  // Get the key of each task
+            const task = childSnapshot.val();  // Get the task data
             
-            // Check if the key contains the specified line and date
-            if (key.includes(line) && key.includes(date)) {
-                childSnapshot.forEach((taskSnapshot) => {
-                    const task = taskSnapshot.val();
-                    task.key = taskSnapshot.key; // Add the task's unique key
-                    tasks.push(task);
-                });
-            }
+            // Create a new div for each task
+            const taskElement = document.createElement("div");
+            taskElement.className = "task";
+
+            // Display key and task inputs
+            taskElement.innerHTML = `<strong>${key}</strong>: ${JSON.stringify(task)}`;
+            
+            tasksList.appendChild(taskElement);  // Append the task to the tasksList
         });
-
-        updateTasksList(tasks);
-
-        // If no tasks found, alert the user
-        if (tasks.length === 0) {
-            alert("No tasks found for the specified line and date.");
-        }
     }).catch((error) => {
-        console.error("Error getting tasks: ", error);
+        console.error("Error getting tasks: ", error);  // Log any errors
     });
 }
+
+// Call the function to load all tasks when needed
+loadAllTasksFromCloud();
+
 
     
 
