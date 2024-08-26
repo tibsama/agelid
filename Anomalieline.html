@@ -90,14 +90,14 @@
 
         /* Style for Zone column */
         td.zone-cell, th {
-            background-color: #4caf50;
+            background-color: #4caf50; /* Green background for the Zone column */
             color: white;
             font-weight: bold;
         }
 
         /* General style for all other cells */
         td.default-cell {
-            background-color: lightblue;
+            background-color: lightblue; /* Light blue background for all other cells */
             color: white;
         }
 
@@ -126,16 +126,13 @@
             }
         }
     </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
-
 </head>
 <body>
     <div class="header">
         Ligne N°: <span id="line-number"></span> | Date: <span id="date-from-url"></span>
     </div>
 
-    <div class="input-container">
+<div class="input-container">
         <button onclick="cellscolor()">Change Cell Color</button>
     </div>
 
@@ -193,12 +190,12 @@
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
-                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
-                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
-                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
-                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
-                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
-                        </tr>
+                        <td class="default-cell"></td><td class="presse-cell-gray"></td><td class="presse-cell-gray"></td>
+                        <td class="presse-cell-gray"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
+                    </tr>
                     <tr onclick="goToZone('Ligne d\'émaillage')">
                         <td class="zone-cell">Ligne d'émaillage</td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
@@ -222,7 +219,7 @@
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                     </tr>
                     <tr onclick="goToZone('Four')">
-                        <td class="zone-cell">Stockage</td>
+                        <td class="zone-cell">Four</td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
@@ -233,7 +230,7 @@
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                     </tr>
                     <tr onclick="goToZone('Triage')">
-                        <td class="zone-cell">Control de qualité</td>
+                        <td class="zone-cell">Triage</td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
@@ -249,84 +246,44 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID",
-            databaseURL: "YOUR_DATABASE_URL"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database(app);
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const lineNumber = urlParams.get("line");
-            const date = urlParams.get("date");
-            
-            document.getElementById("line-number").textContent = lineNumber;
-            document.getElementById("date-from-url").textContent = date;
-
-            if (lineNumber && date) {
-                const dbPath = `${lineNumber}:${date}`;
-                const dbRef = firebase.database().ref(dbPath);
-
-                dbRef.on("value", (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        for (const [key, value] of Object.entries(data)) {
-                            const [line, zone, time] = key.split(":");
-                            const cell = document.querySelector(`td[data-time="${time}"][data-zone="${zone}"]`);
-
-                            if (cell) {
-                                switch (value.status) {
-                                    case "inactive":
-                                        cell.style.backgroundColor = "gray";
-                                        break;
-                                    case "active":
-                                        cell.style.backgroundColor = "blue";
-                                        break;
-                                    default:
-                                        cell.style.backgroundColor = "lightblue";
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        });
-
-        function nextDay() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const dateString = urlParams.get("date");
-            const currentDate = new Date(dateString);
-            currentDate.setDate(currentDate.getDate() + 1);
-            const nextDate = currentDate.toISOString().slice(0, 10);
-            urlParams.set("date", nextDate);
-            window.location.search = urlParams.toString();
+        // JavaScript functions remain unchanged
+        function parseURL() {
+            var txt = window.location.href;
+            var n = txt.indexOf("html#") + 5;
+            var d = txt.indexOf("&date=") + 6;
+            n = txt.substring(n, d-6);
+            document.getElementById("line-number").textContent = n;
+            d = txt.substring(d);
+            document.getElementById('date-from-url').textContent = d;
         }
 
         function previousDay() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const dateString = urlParams.get("date");
-            const currentDate = new Date(dateString);
+            const currentDate = new Date(document.getElementById('date-from-url').textContent);
             currentDate.setDate(currentDate.getDate() - 1);
-            const prevDate = currentDate.toISOString().slice(0, 10);
-            urlParams.set("date", prevDate);
-            window.location.search = urlParams.toString();
+            updateDateInURL(currentDate);
         }
 
-        function goToZone(zone) {
-            const url = `https://tibsama.github.io/agelid/Anomaliezone.html`; 
+        function nextDay() {
+            const currentDate = new Date(document.getElementById('date-from-url').textContent);
+            currentDate.setDate(currentDate.getDate() + 1);
+            updateDateInURL(currentDate);
+        }
+
+        function updateDateInURL(date) {
+            const formattedDate = date.toISOString().split('T')[0];
+            const lineNumber = document.getElementById('line-number').textContent;
+            window.location.hash = `${lineNumber}&date=${formattedDate}`;
+            parseURL();
+        }
+
+        function goToZone(zoneName) {
+            const url = `https://tibsama.github.io/agelid/Anomaliezone.html`;
             const lineNumber = document.getElementById('line-number').textContent;
             const date = document.getElementById('date-from-url').textContent;
             window.location.href = `${url}?line=${lineNumber}&date=${date}&zone=${zoneName}`;
         }
+
+        parseURL();
 
 function cellscolor() {
     // Select the table body
@@ -344,9 +301,13 @@ function cellscolor() {
         const cellElement = row.children[cell.col];
 
         // Change the background color
-        cellElement.style.backgroundColor = 'gray'; // Yellow color
+        cellElement.style.backgroundColor = '#ffeb3b'; // Yellow color
     });
 }
+
+
+
     </script>
 </body>
-</html>
+                                                                                        </html>
+    
