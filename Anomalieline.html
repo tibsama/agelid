@@ -324,35 +324,39 @@ function cellscolor() {
     });
 }
 
- function loadTasksFromCloud() {
+
+    function loadTasksFromCloud() {
     const urlParams = new URLSearchParams(window.location.search);
     const date = urlParams.get('date');
     const line = urlParams.get('line');
 
     if (!date || !line) {
-        alert("Missing URL parameters: date, line.");
+        alert("Missing URL parameters: date or line.");
         return;
     }
 
-    const startKey = `${line}:`; // Use the line and colon to start the range
-    const endKey = `${line}:\uf8ff`; // Use Unicode \uf8ff to match all characters after line:
-
-    database.ref('tasks').orderByKey().startAt(startKey).endAt(endKey).once('value', snapshot => {
+    // Fetch all tasks under the 'tasks' node
+    database.ref('tasks').once('value', snapshot => {
         const tasks = [];
+
         snapshot.forEach(childSnapshot => {
             const key = childSnapshot.key;
-            
-            // Now check if the key format matches `Line:date`
-            // Split the key by ':' and check if the second part matches the date
+
+            // Manually check if the key matches the required format
             const keyParts = key.split(':');
-            if (keyParts[0] === line && keyParts[1] === date) {
+            const taskLine = keyParts[0];  // Extract the line part
+            const taskDate = keyParts[2];  // Extract the date part
+
+            // Check if the task's line and date match the specified parameters
+            if (taskLine === line && taskDate === date) {
                 const task = childSnapshot.val();
-                task.key = childSnapshot.key;
+                task.key = key;
                 tasks.push(task);
             }
         });
 
         updateTasksList(tasks);
+
         if (tasks.length === 0) {
             alert("No tasks found for the specified date and line.");
         }
@@ -360,6 +364,7 @@ function cellscolor() {
         console.error("Error getting tasks: ", error);
     });
 }
+    
 
 
         function updateTasksList(tasks) {
