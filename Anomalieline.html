@@ -344,9 +344,9 @@ function cellscolor() {
                     tasks.push(task);
                 });
                 updateTasksList(tasks);
-               // if (tasks.length === 0) {
-                   // alert("No tasks found for the specified date, line, and zone.");
-              //  }
+                if (tasks.length === 0) {
+                    alert("No tasks found for the specified date, line, and zone.");
+                }
             }).catch(error => {
                 console.error("Error getting tasks: ", error);
             });
