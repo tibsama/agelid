@@ -325,7 +325,7 @@ function cellscolor() {
 }
 
 
-    function loadTasksFromCloud() {
+ function loadTasksFromCloud() {
     const urlParams = new URLSearchParams(window.location.search);
     const date = urlParams.get('date');
     const line = urlParams.get('line');
@@ -342,15 +342,10 @@ function cellscolor() {
         snapshot.forEach(childSnapshot => {
             const key = childSnapshot.key;
 
-            // Manually check if the key matches the required format
-            const keyParts = key.split(':');
-            const taskLine = keyParts[0];  // Extract the line part
-            const taskDate = keyParts[2];  // Extract the date part
-
-            // Check if the task's line and date match the specified parameters
-            if (taskLine === line && taskDate === date) {
+            // Check if the key contains the specified line and date
+            if (key.includes(line) && key.includes(date)) {
                 const task = childSnapshot.val();
-                task.key = key;
+                task.key = key; // Add the key to the task object
                 tasks.push(task);
             }
         });
@@ -364,6 +359,7 @@ function cellscolor() {
         console.error("Error getting tasks: ", error);
     });
 }
+
     
 
 
