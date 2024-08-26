@@ -330,34 +330,6 @@ function cellscolor() {
 }
 
 
-function loadTasksFromCloud() {
-
-    // Fetch all tasks under the 'tasks' node
-    database.ref('tasks').once('value', snapshot => {
-        const tasks = [];
-
-        snapshot.forEach(childSnapshot => {
-            const key = childSnapshot.key;
-
-            // Check if the key contains the specified line and date
-            if (key.includes(n) && key.includes(d)) {
-                const task = childSnapshot.val();
-                task.key = key; // Add the key to the task object
-                tasks.push(task);
-            }
-        });
-
-        updateTasksList(tasks);
-
-        if (tasks.length === 0) {
-            alert("No tasks found for the specified date and line.");
-        }
-    }).catch(error => {
-        console.error("Error getting tasks: ", error);
-    });
-}
-
-      loadTasksFromCloud();  
 
 
 function loadAllTasksFromCloud() {
@@ -370,6 +342,11 @@ function loadAllTasksFromCloud() {
         snapshot.forEach((childSnapshot) => {
             const key = childSnapshot.key;  // Get the key of each task
             const task = childSnapshot.val();  // Get the task data
+     if (key.includes(n) && key.includes(d)) {
+ 
+            } else {
+            
+      
             
             // Create a new div for each task
             const taskElement = document.createElement("div");
@@ -379,7 +356,8 @@ function loadAllTasksFromCloud() {
             taskElement.innerHTML = `<strong>${key}</strong>: ${JSON.stringify(task)}`;
             
             tasksList.appendChild(taskElement);  // Append the task to the tasksList
-        });
+      }
+     });
     }).catch((error) => {
         console.error("Error getting tasks: ", error);  // Log any errors
     });
@@ -387,30 +365,6 @@ function loadAllTasksFromCloud() {
 
 // Call the function to load all tasks when needed
 loadAllTasksFromCloud();
-
-
-    
-
-function updateTasksList(tasks) {
-    const tasksList = document.getElementById("tasksList");
-    tasksList.innerHTML = '';
-
-    tasks.forEach((task) => {
-        const taskElement = document.createElement("div");
-        taskElement.className = "column";
-
-        const taskContent = `
-            <input type="checkbox">
-            <span>${task.taskInput1}</span>
-            <span>${task.taskInput2}</span>
-            <span>${task.taskInput3}</span>
-            <button class="remove-button" onclick="removeTask('${task.key}')">X</button>
-        `;
-        taskElement.innerHTML = taskContent;
-        tasksList.appendChild(taskElement);
-    });
-}
-
     
 
     </script>
