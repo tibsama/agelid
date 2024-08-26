@@ -325,7 +325,8 @@ function cellscolor() {
 }
 
 
- function loadTasksFromCloud() {
+
+function loadTasksFromCloud() {
     const urlParams = new URLSearchParams(window.location.search);
     const date = urlParams.get('date');
     const line = urlParams.get('line');
@@ -335,27 +336,30 @@ function cellscolor() {
         return;
     }
 
-    // Fetch all tasks under the 'tasks' node
-    database.ref('tasks').once('value', snapshot => {
+    // Use the line and date to filter tasks, ignoring the zone
+    const ref = database.ref('tasks');
+    ref.once('value', (snapshot) => {
         const tasks = [];
-
-        snapshot.forEach(childSnapshot => {
+        snapshot.forEach((childSnapshot) => {
             const key = childSnapshot.key;
-
+            
             // Check if the key contains the specified line and date
             if (key.includes(line) && key.includes(date)) {
-                const task = childSnapshot.val();
-                task.key = key; // Add the key to the task object
-                tasks.push(task);
+                childSnapshot.forEach((taskSnapshot) => {
+                    const task = taskSnapshot.val();
+                    task.key = taskSnapshot.key; // Add the task's unique key
+                    tasks.push(task);
+                });
             }
         });
 
         updateTasksList(tasks);
 
+        // If no tasks found, alert the user
         if (tasks.length === 0) {
-            alert("No tasks found for the specified date and line.");
+            alert("No tasks found for the specified line and date.");
         }
-    }).catch(error => {
+    }).catch((error) => {
         console.error("Error getting tasks: ", error);
     });
 }
