@@ -126,6 +126,8 @@
             }
         }
     </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
 </head>
 <body>
     <div class="header">
@@ -190,12 +192,12 @@
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
-                        <td class="default-cell"></td><td class="presse-cell-gray"></td><td class="presse-cell-gray"></td>
-                        <td class="presse-cell-gray"></td><td class="presse-cell"></td><td class="presse-cell"></td>
-                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
-                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
-                        <td class="presse-cell"></td><td class="presse-cell"></td><td class="presse-cell"></td>
-                    </tr>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                        <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
+                     </tr>
                     <tr onclick="goToZone('Ligne d\'émaillage')">
                         <td class="zone-cell">Ligne d'émaillage</td>
                         <td class="default-cell"></td><td class="default-cell"></td><td class="default-cell"></td>
@@ -246,6 +248,21 @@
     </div>
 
     <script>
+// Firebase configuration object
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
+            authDomain: "herher-d121a.firebaseapp.com",
+            databaseURL: "https://herher-d121a.firebaseio.com",
+            projectId: "herher-d121a",
+            storageBucket: "herher-d121a.appspot.com",
+            messagingSenderId: "626438737297",
+            appId: "1:626438737297:web:bf6524275291ec695fde30"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+       
         // JavaScript functions remain unchanged
         function parseURL() {
             var txt = window.location.href;
@@ -301,7 +318,7 @@ function cellscolor() {
         const cellElement = row.children[cell.col];
 
         // Change the background color
-        cellElement.style.backgroundColor = '#ffeb3b'; // Yellow color
+        cellElement.style.backgroundColor = 'gray'; // Yellow color
     });
 }
 
