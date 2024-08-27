@@ -374,15 +374,15 @@ function cellscolor() {
   const end1 = startIndex2 + 15;             
   const result = txt.substring(start, end);
   const result1 = txt.substring(start1, end1);  
-  const rows =3;
-         if (zone==="PMP"){rows=1;}if (zone==="Presse"){rows=2;}if (zone==="Ligne d'émaillage"){rows=3;}
-         if (zone==="Kerajet"){rows=4;}if (zone==="Four"){rows=5;}if (zone==="Triage"){rows=6;}          
+  const rowy =3;
+         if (zone==="PMP"){rowy=1;}if (zone==="Presse"){rowy=2;}if (zone==="Ligne d'émaillage"){rowy=3;}
+         if (zone==="Kerajet"){rowy=4;}if (zone==="Four"){rowy=5;}if (zone==="Triage"){rowy=6;}          
                         
             taskElement.innerHTML = result1;
                  tasksList.appendChild(taskElement);    
 
                     
-  const cellsToChange = [   { row: rows, col: 2 }  ];
+  const cellsToChange = [   { row: rowy, col: 2 }  ];
 
                     
       cellsToChange.forEach(cell => {
