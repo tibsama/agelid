@@ -333,7 +333,6 @@ function cellscolor() {
          const tbody = document.querySelector('tbody');
          const lineNumber = document.getElementById("line-number").textContent;
          const dateFromURL = document.getElementById('date-from-url').textContent;
-            const line3Row = tbody.children[2];
             
     const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
 
@@ -376,14 +375,9 @@ function cellscolor() {
   const result = txt.substring(start, end);
   const result1 = txt.substring(start1, end1);                 
 }
-   //  for (let colIndex = result + 1; colIndex <= result1 + 1; colIndex++) {
-         for (let colIndex = result + 1; colIndex <= Math.min(result1 + 1, line3Row.children.length - 1); colIndex++) {
-
-                        const cell = line3Row.children[colIndex];
-                        if (cell) {
-                            cell.style.backgroundColor = 'gray';
-                        }
-                    }         
+taskElement.innerHTML = result1;
+                 tasksList.appendChild(taskElement);
+                
             }
         });
     }).catch((error) => {
