@@ -344,7 +344,7 @@ function loadAllTasksFromCloud() {
             const task = childSnapshot.val();  // Get the task data
      if (key.includes(n) && key.includes(d)) {
  
-            } else {
+            } 
             
       
             
@@ -356,7 +356,7 @@ function loadAllTasksFromCloud() {
             taskElement.innerHTML = `<strong>${key}</strong>: ${JSON.stringify(task)}`;
             
             tasksList.appendChild(taskElement);  // Append the task to the tasksList
-      }
+      
      });
     }).catch((error) => {
         console.error("Error getting tasks: ", error);  // Log any errors
