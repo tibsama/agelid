@@ -376,7 +376,9 @@ function cellscolor() {
   const result = txt.substring(start, end);
   const result1 = txt.substring(start1, end1);                 
 }
-     for (let colIndex = result + 1; colIndex <= result1 + 1; colIndex++) {
+   //  for (let colIndex = result + 1; colIndex <= result1 + 1; colIndex++) {
+         for (let colIndex = result + 1; colIndex <= Math.min(result1 + 1, line3Row.children.length - 1); colIndex++) {
+
                         const cell = line3Row.children[colIndex];
                         if (cell) {
                             cell.style.backgroundColor = 'gray';
