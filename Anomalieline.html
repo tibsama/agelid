@@ -404,17 +404,14 @@ function changeCellsColorForLine3() {
                             cell.style.backgroundColor = 'gray';
                         }
                     }
-            const startCell = line3Row.children[startHour + 1];
-                if (startCell) {
-                    const taskElement = document.createElement("div");
-                    taskElement.className = "task";
-                    taskElement.style.position = "relative";
-                    taskElement.style.top = "10px";  // Adjust this to control the spacing
-                    taskElement.innerHTML = taskinput2;
+          
+                const taskElement = document.createElement("div");
+                taskElement.className = "task";
+                taskElement.textContent = `Task Start Time: ${taskinput2}`;
 
-                    // Append the task element to the start cell
-                    startCell.appendChild(taskElement);
-                }  
+                // Append the task element below the table
+                tbody.parentElement.appendChild(taskElement);
+                 
             }
         });
     }).catch((error) => {
