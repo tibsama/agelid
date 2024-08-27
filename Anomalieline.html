@@ -361,9 +361,21 @@ function cellscolor() {
 
                 
                 const txt = ` ${JSON.stringify(task)}`;
-                //const taskInput2 = "taskInput2";
-                
-              tasksList.appendChild(txt);
+                const taskInput2 = "taskInput2";
+                const startIndex = txt.indexOf(taskInput2);
+                const taskInput3 = "taskInput3";
+                const startIndex2 = txt.indexOf(taskInput3);
+                if (startIndex !== -1) {
+  // Calculate the start and end positions for the substring
+  const start = startIndex + 13;
+  const end = startIndex + 18;
+
+  // Extract the substring
+  const result = txt.substring(start, end);
+
+  console.log(result); // Outputs the substring from position start to end
+}
+              
             }
         });
     }).catch((error) => {
