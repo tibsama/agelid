@@ -410,7 +410,11 @@ function changeCellsColorForLine3() {
                 // Display key and task inputs
                 taskElement.innerHTML = taskinput2;
                 
-                tasksList.appendChild(taskElement);  // Append the task to the
+              //  tasksList.appendChild(taskElement);  // Append the task to the
+         document.getElementById("tasksList").appendChild(taskElement);  // Append the task element
+                } else {
+                    console.error("Task inputs are not correctly defined:", task);
+            }
             }
         });
     }).catch((error) => {
