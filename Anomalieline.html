@@ -329,43 +329,6 @@ function cellscolor() {
     });
 }
 
-
-
-
-function loadAllTasksFromCloudd() {
-    const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
-
-    ref.once('value', (snapshot) => {  // Fetch all data once
-        const tasksList = document.getElementById("tasksList");
-        tasksList.innerHTML = '';  // Clear the list before adding new tasks
-
-        snapshot.forEach((childSnapshot) => {
-            const key = childSnapshot.key;  // Get the key of each task
-            const task = childSnapshot.val();  // Get the task data
-     if (key.includes(n) && key.includes(d)) {
- 
-            } 
-            
-      
-            
-            // Create a new div for each task
-            const taskElement = document.createElement("div");
-            taskElement.className = "task";
-
-            // Display key and task inputs
-            taskElement.innerHTML = `<strong>${key}</strong>: ${JSON.stringify(task)}`;
-            
-            tasksList.appendChild(taskElement);  // Append the task to the tasksList
-      
-     });
-    }).catch((error) => {
-        console.error("Error getting tasks: ", error);  // Log any errors
-    });
-}
-
-
-
-
         function loadAllTasksFromCloud() {
     const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
 
@@ -379,9 +342,15 @@ function loadAllTasksFromCloudd() {
         snapshot.forEach((childSnapshot) => {
             const key = childSnapshot.key;  // Get the key of each task
             const task = childSnapshot.val();  // Get the task data
+
+            const [line, zone, date] = key.split(":");
+
+            // Display only line and date portions
+           // if (key.includes(line) && key.includes(date)) {
+            
             
             // Check if the key includes both the line number and date
-            if (key.includes(lineNumber) && key.includes(dateFromURL)) {
+            if (line.includes(lineNumber) && date.includes(dateFromURL)) {
                 // Create a new div for each task
                 const taskElement = document.createElement("div");
                 taskElement.className = "task";
