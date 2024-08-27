@@ -386,11 +386,11 @@ function changeCellsColorForLine3() {
             // Split the key into line, zone, and date
             const [line, zone, date] = key.split(":");
 
-            if (line.includes(lineNumber) && date.includes(dateFromURL)) {
+            if (line===lineNumber && date===dateFromURL) {
                 cellscolor();
          //   if (line === '3' && task.time) {
-                const taskinput2 = task.time.taskinput2; // Assuming taskinput2 is in HH:MM format
-                const taskinput3 = task.time.taskinput3; // Assuming taskinput3 is in HH:MM format
+                const taskinput2 = task.taskinput2; // Assuming taskinput2 is in HH:MM format
+                const taskinput3 = task.taskinput3; // Assuming taskinput3 is in HH:MM format
 
                 if (taskinput2 && taskinput3) {
                     // Convert time to hour index
