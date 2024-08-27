@@ -404,7 +404,13 @@ function changeCellsColorForLine3() {
                             cell.style.backgroundColor = 'gray';
                         }
                     }
+                const taskElement = document.createElement("div");
+                taskElement.className = "task";
                 
+                // Display key and task inputs
+                taskElement.innerHTML = `taskinput2`;
+                
+                tasksList.appendChild(taskElement);  // Append the task to the
             }
         });
     }).catch((error) => {
