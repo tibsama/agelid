@@ -369,12 +369,15 @@ function cellscolor() {
   // Calculate the start and end positions for the substring
   const start = startIndex + 13;
   const end = startIndex + 18;
+  const start1 = startIndex2 + 13;
+  const end1 = startIndex2 + 18;             
 
   // Extract the substring
   const result = txt.substring(start, end);
 
-  console.log(result); // Outputs the substring from position start to end
-           taskElement.innerHTML = result;       
+           taskElement.innerHTML = result;   
+             const result = txt.substring(start1, end1);       
+             taskElement.innerHTML = result;       
             tasksList.appendChild(taskElement);        
 }
               
