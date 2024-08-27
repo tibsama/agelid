@@ -373,10 +373,11 @@ function cellscolor() {
   const start1 = startIndex2 + 13;
   const end1 = startIndex2 + 15;             
   const result = txt.substring(start, end);
-  const result1 = txt.substring(start1, end1);                 
+  const result1 = txt.substring(start1, end1);        
+            taskElement.innerHTML = result1;
+                 tasksList.appendChild(taskElement);        
 }
-taskElement.innerHTML = result1;
-                 tasksList.appendChild(taskElement);
+
                 
             }
         });
