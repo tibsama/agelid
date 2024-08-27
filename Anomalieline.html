@@ -350,7 +350,7 @@ function cellscolor() {
             
             
             // Check if the key includes both the line number and date
-            if (line.includes(lineNumber) && date.includes(dateFromURL)) {
+            if (line===lineNumber && date===dateFromURL) {
                 // Create a new div for each task
                 const taskElement = document.createElement("div");
                 taskElement.className = "task";
@@ -423,8 +423,8 @@ function changeCellsColorForLine3() {
 
         
 // Call the function to load all tasks when needed
-//loadAllTasksFromCloud();
-changeCellsColorForLine3();
+loadAllTasksFromCloud();
+//changeCellsColorForLine3();
         
     </script>
 </body>
