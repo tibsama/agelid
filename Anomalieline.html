@@ -375,14 +375,14 @@ function cellscolor() {
   const result = txt.substring(start, end);
   const result1 = txt.substring(start1, end1);  
   const rows =3;
-       //  if (zone==="PMP"){row=1;}if (zone==="Presse"){row=2;}if (zone==="Ligne d'émaillage"){row=3;}
-       //  if (zone==="Kerajet"){row=4;}if (zone==="Four"){row=5;}if (zone==="Triage"){row=6;}          
+         if (zone==="PMP"){row=1;}if (zone==="Presse"){row=2;}if (zone==="Ligne d'émaillage"){row=3;}
+         if (zone==="Kerajet"){row=4;}if (zone==="Four"){row=5;}if (zone==="Triage"){row=6;}          
                         
             taskElement.innerHTML = result1;
                  tasksList.appendChild(taskElement);    
 
                     
-  const cellsToChange = [   { row: 3, col: 2 }  ];
+  const cellsToChange = [   { row: rows, col: 2 }  ];
 
                     
       cellsToChange.forEach(cell => {
