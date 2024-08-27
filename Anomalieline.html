@@ -332,7 +332,7 @@ function cellscolor() {
 
 
 
-function loadAllTasksFromCloud() {
+function loadAllTasksFromCloudd() {
     const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
 
     ref.once('value', (snapshot) => {  // Fetch all data once
@@ -363,8 +363,43 @@ function loadAllTasksFromCloud() {
     });
 }
 
+
+
+
+        function loadAllTasksFromCloud() {
+    const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
+
+    ref.once('value', (snapshot) => {  // Fetch all data once
+        const tasksList = document.getElementById("tasksList");
+        tasksList.innerHTML = '';  // Clear the list before adding new tasks
+
+        const lineNumber = document.getElementById("line-number").textContent;
+        const dateFromURL = document.getElementById('date-from-url').textContent;
+
+        snapshot.forEach((childSnapshot) => {
+            const key = childSnapshot.key;  // Get the key of each task
+            const task = childSnapshot.val();  // Get the task data
+            
+            // Check if the key includes both the line number and date
+            if (key.includes(lineNumber) && key.includes(dateFromURL)) {
+                // Create a new div for each task
+                const taskElement = document.createElement("div");
+                taskElement.className = "task";
+                
+                // Display key and task inputs
+                taskElement.innerHTML = `<strong>${key}</strong>: ${JSON.stringify(task)}`;
+                
+                tasksList.appendChild(taskElement);  // Append the task to the tasksList
+            }
+        });
+    }).catch((error) => {
+        console.error("Error getting tasks: ", error);  // Log any errors
+    });
+}
+
 // Call the function to load all tasks when needed
 loadAllTasksFromCloud();
+        
     
 
     </script>
