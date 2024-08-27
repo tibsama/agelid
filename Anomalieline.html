@@ -374,7 +374,8 @@ function cellscolor() {
   const result = txt.substring(start, end);
 
   console.log(result); // Outputs the substring from position start to end
-            tasksList.appendChild(result);        
+           taskElement.innerHTML = result;       
+            tasksList.appendChild(taskElement);        
 }
               
             }
