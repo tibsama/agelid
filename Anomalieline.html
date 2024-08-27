@@ -370,7 +370,9 @@ function cellscolor() {
 function changeCellsColorForLine3() {
     // Select the table body
     const tbody = document.querySelector('tbody');
-
+    const lineNumber = document.getElementById("line-number").textContent;
+    const dateFromURL = document.getElementById('date-from-url').textContent;
+    
     // Select the row corresponding to line 3 (adjust row index if needed)
     const line3Row = tbody.children[2]; // Index 2 corresponds to the 3rd row (0-based index)
 
@@ -384,11 +386,11 @@ function changeCellsColorForLine3() {
             // Split the key into line, zone, and date
             const [line, zone, date] = key.split(":");
 
-            if (line.includes(n) && date.includes(d)) {
+            if (line.includes(lineNumber) && date.includes(dateFromURL)) {
                 cellscolor();
          //   if (line === '3' && task.time) {
-                const taskinput2 = task.taskinput2; // Assuming taskinput2 is in HH:MM format
-                const taskinput3 = task.taskinput3; // Assuming taskinput3 is in HH:MM format
+                const taskinput2 = task.time.taskinput2; // Assuming taskinput2 is in HH:MM format
+                const taskinput3 = task.time.taskinput3; // Assuming taskinput3 is in HH:MM format
 
                 if (taskinput2 && taskinput3) {
                     // Convert time to hour index
