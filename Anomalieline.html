@@ -366,11 +366,56 @@ function cellscolor() {
     });
 }
 
+
+function changeCellsColorForLine3() {
+    // Select the table body
+    const tbody = document.querySelector('tbody');
+
+    // Select the row corresponding to line 3 (adjust row index if needed)
+    const line3Row = tbody.children[2]; // Index 2 corresponds to the 3rd row (0-based index)
+
+    // Find the task data and calculate the start and end time columns
+    const ref = database.ref('tasks');
+    ref.once('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const key = childSnapshot.key;
+            const task = childSnapshot.val();
+
+            // Split the key into line, zone, and date
+            const [line, zone, date] = key.split(":");
+
+            if (line.includes(n) && date.includes(d)) {
+         //   if (line === '3' && task.time) {
+                const taskinput2 = task.time.taskinput2; // Assuming taskinput2 is in HH:MM format
+                const taskinput3 = task.time.taskinput3; // Assuming taskinput3 is in HH:MM format
+
+                if (taskinput2 && taskinput3) {
+                    // Convert time to hour index
+                    const startHour = parseInt(taskinput2.split(":")[0], 10);
+                    const endHour = parseInt(taskinput3.split(":")[0], 10);
+
+                    // Apply gray background color to the cells between taskinput2 and taskinput3
+                    for (let colIndex = startHour + 1; colIndex <= endHour + 1; colIndex++) {
+                        const cell = line3Row.children[colIndex];
+                        if (cell) {
+                            cell.style.backgroundColor = 'gray';
+                        }
+                    }
+                }
+            }
+        });
+    }).catch((error) => {
+        console.error("Error getting tasks: ", error);
+    });
+}
+        
+
+
+        
 // Call the function to load all tasks when needed
 loadAllTasksFromCloud();
+changeCellsColorForLine3();
         
-    
-
     </script>
 </body>
                                                                                         </html>
