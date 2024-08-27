@@ -368,18 +368,18 @@ function cellscolor() {
                 if (startIndex !== -1) {
   // Calculate the start and end positions for the substring
   const start = startIndex + 13;
-  const end = startIndex + 18;
+  const end = startIndex + 15;
   const start1 = startIndex2 + 13;
-  const end1 = startIndex2 + 18;             
-
-  // Extract the substring
-  const result = txt.substring(start1, end1);
-
-           taskElement.innerHTML = result;   
-                 
-            tasksList.appendChild(taskElement);        
+  const end1 = startIndex2 + 15;             
+  const result = txt.substring(start, end);
+  const result1 = txt.substring(start1, end1);                 
 }
-              
+     for (let colIndex = result + 1; colIndex <= result1 + 1; colIndex++) {
+                        const cell = line3Row.children[colIndex];
+                        if (cell) {
+                            cell.style.backgroundColor = 'gray';
+                        }
+                    }         
             }
         });
     }).catch((error) => {
