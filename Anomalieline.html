@@ -385,9 +385,10 @@ function changeCellsColorForLine3() {
             const [line, zone, date] = key.split(":");
 
             if (line.includes(n) && date.includes(d)) {
+                cellscolor();
          //   if (line === '3' && task.time) {
-                const taskinput2 = task.time.taskinput2; // Assuming taskinput2 is in HH:MM format
-                const taskinput3 = task.time.taskinput3; // Assuming taskinput3 is in HH:MM format
+                const taskinput2 = task.taskinput2; // Assuming taskinput2 is in HH:MM format
+                const taskinput3 = task.taskinput3; // Assuming taskinput3 is in HH:MM format
 
                 if (taskinput2 && taskinput3) {
                     // Convert time to hour index
