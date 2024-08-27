@@ -404,15 +404,17 @@ function changeCellsColorForLine3() {
                             cell.style.backgroundColor = 'gray';
                         }
                     }
-                const taskElement = document.createElement("div");
-                taskElement.className = "task";
-                
-                // Display key and task inputs
-                taskElement.innerHTML = taskinput2;
-                
-              //  tasksList.appendChild(taskElement);  // Append the task to the
-         document.getElementById("tasksList").appendChild(taskElement);  // Append the task element
-                
+            const startCell = line3Row.children[startHour + 1];
+                if (startCell) {
+                    const taskElement = document.createElement("div");
+                    taskElement.className = "task";
+                    taskElement.style.position = "relative";
+                    taskElement.style.top = "10px";  // Adjust this to control the spacing
+                    taskElement.innerHTML = taskinput2;
+
+                    // Append the task element to the start cell
+                    startCell.appendChild(taskElement);
+                }  
             }
         });
     }).catch((error) => {
