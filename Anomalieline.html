@@ -380,10 +380,14 @@ function cellscolor() {
                         
             taskElement.innerHTML = result1;
                  tasksList.appendChild(taskElement);    
+                 
+ // const cellsToChange = [   { row: rowy, col: result}  ];
 
+const cellsToChange = [];
+for (let col = result; col <= result1; col++) {
+    cellsToChange.push({ row: rowy, col: col });
+}
                     
-  const cellsToChange = [   { row: rowy, col: result}  ];
-
                     
       cellsToChange.forEach(cell => {
         const row = tbody.children[cell.row - 1];
