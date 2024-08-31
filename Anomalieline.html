@@ -312,8 +312,8 @@ function cellscolor() {
  //   const cellsToChange = [ { row: 2, col: 3 },  { row: 4, col: 4 }  ];
     if (cellsToChange.length > 0) {
     cellsToChange.forEach(cell => {
-        const row = tbody.children[cell.row];
-        const cellElement = row.children[cell.col];
+        const row = tbody.children[cell.row-1];
+        const cellElement = row.children[cell.col+1];
         cellElement.style.backgroundColor = 'gray'; 
     });
 }   }
