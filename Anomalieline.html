@@ -313,7 +313,7 @@ function cellscolor() {
     if (cellsToChange.length > 0) {
     cellsToChange.forEach(cell => {
         const row = tbody.children[cell.row-1];
-        const cellElement = row.children[cell.col+1];
+        const cellElement = row.children[cell.col];
         cellElement.style.backgroundColor = 'gray'; 
     });
 }   }
