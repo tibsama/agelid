@@ -306,28 +306,16 @@
         parseURL();
 
 function cellscolor() {
-    // Select the table body
     const tbody = document.querySelector('tbody');
-
-    // Define the cell coordinates to change (rowIndex, cellIndex)
-    const cellsToChange = [
-        { row: 2, col: 3 }, // Cell (2, 3)
-        { row: 4, col: 4 }  // Cell (4, 4)
-    ];
-    
-
+    const cellsToChange = [ { row: 2, col: 3 },  { row: 4, col: 4 }  ];
     cellsToChange.forEach(cell => {
-        // Select the row and cell
         const row = tbody.children[cell.row - 1];
         const cellElement = row.children[cell.col];
-
-        // Change the background color
-        cellElement.style.backgroundColor = 'gray'; // Yellow color
+        cellElement.style.backgroundColor = 'gray'; 
     });
 }
 
         function loadAllTasksFromCloud() {
-         const tbody = document.querySelector('tbody');
          const lineNumber = document.getElementById("line-number").textContent;
          const dateFromURL = document.getElementById('date-from-url').textContent;
           
@@ -342,21 +330,11 @@ function cellscolor() {
             let task = childSnapshot.val();  // Get the task data
 
             let [line, zone, date] = key.split(":");
-
-            // Display only line and date portions
-           // if (key.includes(line) && key.includes(date)) {
             
-            
-            // Check if the key includes both the line number and date
             if (line===lineNumber && date===dateFromURL) {
                 // Create a new div for each task
                 let taskElement = document.createElement("div");
                 taskElement.className = "task";
-                
-                // Display key and task inputs
-                //taskElement.innerHTML = `<strong>${key}</strong>: ${JSON.stringify(task)}`;
-               //  tasksList.appendChild(taskElement);  // Append the task to the tasksList
-
                 
                 let txt = ` ${JSON.stringify(task)}`;
                 let taskInput2 = "taskInput2";
@@ -388,23 +366,8 @@ function cellscolor() {
               
                     
             taskElement.innerHTML = `  Total arrêt zone ${zone} est de ${formattedDuration}`;
-                 tasksList.appendChild(taskElement);    
-
-               
- // const cellsToChange = [   { row: rowy, col: result}  ];
-
-let cellsToChange = [];
-for (let col = result; col <= result1; col++) {
-    cellsToChange.push({ row: rowy, col: col });
-}
-                    
-                    
-      cellsToChange.forEach(cell => {
-        let row = tbody.children[cell.row - 1];
-        let cellElement = row.children[cell.col];
-        cellElement.style.backgroundColor = 'gray'; 
-    });              
-}
+                 tasksList.appendChild(taskElement);               
+           }
                 
             }
         });
