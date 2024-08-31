@@ -339,6 +339,7 @@ function cellscolor() {
 
     ref.once('value', (snapshot) => {  // Fetch all data once
         const tasksList = document.getElementById("tasksList");
+        let table = document.getElementById('your-table-id');
         tasksList.innerHTML = '';  // Clear the list before adding new tasks
 
         snapshot.forEach((childSnapshot) => {
@@ -393,20 +394,22 @@ function cellscolor() {
                     
             taskElement.innerHTML = `  Total arrêt zone ${zone} est de ${formattedDuration}`;
                  tasksList.appendChild(taskElement);    
-                 
+
+                 let cell = table.rows[rowy]?.cells[col];   
+                 cell.style.backgroundColor = 'gray';
  // const cellsToChange = [   { row: rowy, col: result}  ];
 
-let cellsToChange = [];
-for (let col = result; col <= result1; col++) {
-    cellsToChange.push({ row: rowy, col: col });
-}
+//let cellsToChange = [];
+//for (let col = result; col <= result1; col++) {
+ //   cellsToChange.push({ row: rowy, col: col });
+//}
                     
                     
-      cellsToChange.forEach(cell => {
-        let row = tbody.children[cell.row - 1];
-        let cellElement = row.children[cell.col];
-        cellElement.style.backgroundColor = 'gray'; 
-    });              
+  //    cellsToChange.forEach(cell => {
+   //     let row = tbody.children[cell.row - 1];
+    //    let cellElement = row.children[cell.col];
+     //   cellElement.style.backgroundColor = 'gray'; 
+   // });              
 }
                 
             }
