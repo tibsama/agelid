@@ -134,10 +134,6 @@
         Ligne N°: <span id="line-number"></span> | Date: <span id="date-from-url"></span>
     </div>
 
-<div class="input-container">
-        <button onclick="cellscolor()">Change Cell Color</button>
-    </div>
-
     <div class="calendar-container">
         <div class="day-switcher">
             <button onclick="previousDay()">Previous Day</button>
@@ -331,15 +327,14 @@ function cellscolor() {
 }
 
         function loadAllTasksFromCloud() {
-       //  const tbody = document.querySelector('tbody');
+         const tbody = document.querySelector('tbody');
          const lineNumber = document.getElementById("line-number").textContent;
          const dateFromURL = document.getElementById('date-from-url').textContent;
           
     const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
 
     ref.once('value', (snapshot) => {  // Fetch all data once
-      //  const tasksList = document.getElementById("tasksList");
-        let table = document.getElementById('your-table-id');
+        const tasksList = document.getElementById("tasksList");
         tasksList.innerHTML = '';  // Clear the list before adding new tasks
 
         snapshot.forEach((childSnapshot) => {
@@ -395,21 +390,20 @@ function cellscolor() {
             taskElement.innerHTML = `  Total arrêt zone ${zone} est de ${formattedDuration}`;
                  tasksList.appendChild(taskElement);    
 
-                 let cell = table.rows[rowy]?.cells[col];   
-                 cell.style.backgroundColor = 'gray';
+               
  // const cellsToChange = [   { row: rowy, col: result}  ];
 
-//let cellsToChange = [];
-//for (let col = result; col <= result1; col++) {
- //   cellsToChange.push({ row: rowy, col: col });
-//}
+let cellsToChange = [];
+for (let col = result; col <= result1; col++) {
+    cellsToChange.push({ row: rowy, col: col });
+}
                     
                     
-  //    cellsToChange.forEach(cell => {
-   //     let row = tbody.children[cell.row - 1];
-    //    let cellElement = row.children[cell.col];
-     //   cellElement.style.backgroundColor = 'gray'; 
-   // });              
+      cellsToChange.forEach(cell => {
+        let row = tbody.children[cell.row - 1];
+        let cellElement = row.children[cell.col];
+        cellElement.style.backgroundColor = 'gray'; 
+    });              
 }
                 
             }
