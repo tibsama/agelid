@@ -363,12 +363,15 @@ function cellscolor() {
       let hours = Math.floor(durationMinutes / 60);
       let minutes = durationMinutes % 60;
       let formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-              
+                              
+      taskElement.innerHTML = `  Total arrêt zone ${zone} est de ${formattedDuration}`;
+      tasksList.appendChild(taskElement);   
+
+      const table = document.getElementById('your-table-id');
+      const cell = table.rows[rowy]?.cells[col];   
+      if (cell) { cell.style.backgroundColor = 'gray';  }              
                     
-            taskElement.innerHTML = `  Total arrêt zone ${zone} est de ${formattedDuration}`;
-                 tasksList.appendChild(taskElement);               
-           }
-                
+           }          
             }
         });
     }).catch((error) => {
