@@ -312,7 +312,7 @@ function cellscolor() {
  //   const cellsToChange = [ { row: 2, col: 3 },  { row: 4, col: 4 }  ];
     if (cellsToChange.length > 0) {
     cellsToChange.forEach(cell => {
-        const row = tbody.children[cell.row - 1];
+        const row = tbody.children[cell.row];
         const cellElement = row.children[cell.col];
         cellElement.style.backgroundColor = 'gray'; 
     });
@@ -370,7 +370,7 @@ function cellscolor() {
       taskElement.innerHTML = `  Total arrêt zone ${zone} est de ${formattedDuration}`;
       tasksList.appendChild(taskElement);   
 
-        for (let col = result + 1; col <= result1; col++) {
+        for (let col = result; col <= result1; col++) {
             cellsToChange.push({ row: rowy, col: col });
         }  
                     
