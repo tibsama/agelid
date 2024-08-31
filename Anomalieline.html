@@ -388,8 +388,10 @@ function cellscolor() {
       let durationMinutes = endMinutes - startMinutes;
       let hours = Math.floor(durationMinutes / 60);
       let minutes = durationMinutes % 60;
+      let formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+              
                     
-            taskElement.innerHTML = `  Total arrêt zone ${zone} est de ${hours}:${minutes}.`;
+            taskElement.innerHTML = `  Total arrêt zone ${zone} est de ${formattedDuration}`;
                  tasksList.appendChild(taskElement);    
                  
  // const cellsToChange = [   { row: rowy, col: result}  ];
@@ -418,6 +420,37 @@ for (let col = result; col <= result1; col++) {
 // Call the function to load all tasks when needed
 loadAllTasksFromCloud();
 //changeCellsColorForLine3();
+
+
+
+// Add this function to your existing <script> section
+function changeCellColorOnClick(event) {
+    // Check if the clicked element is a cell (td)
+    if (event.target.tagName === 'TD') {
+        event.target.style.backgroundColor = 'gray';  // Change the cell color to gray
+    }
+}
+
+// Function to attach click event listeners to each cell
+function attachCellClickListeners() {
+    // Select all cells (td elements) in the table body
+    const cells = document.querySelectorAll('tbody td.default-cell');
+
+    // Attach the click event listener to each cell
+    cells.forEach(cell => {
+        cell.addEventListener('click', changeCellColorOnClick);
+    });
+}
+
+// Call this function after the DOM has fully loaded to ensure all elements are available
+document.addEventListener('DOMContentLoaded', function() {
+    attachCellClickListeners();
+});
+
+
+
+
+        
         
     </script>
 </body>
