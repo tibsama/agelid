@@ -248,7 +248,7 @@
     </div>
 
     <div id="allTasks">
-    <h3>All Tasks from Database:</h3>
+    <h3>Total heures d'arrêt:</h3>
     <div id="tasksList"></div>
 </div>
 
@@ -342,10 +342,10 @@ function cellscolor() {
         tasksList.innerHTML = '';  // Clear the list before adding new tasks
 
         snapshot.forEach((childSnapshot) => {
-            const key = childSnapshot.key;  // Get the key of each task
-            const task = childSnapshot.val();  // Get the task data
+            let key = childSnapshot.key;  // Get the key of each task
+            let task = childSnapshot.val();  // Get the task data
 
-            const [line, zone, date] = key.split(":");
+            let [line, zone, date] = key.split(":");
 
             // Display only line and date portions
            // if (key.includes(line) && key.includes(date)) {
@@ -354,7 +354,7 @@ function cellscolor() {
             // Check if the key includes both the line number and date
             if (line===lineNumber && date===dateFromURL) {
                 // Create a new div for each task
-                const taskElement = document.createElement("div");
+                let taskElement = document.createElement("div");
                 taskElement.className = "task";
                 
                 // Display key and task inputs
@@ -362,37 +362,47 @@ function cellscolor() {
                //  tasksList.appendChild(taskElement);  // Append the task to the tasksList
 
                 
-                const txt = ` ${JSON.stringify(task)}`;
-                const taskInput2 = "taskInput2";
-                const startIndex = txt.indexOf(taskInput2);
-                const taskInput3 = "taskInput3";
-                const startIndex2 = txt.indexOf(taskInput3);
+                let txt = ` ${JSON.stringify(task)}`;
+                let taskInput2 = "taskInput2";
+                let startIndex = txt.indexOf(taskInput2);
+                let taskInput3 = "taskInput3";
+                let startIndex2 = txt.indexOf(taskInput3);
                 if (startIndex !== -1) {
   // Calculate the start and end positions for the substring
-  const start = startIndex + 13;
-  const end = startIndex + 15;
-  const start1 = startIndex2 + 13;
-  const end1 = startIndex2 + 15;             
-  const result = txt.substring(start, end);
-  const result1 = txt.substring(start1, end1);  
+  let start = startIndex + 13;
+  let end = startIndex + 15;
+  let start1 = startIndex2 + 13;
+  let end1 = startIndex2 + 15;      
+  let startTime = txt.substring(start, end+3);
+  let endTime = txt.substring(start1, end1+3);                
+  let result = txt.substring(start, end);
+  let result1 = txt.substring(start1, end1);  
   let rowy =3;
          if (zone==="PMP"){rowy=1;}if (zone==="Presse"){rowy=2;}if (zone==="Ligne d'émaillage"){rowy=3;}
          if (zone==="Kerajet"){rowy=4;}if (zone==="Four"){rowy=5;}if (zone==="Triage"){rowy=6;}          
-                        
-            taskElement.innerHTML = result1;
+
+      let startParts = startTime.split(":");
+      let endParts = endTime.split(":"); 
+      let startMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+      let endMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+      let durationMinutes = endMinutes - startMinutes;
+      let hours = Math.floor(durationMinutes / 60);
+      let minutes = durationMinutes % 60;
+                    
+            taskElement.innerHTML = `Total heures d'arrêt zone ${zone} est de ${hours} heures et ${minutes} minutes.`;
                  tasksList.appendChild(taskElement);    
                  
  // const cellsToChange = [   { row: rowy, col: result}  ];
 
-const cellsToChange = [];
+let cellsToChange = [];
 for (let col = result; col <= result1; col++) {
     cellsToChange.push({ row: rowy, col: col });
 }
                     
                     
       cellsToChange.forEach(cell => {
-        const row = tbody.children[cell.row - 1];
-        const cellElement = row.children[cell.col];
+        let row = tbody.children[cell.row - 1];
+        let cellElement = row.children[cell.col];
         cellElement.style.backgroundColor = 'gray'; 
     });              
 }
