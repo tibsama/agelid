@@ -397,9 +397,9 @@ function cellscolor() {
  // const cellsToChange = [   { row: rowy, col: result}  ];
 
 let cellsToChange = [];
-for (let col = result; col <= result1; col++) {
+//for (let col = result; col <= result1; col++) {
     cellsToChange.push({ row: rowy, col: col });
-}
+//}
                     
                     
       cellsToChange.forEach(cell => {
@@ -419,38 +419,7 @@ for (let col = result; col <= result1; col++) {
         
 // Call the function to load all tasks when needed
 loadAllTasksFromCloud();
-//changeCellsColorForLine3();
-
-
-
-// Add this function to your existing <script> section
-function changeCellColorOnClick(event) {
-    // Check if the clicked element is a cell (td)
-    if (event.target.tagName === 'TD') {
-        event.target.style.backgroundColor = 'gray';  // Change the cell color to gray
-    }
-}
-
-// Function to attach click event listeners to each cell
-function attachCellClickListeners() {
-    // Select all cells (td elements) in the table body
-    const cells = document.querySelectorAll('tbody td.default-cell');
-
-    // Attach the click event listener to each cell
-    cells.forEach(cell => {
-        cell.addEventListener('click', changeCellColorOnClick);
-    });
-}
-
-// Call this function after the DOM has fully loaded to ensure all elements are available
-document.addEventListener('DOMContentLoaded', function() {
-    attachCellClickListeners();
-});
-
-
-
-
-        
+//changeCellsColorForLine3();        
         
     </script>
 </body>
