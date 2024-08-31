@@ -263,7 +263,9 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-       
+
+        let cellsToChange = [];
+        
         // JavaScript functions remain unchanged
         function parseURL() {
             var txt = window.location.href;
@@ -307,7 +309,7 @@
 
 function cellscolor() {
     const tbody = document.querySelector('tbody');
-    const cellsToChange = [ { row: 2, col: 3 },  { row: 4, col: 4 }  ];
+ //   const cellsToChange = [ { row: 2, col: 3 },  { row: 4, col: 4 }  ];
     cellsToChange.forEach(cell => {
         const row = tbody.children[cell.row - 1];
         const cellElement = row.children[cell.col];
@@ -367,13 +369,11 @@ function cellscolor() {
       taskElement.innerHTML = `  Total arrêt zone ${zone} est de ${formattedDuration}`;
       tasksList.appendChild(taskElement);   
 
-      const table = document.getElementById('your-table-id');
-      const cell = table.rows[rowy]?.cells[col];   
-      if (cell) { cell.style.backgroundColor = 'gray';  }              
+        cellsToChange.push([rowy, result]);    
                     
            }          
             }
-        });
+        });   cellscolor();
     }).catch((error) => {
         console.error("Error getting tasks: ", error);  // Log any errors
     });
