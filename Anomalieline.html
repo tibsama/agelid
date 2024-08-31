@@ -331,14 +331,14 @@ function cellscolor() {
 }
 
         function loadAllTasksFromCloud() {
-         const tbody = document.querySelector('tbody');
+       //  const tbody = document.querySelector('tbody');
          const lineNumber = document.getElementById("line-number").textContent;
          const dateFromURL = document.getElementById('date-from-url').textContent;
           
     const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
 
     ref.once('value', (snapshot) => {  // Fetch all data once
-        const tasksList = document.getElementById("tasksList");
+      //  const tasksList = document.getElementById("tasksList");
         let table = document.getElementById('your-table-id');
         tasksList.innerHTML = '';  // Clear the list before adding new tasks
 
