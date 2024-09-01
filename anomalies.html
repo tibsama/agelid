@@ -231,11 +231,13 @@ const firebaseConfig = {
         function previousDay() {
             currentDate.setDate(currentDate.getDate() - 1);
             displayCurrentDay();
+            loadAllTasksFromClouds();
         }
 
         function nextDay() {
             currentDate.setDate(currentDate.getDate() + 1);
-            displayCurrentDay();
+            displayCurrentDay()
+            loadAllTasksFromClouds();
         }
 
         function goToLine(lineNumber) {
