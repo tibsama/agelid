@@ -340,6 +340,8 @@ const firebaseConfig = {
     const lineNumber = lineNumberElement.textContent;
     const dateFromURL = dateFromURLElement.textContent;
 
+            alert("25");
+            
     const ref = database.ref('tasks');
     ref.once('value', (snapshot) => {
         const tasksList = document.getElementById("tasksList");
