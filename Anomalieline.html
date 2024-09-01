@@ -329,7 +329,7 @@ function cellscolor() {
         tasksList.innerHTML = '';  // Clear the list before adding new tasks
 
         snapshot.forEach((childSnapshot) => {
-            let key = childSnapshot.key();  // Get the key of each task
+            let key = childSnapshot.key;  // Get the key of each task
             let task = childSnapshot.val();  // Get the task data
 
             let [line, zone, date] = key.split(":");
