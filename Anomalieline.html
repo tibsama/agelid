@@ -324,6 +324,7 @@ function cellscolor() {
           
     const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
 
+        const keys ;   
         const regex = new RegExp(`^${lineNumber}:.*:${dateFromURL}$`);
         return regex.test(keys);  
            
