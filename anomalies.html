@@ -260,8 +260,6 @@ const firebaseConfig = {
 }   }
 
         function loadAllTasksFromCloud() {
-         const lineNumber = document.getElementById("line-number").textContent;
-         const dateFromURL = document.getElementById('date-from-url').textContent;
 
     const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
 
@@ -331,9 +329,7 @@ const firebaseConfig = {
 //loadAllTasksFromCloud();
 
         function loadAllTasksFromClouds() {
-            var txt = window.location.href;
-            var d = txt.indexOf("&date=") + 6;
-            d = txt.substring(d);
+            var d = document.getElementById("current-day").textContent;
       
             
     const ref = database.ref('tasks');
