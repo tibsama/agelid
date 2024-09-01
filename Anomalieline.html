@@ -323,17 +323,13 @@ function cellscolor() {
          const dateFromURL = document.getElementById('date-from-url').textContent;
           
     const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
-
-        var keys="";   
-        const regex = new RegExp(`^${lineNumber}:.*:${dateFromURL}$`);
-        return regex.test(keys);  
            
-   // ref.once('value', (snapshot) => { 
-     database.ref('tasks').child(keys).once('value', snapshot => {   
+    ref.once('value', (snapshot) => {   
         const tasksList = document.getElementById("tasksList");
         tasksList.innerHTML = '';  // Clear the list before adding new tasks
 
-        snapshot.forEach((childSnapshot) => {
+       // snapshot.forEach((childSnapshot) => {
+         database.ref('tasks').child('key').once('value', snapshot => {
             let key = childSnapshot.key;  // Get the key of each task
             let task = childSnapshot.val();  // Get the task data
 
