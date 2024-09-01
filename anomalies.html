@@ -339,11 +339,12 @@ const firebaseConfig = {
         snapshot.forEach((childSnapshot) => {
             let key = childSnapshot.key;
             let task = childSnapshot.val();
-               
+               alert ("1");
 
             let [line, zone, date] = key.split(":");
 
             if (date === d) {
+                alert ("2");
                 let taskElement = document.createElement("div");
                 taskElement.className = "task";
 
@@ -352,8 +353,9 @@ const firebaseConfig = {
                 let startIndex = txt.indexOf(taskInput2);
                 let taskInput3 = "taskInput3";
                 let startIndex2 = txt.indexOf(taskInput3);
-
+  alert ("3");
                 if (startIndex !== -1) {
+                    alert ("4");
                     let start = startIndex + 13;
                     let end = startIndex + 15;
                     let start1 = startIndex2 + 13;
