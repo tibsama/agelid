@@ -327,6 +327,89 @@ const firebaseConfig = {
         
 // Call the function to load all tasks when needed
 loadAllTasksFromCloud();
+
+        function loadAllTasksFromClouds() {
+    const lineNumberElement = document.getElementById("line-number");
+    const dateFromURLElement = document.getElementById('date-from-url');
+    if (!lineNumberElement || !dateFromURLElement) {
+        console.error("line-number or date-from-url elements are missing");
+        return;
+    }
+
+    const lineNumber = lineNumberElement.textContent;
+    const dateFromURL = dateFromURLElement.textContent;
+
+    const ref = database.ref('tasks');
+    ref.once('value', (snapshot) => {
+        const tasksList = document.getElementById("tasksList");
+        tasksList.innerHTML = ''; // Clear the list before adding new tasks
+
+        console.log("Data fetched from Firebase: ", snapshot.val()); // Add this line
+
+        snapshot.forEach((childSnapshot) => {
+            let key = childSnapshot.key;
+            let task = childSnapshot.val();
+
+            console.log("Processing task: ", key, task); // Add this line
+
+            let [line, zone, date] = key.split(":");
+
+            if (date === dateFromURL) {
+                let taskElement = document.createElement("div");
+                taskElement.className = "task";
+
+                let txt = ` ${JSON.stringify(task)}`;
+                let taskInput2 = "taskInput2";
+                let startIndex = txt.indexOf(taskInput2);
+                let taskInput3 = "taskInput3";
+                let startIndex2 = txt.indexOf(taskInput3);
+
+                if (startIndex !== -1) {
+                    let start = startIndex + 13;
+                    let end = startIndex + 15;
+                    let start1 = startIndex2 + 13;
+                    let end1 = startIndex2 + 15;
+                    let startTime = txt.substring(start, end + 3);
+                    let endTime = txt.substring(start1, end1 + 3);
+                    let result = txt.substring(start, end);
+                    let result1 = txt.substring(start1, end1);
+                    result++;
+                    result1++;
+
+                    let rowy = 3;
+                    if (zone === "PMP") { rowy = 1; }
+                    if (zone === "Presse") { rowy = 2; }
+                    if (zone === "Ligne d'émaillage") { rowy = 3; }
+                    if (zone === "Kerajet") { rowy = 4; }
+                    if (zone === "Four") { rowy = 5; }
+                    if (zone === "Triage") { rowy = 6; }
+
+                    let startParts = startTime.split(":");
+                    let endParts = endTime.split(":");
+                    let startMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+                    let endMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+                    let durationMinutes = endMinutes - startMinutes;
+                    let hours = Math.floor(durationMinutes / 60);
+                    let minutes = durationMinutes % 60;
+                    let formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
+                    taskElement.innerHTML = `Total arrêt ligne N°${line} est de ${formattedDuration}`;
+                    tasksList.appendChild(taskElement);
+
+                    for (let col = result; col <= result1; col++) {
+                        cellsToChange.push({ row: rowy, col: col });
+                    }
+                }
+            }
+        });
+
+        cellscolor(); // Call to color the cells
+    }).catch((error) => {
+        console.error("Error getting tasks: ", error); // Log any errors
+    });
+        }
+
+        loadAllTasksFromClouds();
         
     </script>
 </body>
