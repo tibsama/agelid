@@ -339,10 +339,11 @@ const firebaseConfig = {
         snapshot.forEach((childSnapshot) => {
             let key = childSnapshot.key;
             let task = childSnapshot.val();
-               alert ("1");
+            
 
             let [line, zone, date] = key.split(":");
 
+            alert(date); alert(d);
             if (date === d) {
                 alert ("2");
                 let taskElement = document.createElement("div");
