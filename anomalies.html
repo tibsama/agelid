@@ -329,7 +329,6 @@ const firebaseConfig = {
 //loadAllTasksFromCloud();
 
         function loadAllTasksFromClouds() {
-            var d = document.getElementById("current-day").textContent;
       
             
     const ref = database.ref('tasks');
@@ -345,8 +344,8 @@ const firebaseConfig = {
 
             let [line, zone, date] = key.split(":");
 
-            alert(date); alert(d);
-            if (date === d) {
+            alert(date); alert(currentDate);
+            if (date === currentDate) {
                 alert ("2");
                 let taskElement = document.createElement("div");
                 taskElement.className = "task";
