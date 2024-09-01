@@ -231,13 +231,13 @@ const firebaseConfig = {
         function previousDay() {
             currentDate.setDate(currentDate.getDate() - 1);
             displayCurrentDay();
-            loadAllTasksFromClouds();
+            loadAllTasksFromCloud();
         }
 
         function nextDay() {
             currentDate.setDate(currentDate.getDate() + 1);
             displayCurrentDay()
-            loadAllTasksFromClouds();
+            loadAllTasksFromCloud();
         }
 
         function goToLine(lineNumber) {
@@ -259,71 +259,6 @@ const firebaseConfig = {
     });
 }   }
 
-        function loadAllTasksFromCloud() {
-
-    const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
-
-    ref.once('value', (snapshot) => {  // Fetch all data once
-        const tasksList = document.getElementById("tasksList");
-        tasksList.innerHTML = '';  // Clear the list before adding new tasks
-
-        snapshot.forEach((childSnapshot) => {
-            let key = childSnapshot.key;  // Get the key of each task
-            let task = childSnapshot.val();  // Get the task data
-              
-            let [line, zone, date] = key.split(":");
-            
-            if (date===dateFromURL) {   
-            
-                // Create a new div for each task
-                let taskElement = document.createElement("div");
-                taskElement.className = "task";
-                
-                let txt = ` ${JSON.stringify(task)}`;
-                let taskInput2 = "taskInput2";
-                let startIndex = txt.indexOf(taskInput2);
-                let taskInput3 = "taskInput3";
-                let startIndex2 = txt.indexOf(taskInput3);
-                if (startIndex !== -1) {
-             
-  // Calculate the start and end positions for the substring
-  let start = startIndex + 13;
-  let end = startIndex + 15;
-  let start1 = startIndex2 + 13;
-  let end1 = startIndex2 + 15;      
-  let startTime = txt.substring(start, end+3);
-  let endTime = txt.substring(start1, end1+3);                
-  let result = txt.substring(start, end);
-  let result1 = txt.substring(start1, end1);  
-     result++;      result1++;
-  let rowy =3;
-         if (zone==="PMP"){rowy=1;}if (zone==="Presse"){rowy=2;}if (zone==="Ligne d'émaillage"){rowy=3;}
-         if (zone==="Kerajet"){rowy=4;}if (zone==="Four"){rowy=5;}if (zone==="Triage"){rowy=6;}          
-
-      let startParts = startTime.split(":");
-      let endParts = endTime.split(":"); 
-      let startMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
-      let endMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
-      let durationMinutes = endMinutes - startMinutes;
-      let hours = Math.floor(durationMinutes / 60);
-      let minutes = durationMinutes % 60;
-      let formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-                              
-      taskElement.innerHTML = `  Total arrêt ligne N°${line} est de ${formattedDuration}`;
-      tasksList.appendChild(taskElement);   
-
-        for (let col = result; col <= result1; col++) {
-            cellsToChange.push({ row: rowy, col: col });
-        }  
-                    
-           }          
-            }
-        });   cellscolor();
-    }).catch((error) => {
-        console.error("Error getting tasks: ", error);  // Log any errors
-    });
-}      
-
         function getCurrentDateFormatted() {
 
     const year = currentDate.getFullYear(); // Get the full year (e.g., 2024)
@@ -334,10 +269,9 @@ const firebaseConfig = {
 }
         
 
-// Call the function to load all tasks when needed
-//loadAllTasksFromCloud();
 
-        function loadAllTasksFromClouds() {
+
+        function loadAllTasksFromCloud() {
       const formattedDate = getCurrentDateFormatted();
             
     const ref = database.ref('tasks');
@@ -353,9 +287,7 @@ const firebaseConfig = {
 
             let [line, zone, date] = key.split(":");
 
-            alert(date); alert(formattedDate);
             if (date === formattedDate) {
-                alert ("2");
                 let taskElement = document.createElement("div");
                 taskElement.className = "task";
 
@@ -364,9 +296,7 @@ const firebaseConfig = {
                 let startIndex = txt.indexOf(taskInput2);
                 let taskInput3 = "taskInput3";
                 let startIndex2 = txt.indexOf(taskInput3);
-  alert ("3");
                 if (startIndex !== -1) {
-                    alert ("4");
                     let start = startIndex + 13;
                     let end = startIndex + 15;
                     let start1 = startIndex2 + 13;
@@ -377,14 +307,6 @@ const firebaseConfig = {
                     let result1 = txt.substring(start1, end1);
                     result++;
                     result1++;
-
-                    let rowy = 3;
-                    if (zone === "PMP") { rowy = 1; }
-                    if (zone === "Presse") { rowy = 2; }
-                    if (zone === "Ligne d'émaillage") { rowy = 3; }
-                    if (zone === "Kerajet") { rowy = 4; }
-                    if (zone === "Four") { rowy = 5; }
-                    if (zone === "Triage") { rowy = 6; }
 
                     let startParts = startTime.split(":");
                     let endParts = endTime.split(":");
@@ -399,7 +321,7 @@ const firebaseConfig = {
                     tasksList.appendChild(taskElement);
 
                     for (let col = result; col <= result1; col++) {
-                        cellsToChange.push({ row: rowy, col: col });
+                        cellsToChange.push({ row: line, col: col });
                     }
                 }
             }
@@ -411,7 +333,7 @@ const firebaseConfig = {
     });
         }
 
-        loadAllTasksFromClouds();
+        loadAllTasksFromCloud();
         
     </script>
 </body>
