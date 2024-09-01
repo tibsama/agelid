@@ -331,10 +331,8 @@ const firebaseConfig = {
         function loadAllTasksFromClouds() {
     const lineNumberElement = document.getElementById("line-number");
     const dateFromURLElement = document.getElementById('date-from-url');
-    if (!lineNumberElement || !dateFromURLElement) {
+    
         console.error("line-number or date-from-url elements are missing");
-        return;
-    }
 
     const lineNumber = lineNumberElement.textContent;
     const dateFromURL = dateFromURLElement.textContent;
