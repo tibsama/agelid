@@ -116,6 +116,7 @@
             }
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
 </head>
 <body>
     <!-- Spider Header Showing Current Day -->
@@ -196,9 +197,28 @@
                 </tbody>
             </table>
         </div>
+        <div id="allTasks">
+    <h3>Total heures d'arrêt:</h3>
+    <div id="tasksList"></div>
     </div>
 
     <script>
+const firebaseConfig = {
+            apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
+            authDomain: "herher-d121a.firebaseapp.com",
+            databaseURL: "https://herher-d121a.firebaseio.com",
+            projectId: "herher-d121a",
+            storageBucket: "herher-d121a.appspot.com",
+            messagingSenderId: "626438737297",
+            appId: "1:626438737297:web:bf6524275291ec695fde30"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let cellsToChange = [];
+        
         let currentDate = new Date();
 
         function displayCurrentDay() {
@@ -223,6 +243,88 @@
         }
 
         displayCurrentDay();
+
+
+        function cellscolor() {
+    const tbody = document.querySelector('tbody');
+ //   const cellsToChange = [ { row: 2, col: 3 },  { row: 4, col: 4 }  ];
+    if (cellsToChange.length > 0) {
+    cellsToChange.forEach(cell => {
+        const row = tbody.children[cell.row-1];
+        const cellElement = row.children[cell.col];
+        cellElement.style.backgroundColor = 'gray'; 
+    });
+}   }
+
+        function loadAllTasksFromCloud() {
+         const lineNumber = document.getElementById("line-number").textContent;
+         const dateFromURL = document.getElementById('date-from-url').textContent;
+          
+    const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
+
+    ref.once('value', (snapshot) => {  // Fetch all data once
+        const tasksList = document.getElementById("tasksList");
+        tasksList.innerHTML = '';  // Clear the list before adding new tasks
+
+        snapshot.forEach((childSnapshot) => {
+            let key = childSnapshot.key;  // Get the key of each task
+            let task = childSnapshot.val();  // Get the task data
+
+            let [line, zone, date] = key.split(":");
+            
+            if (line===lineNumber && date===dateFromURL) {
+                // Create a new div for each task
+                let taskElement = document.createElement("div");
+                taskElement.className = "task";
+                
+                let txt = ` ${JSON.stringify(task)}`;
+                let taskInput2 = "taskInput2";
+                let startIndex = txt.indexOf(taskInput2);
+                let taskInput3 = "taskInput3";
+                let startIndex2 = txt.indexOf(taskInput3);
+                if (startIndex !== -1) {
+  // Calculate the start and end positions for the substring
+  let start = startIndex + 13;
+  let end = startIndex + 15;
+  let start1 = startIndex2 + 13;
+  let end1 = startIndex2 + 15;      
+  let startTime = txt.substring(start, end+3);
+  let endTime = txt.substring(start1, end1+3);                
+  let result = txt.substring(start, end);
+  let result1 = txt.substring(start1, end1);  
+     result++;      result1++;
+  let rowy =3;
+         if (zone==="PMP"){rowy=1;}if (zone==="Presse"){rowy=2;}if (zone==="Ligne d'émaillage"){rowy=3;}
+         if (zone==="Kerajet"){rowy=4;}if (zone==="Four"){rowy=5;}if (zone==="Triage"){rowy=6;}          
+
+      let startParts = startTime.split(":");
+      let endParts = endTime.split(":"); 
+      let startMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+      let endMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+      let durationMinutes = endMinutes - startMinutes;
+      let hours = Math.floor(durationMinutes / 60);
+      let minutes = durationMinutes % 60;
+      let formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                              
+      taskElement.innerHTML = `  Total arrêt zone ${zone} est de ${formattedDuration}`;
+      tasksList.appendChild(taskElement);   
+
+        for (let col = result; col <= result1; col++) {
+            cellsToChange.push({ row: rowy, col: col });
+        }  
+                    
+           }          
+            }
+        });   cellscolor();
+    }).catch((error) => {
+        console.error("Error getting tasks: ", error);  // Log any errors
+    });
+}      
+
+        
+// Call the function to load all tasks when needed
+loadAllTasksFromCloud();
+        
     </script>
 </body>
 </html>
