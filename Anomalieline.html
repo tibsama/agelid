@@ -326,7 +326,7 @@ function cellscolor() {
 
           const keys = `${lineNumber}:.*:${dateFromURL}`;  
    // ref.once('value', (snapshot) => { 
-     database.ref('tasks').child(key).once('value', snapshot => {   
+     database.ref('tasks').child(keys).once('value', snapshot => {   
         const tasksList = document.getElementById("tasksList");
         tasksList.innerHTML = '';  // Clear the list before adding new tasks
 
