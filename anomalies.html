@@ -279,13 +279,14 @@ const firebaseConfig = {
         const tasksList = document.getElementById("tasksList");
         tasksList.innerHTML = ''; // Clear the list before adding new tasks
 
+        alert("1");
         let l1 = { hours: 0, minutes: 0 };
         let l2 = { hours: 0, minutes: 0 };
         let l3 = { hours: 0, minutes: 0 };
         let l4 = { hours: 0, minutes: 0 };
         let l5 = { hours: 0, minutes: 0 };
 
-
+alert("2");
         snapshot.forEach((childSnapshot) => {
             let key = childSnapshot.key;
             let task = childSnapshot.val();
@@ -323,9 +324,9 @@ const firebaseConfig = {
                     let minutes = durationMinutes % 60;
                     let formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
-                 alert("1");
+                 alert("3");
                     let [durationHours, durationMinutes] = formattedDuration.split(':').map(Number);
-                 alert("2");
+                 alert("4");
     // Determine which line to add time to
     let lineObj;
     switch (line) {
