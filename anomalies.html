@@ -272,7 +272,7 @@ const firebaseConfig = {
 
             let [line, zone, date] = key.split(":");
             
-            if (line===lineNumber && date===dateFromURL) {
+            if (date===dateFromURL) {
                 // Create a new div for each task
                 let taskElement = document.createElement("div");
                 taskElement.className = "task";
