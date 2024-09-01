@@ -270,9 +270,16 @@ const firebaseConfig = {
             let key = childSnapshot.key;  // Get the key of each task
             let task = childSnapshot.val();  // Get the task data
 
+            taskElement.innerHTML = `1`;
+      tasksList.appendChild(taskElement);   
+            
             let [line, zone, date] = key.split(":");
             
             if (date===dateFromURL) {
+                
+                taskElement.innerHTML = `2`;
+      tasksList.appendChild(taskElement);   
+            
                 // Create a new div for each task
                 let taskElement = document.createElement("div");
                 taskElement.className = "task";
@@ -283,6 +290,10 @@ const firebaseConfig = {
                 let taskInput3 = "taskInput3";
                 let startIndex2 = txt.indexOf(taskInput3);
                 if (startIndex !== -1) {
+
+                   taskElement.innerHTML = `3`;
+      tasksList.appendChild(taskElement);   
+             
   // Calculate the start and end positions for the substring
   let start = startIndex + 13;
   let end = startIndex + 15;
