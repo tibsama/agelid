@@ -278,7 +278,13 @@ const firebaseConfig = {
     ref.once('value', (snapshot) => {
         const tasksList = document.getElementById("tasksList");
         tasksList.innerHTML = ''; // Clear the list before adding new tasks
-               
+
+        let l1 = { hours: 0, minutes: 0 };
+        let l2 = { hours: 0, minutes: 0 };
+        let l3 = { hours: 0, minutes: 0 };
+        let l4 = { hours: 0, minutes: 0 };
+        let l5 = { hours: 0, minutes: 0 };
+
 
         snapshot.forEach((childSnapshot) => {
             let key = childSnapshot.key;
@@ -317,8 +323,41 @@ const firebaseConfig = {
                     let minutes = durationMinutes % 60;
                     let formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
-                    taskElement.innerHTML = `Total arrêt ligne N°${line} est de ${formattedDuration}`;
-                    tasksList.appendChild(taskElement);
+
+                    let [durationHours, durationMinutes] = formattedDuration.split(':').map(Number);
+
+    // Determine which line to add time to
+    let lineObj;
+    switch (line) {
+        case 1:
+            lineObj = l1;
+            break;
+        case 2:
+            lineObj = l2;
+            break;
+        case 3:
+            lineObj = l3;
+            break;
+        case 4:
+            lineObj = l4;
+            break;
+        case 5:
+            lineObj = l5;
+            break;
+        default:
+            console.error("Invalid line number");
+            return;
+    }
+
+    // Add the duration to the current line's total time
+    lineObj.hours += durationHours;
+    lineObj.minutes += durationMinutes;
+
+    // Convert minutes to hours if minutes are 60 or more
+    if (lineObj.minutes >= 60) {
+        lineObj.hours += Math.floor(lineObj.minutes / 60);
+        lineObj.minutes = lineObj.minutes % 60;
+    }
 
                     for (let col = result; col <= result1; col++) {
                         cellsToChange.push({ row: line, col: col });
@@ -326,7 +365,10 @@ const firebaseConfig = {
                 }
             }
         });
-
+        
+                    taskElement.innerHTML = `Total arrêt ligne N°1: ${l1.hours}:${l1.minutes}`;
+                    tasksList.appendChild(taskElement);
+        
         cellscolor(); // Call to color the cells
     }).catch((error) => {
         console.error("Error getting tasks: ", error); // Log any errors
