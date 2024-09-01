@@ -328,8 +328,7 @@ function cellscolor() {
         const tasksList = document.getElementById("tasksList");
         tasksList.innerHTML = '';  // Clear the list before adding new tasks
 
-       // snapshot.forEach((childSnapshot) => {
-         database.ref('tasks').child('key').once('value', snapshot => {
+        snapshot.forEach((childSnapshot) => {
             let key = childSnapshot.key();  // Get the key of each task
             let task = childSnapshot.val();  // Get the task data
 
