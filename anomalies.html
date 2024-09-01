@@ -324,17 +324,18 @@ const firebaseConfig = {
     });
 }      
 
-        console.error("line-number r date-from-url elements are missing");
 
 // Call the function to load all tasks when needed
 //loadAllTasksFromCloud();
 
         function loadAllTasksFromClouds() {
-            console.error("line-number or date-from-url elements are missing");
+            alert("1");
+               
     const lineNumberElement = document.getElementById("line-number");
     const dateFromURLElement = document.getElementById('date-from-url');
     
-        console.error("line-number or date-from-url elements are missing");
+        alert("2");
+               
 
     const lineNumber = lineNumberElement.textContent;
     const dateFromURL = dateFromURLElement.textContent;
@@ -344,13 +345,15 @@ const firebaseConfig = {
         const tasksList = document.getElementById("tasksList");
         tasksList.innerHTML = ''; // Clear the list before adding new tasks
 
-        console.log("Data fetched from Firebase: ", snapshot.val()); // Add this line
+        alert("3");
+               
 
         snapshot.forEach((childSnapshot) => {
             let key = childSnapshot.key;
             let task = childSnapshot.val();
 
-            console.log("Processing task: ", key, task); // Add this line
+            alert("4");
+               
 
             let [line, zone, date] = key.split(":");
 
