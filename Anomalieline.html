@@ -324,9 +324,9 @@ function cellscolor() {
           
     const ref = database.ref('tasks');  // Reference to the 'tasks' node in your Firebase Realtime Database
 
-          const keys = `${line}:${zone}:${date}`;  
+          const keys = `${lineNumber}:${zone}:${dateFromURL}`;  
    // ref.once('value', (snapshot) => { 
-     database.ref('tasks').child(keys).once('value', snapshot => {   
+     database.ref('tasks').once('value', snapshot => {   
         const tasksList = document.getElementById("tasksList");
         tasksList.innerHTML = '';  // Clear the list before adding new tasks
 
