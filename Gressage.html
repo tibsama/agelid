@@ -1,362 +1,230 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Calendar</title>
+    <title>Plan de Graissage Mensuel</title>
     <style>
-        /* The same CSS styles as before */
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            flex-direction: column;
-        }
-
-        .calendar {
-            width: 350px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .calendar-header button {
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        .calendar-header button:hover {
-            background-color: #0056b3;
-        }
-
-        .calendar-header h2 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: normal;
-        }
-
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            margin-bottom: 10px;
-        }
-
-        .calendar-days div {
-            padding: 10px 0;
-            font-weight: bold;
-            color: #007BFF;
-        }
-
-        .calendar-dates {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-        }
-
-        .calendar-dates div {
-            padding: 10px 0;
-            margin: 5px 0;
-            cursor: pointer;
-        }
-
-        .calendar-dates div:hover, .calendar-dates .selected {
-            background-color: #007BFF;
-            color: #fff;
-            border-radius: 50%;
-        }
-
-        .calendar-dates div.disabled {
-            color: #ccc;
-            cursor: default;
-        }
-
-        .task-manager {
-            width: 350px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            text-align: left;
-        }
-
-        .task-manager h3 {
-            margin-top: 0;
-            font-size: 18px;
-            border-bottom: 1px solid #007BFF;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .task-manager ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .task-manager li {
-            background-color: #f9f9f9;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .task-manager li button {
-            background-color: #ff4d4d;
-            border: none;
-            color: #fff;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .task-manager li button:hover {
-            background-color: #cc0000;
-        }
-
-        .task-manager input[type="text"] {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-
-        .task-manager button.add-task {
-            background-color: #007BFF;
-            border: none;
-            color: #fff;
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 4px;
+        table {
             width: 100%;
+            border-collapse: collapse;
         }
-
-        .task-manager button.add-task:hover {
-            background-color: #0056b3;
-        }
-
-        .task-manager button.save, .task-manager button.load {
-            background-color: #28a745;
-            border: none;
-            color: #fff;
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 4px;
-            width: 48%;
-            margin: 5px 1%;
+        th, td {
+            border: 1px solid #dddddd;
             text-align: center;
+            padding: 8px;
         }
-
-        .task-manager button.load {
-            background-color: #17a2b8;
+        th {
+            background-color: #f2f2f2;
         }
-
-        .task-manager button.save:hover {
-            background-color: #218838;
+        .editable {
+            background-color: #e0f7fa;
         }
-
-        .task-manager button.load:hover {
-            background-color: #138496;
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .control-buttons {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .today {
+            background-color: red;
+        }
+        .tomorrow {
+            background-color: yellow;
+        }
+        .future {
+            background-color: green;
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
 </head>
-<body>
+<body onload="loadData()">
 
-    <!-- Calendar -->
-    <div class="calendar">
-        <div class="calendar-header">
-            <button id="prev-month">Prev</button>
-            <h2 id="month-year"></h2>
-            <button id="next-month">Next</button>
-        </div>
-        <div class="calendar-days">
-            <div>Sun</div>
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
-        </div>
-        <div class="calendar-dates" id="calendar-dates"></div>
-    </div>
+<h2>Plan de Graissage Mensuel</h2>
 
-    <!-- Task Manager -->
-    <div class="task-manager">
-        <h3 id="selected-date">Tasks for: </h3>
-        <ul id="task-list"></ul>
-        <input type="text" id="task-input" placeholder="Add a new task">
-        <button class="add-task" id="add-task">Add Task</button>
-        <button class="save" id="save-tasks">Save Tasks</button>
-        <button class="load" id="load-tasks">Load Tasks</button>
-    </div>
+<!-- Boutons de contrôle en haut de la page -->
+<div class="control-buttons">
+    <button onclick="addRow()">Ajouter une ligne</button>
+    <button onclick="removeRow()">Retirer une ligne</button>
+    <button onclick="saveData()">Sauvegarder</button>
+</div>
 
-    <script>
-        const calendar = document.getElementById('calendar-dates');
-        const monthYear = document.getElementById('month-year');
-        const prevMonth = document.getElementById('prev-month');
-        const nextMonth = document.getElementById('next-month');
-        const selectedDateText = document.getElementById('selected-date');
-        const taskInput = document.getElementById('task-input');
-        const taskList = document.getElementById('task-list');
-        const addTaskButton = document.getElementById('add-task');
-        const saveTasksButton = document.getElementById('save-tasks');
-        const loadTasksButton = document.getElementById('load-tasks');
+<table id="greasePlanTable">
+    <thead>
+        <tr>
+            <th>Pièce</th>
+            <th>PMP</th>
+            <th>Presse</th>
+            <th>Ligne d'emaillage</th>
+            <th>Kerajet</th>
+            <th>Four</th>
+            <th>Triage</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td contenteditable="true" class="editable">Pièce 1</td>
+            <td class="editable"><input type="date"></td>
+            <td class="editable"><input type="date"></td>
+            <td class="editable"><input type="date"></td>
+            <td class="editable"><input type="date"></td>
+            <td class="editable"><input type="date"></td>
+            <td class="editable"><input type="date"></td>
+        </tr>
+        <!-- Plus de lignes peuvent être ajoutées ici -->
+    </tbody>
+</table>
 
-        let currentDate = new Date();
-        let selectedDate = null;
-        let tasks = {}; // Object to store tasks for each date
+<script>
+    // Configuration Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
+        authDomain: "herher-d121a.firebaseapp.com",
+        databaseURL: "https://herher-d121a.firebaseio.com",
+        projectId: "herher-d121a",
+        storageBucket: "herher-d121a.appspot.com",
+        messagingSenderId: "626438737297",
+        appId: "1:626438737297:web:bf6524275291ec695fde30"
+    };
 
-        function renderCalendar(date) {
-            const year = date.getFullYear();
-            const month = date.getMonth();
-            const firstDay = new Date(year, month, 1).getDay();
-            const lastDate = new Date(year, month + 1, 0).getDate();
-            const prevLastDate = new Date(year, month, 0).getDate();
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-            monthYear.innerText = `${date.toLocaleString('default', { month: 'long' })} ${year}`;
+    // Fonction pour charger les données depuis Firebase
+    function loadData() {
+        const table = document.getElementById("greasePlanTable");
+        const tbody = table.getElementsByTagName('tbody')[0];
 
-            let days = '';
-
-            // Previous month's last few days
-            for (let i = firstDay; i > 0; i--) {
-                days += `<div class="disabled">${prevLastDate - i + 1}</div>`;
-            }
-
-            // Current month's days
-            for (let i = 1; i <= lastDate; i++) {
-                const isSelected = selectedDate && selectedDate.getDate() === i && selectedDate.getMonth() === month && selectedDate.getFullYear() === year;
-                days += `<div class="${isSelected ? 'selected' : ''}" data-date="${year}-${month + 1}-${i}">${i}</div>`;
-            }
-
-            // Next month's first few days (filling the rest of the grid)
-            const totalDays = firstDay + lastDate;
-            const nextDays = 7 - (totalDays % 7);
-            if (nextDays < 7) {
-                for (let i = 1; i <= nextDays; i++) {
-                    days += `<div class="disabled">${i}</div>`;
-                }
-            }
-
-            calendar.innerHTML = days;
-
-            // Add click event listeners to each date
-            document.querySelectorAll('.calendar-dates div:not(.disabled)').forEach(dateEl => {
-                dateEl.addEventListener('click', function () {
-                    document.querySelectorAll('.calendar-dates div').forEach(div => div.classList.remove('selected'));
-                    this.classList.add('selected');
-                    selectedDate = new Date(this.dataset.date);
-                    selectedDateText.innerText = `Tasks for: ${selectedDate.toDateString()}`;
-                    renderTasks();
-                });
-            });
-        }
-
-        function renderTasks() {
-            const dateKey = selectedDate.toISOString().split('T')[0];
-            const dateTasks = tasks[dateKey] || [];
-
-            taskList.innerHTML = '';
-
-            dateTasks.forEach((task, index) => {
-                const taskItem = document.createElement('li');
-                taskItem.innerText = task;
-                
-                const deleteButton = document.createElement('button');
-                deleteButton.innerText = 'Delete';
-                deleteButton.addEventListener('click', () => {
-                    dateTasks.splice(index, 1);
-                    tasks[dateKey] = dateTasks;
-                    renderTasks();
-                });
-
-                taskItem.appendChild(deleteButton);
-                taskList.appendChild(taskItem);
-            });
-        }
-
-        addTaskButton.addEventListener('click', () => {
-            const taskText = taskInput.value.trim();
-            if (taskText !== '') {
-                const dateKey = selectedDate.toISOString().split('T')[0];
-                if (!tasks[dateKey]) {
-                    tasks[dateKey] = [];
-                }
-                tasks[dateKey].push(taskText);
-                taskInput.value = '';
-                renderTasks();
-            }
-        });
-
-        saveTasksButton.addEventListener('click', () => {
-            const tasksJSON = JSON.stringify(tasks);
-            const blob = new Blob([tasksJSON], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'tasks.json';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-
-        loadTasksButton.addEventListener('click', () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'application/json';
-            input.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const loadedTasks = JSON.parse(e.target.result);
-                        tasks = loadedTasks;
-                        if (selectedDate) {
-                            renderTasks();
+        database.ref('greasePlan/data').once('value')
+            .then(snapshot => {
+                const data = snapshot.val();
+                if (data) {
+                    for (let i = 0; i < tbody.rows.length; i++) {
+                        const row = tbody.rows[i];
+                        const pieceCell = row.cells[0];
+                        const piece = pieceCell.textContent.trim();
+                        if (data[piece]) {
+                            for (let j = 1; j < row.cells.length; j++) {
+                                const cell = row.cells[j];
+                                const dateInput = cell.querySelector('input[type="date"]');
+                                dateInput.value = data[piece]['zone' + j] || '';
+                                colorCell(dateInput);
+                            }
                         }
-                    };
-                    reader.readAsText(file);
+                    }
                 }
+            })
+            .catch(error => {
+                console.error('Erreur de chargement des données :', error);
             });
-            input.click();
+    }
+
+    // Fonction pour colorer les cellules en fonction de la date
+    function colorCell(input) {
+        const cellDate = new Date(input.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);  // Réinitialise les heures de la date d'aujourd'hui
+
+        if (!input.value) {
+            input.parentElement.classList.remove('today', 'tomorrow', 'future');
+            return;
+        }
+
+        if (cellDate.toDateString() === today.toDateString()) {
+            input.parentElement.classList.add('today');
+        } else if (cellDate.toDateString() === new Date(today.getTime() + 86400000).toDateString()) { // Demain
+            input.parentElement.classList.add('tomorrow');
+        } else if (cellDate > today) {
+            input.parentElement.classList.add('future');
+        }
+    }
+
+    // Fonction pour sauvegarder les données dans Firebase
+    function saveData() {
+        const table = document.getElementById("greasePlanTable");
+        const data = {};
+        let rowCount = 0;
+
+        // Boucle à travers les lignes du tableau
+        for (let i = 1, row; row = table.rows[i]; i++) {
+            const pieceCell = row.cells[0];
+            const piece = pieceCell.textContent.trim();
+            data[piece] = {};
+            
+            // Boucle à travers les colonnes du tableau (en commençant par l'index 1 pour ignorer la colonne 'Pièce')
+            for (let j = 1, col; col = row.cells[j]; j++) {
+                const dateInput = col.querySelector('input[type="date"]');
+                data[piece]['zone' + j] = dateInput.value.trim() || '';  // Save empty string if no date
+            }
+            rowCount++;
+        }
+
+        // Sauvegarder dans Firebase
+        database.ref('greasePlan').set({
+            data: data,
+            rowCount: rowCount
+        })
+        .then(() => {
+            alert('Données sauvegardées avec succès !');
+        })
+        .catch((error) => {
+            console.error('Erreur de sauvegarde :', error);
         });
+    }
 
-        prevMonth.addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar(currentDate);
+    // Fonction pour ajouter une ligne
+    function addRow() {
+        const table = document.getElementById("greasePlanTable");
+        const tbody = table.getElementsByTagName('tbody')[0];
+        const newRow = tbody.insertRow();
+
+        // Ajouter la cellule pour la pièce
+        const pieceCell = newRow.insertCell();
+        const pieceInput = document.createElement('input');
+        pieceInput.type = 'text';
+        pieceInput.classList.add('editable');
+        pieceInput.value = `Pièce ${tbody.rows.length}`;
+        pieceCell.appendChild(pieceInput);
+
+        // Ajouter des cellules pour chaque zone avec des sélecteurs de date
+        for (let i = 0; i < 6; i++) {
+            const cell = newRow.insertCell();
+            const dateInput = document.createElement('input');
+            dateInput.type = 'date';
+            dateInput.classList.add('editable');
+            cell.appendChild(dateInput);
+        }
+    }
+
+    // Fonction pour retirer une ligne
+    function removeRow() {
+        const table = document.getElementById("greasePlanTable");
+        const tbody = table.getElementsByTagName('tbody')[0];
+        if (tbody.rows.length > 1) {
+            tbody.deleteRow(tbody.rows.length - 1);
+        } else {
+            alert('Il doit y avoir au moins une ligne dans le tableau.');
+        }
+    }
+
+    // Ajoutez un écouteur d'événement pour changer la couleur de la cellule à l'édition
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById("greasePlanTable").addEventListener('input', function(event) {
+            if (event.target.tagName === 'INPUT') {
+                colorCell(event.target);
+            }
         });
+    });
+</script>
 
-        nextMonth.addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar(currentDate);
-        });
-
-        // Initial render of the calendar
-        renderCalendar(currentDate);
-
-        // Set the current date as the selected date initially
-        selectedDate = currentDate;
-        selectedDateText.innerText = `Tasks for: ${selectedDate.toDateString()}`;
-    </script>
 </body>
 </html>
-
