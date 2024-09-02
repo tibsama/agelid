@@ -17,6 +17,56 @@
             height: 100vh;
         }
 
+        /* Style de la page de fond */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0d1b2a; /* couleur de fond foncée */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Style du loader */
+.loader {
+  width: 100px;
+  height: 100px;
+  position: relative;
+}
+
+/* Style des points */
+.loader::before,
+.loader::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 5px solid transparent;
+  border-top-color: #00aaff;
+  animation: spin 1s infinite linear;
+}
+
+/* Deuxième couche de points avec un retard pour un effet de mouvement */
+.loader::after {
+  border-top-color: #0066ff;
+  animation-delay: -0.5s;
+}
+
+/* Animation de rotation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
         .header {
             width: 100%;
             background-color: #007BFF;
@@ -201,6 +251,10 @@
         <div id="allTasks">
     <h3>Total heures d'arrêt:</h3>
     <div id="tasksList"></div>
+  <div class="loading-container">
+  <div class="loader"></div>
+            </div>
+            
     </div>
 
     <script>
@@ -316,18 +370,20 @@ const firebaseConfig = {
                     let minutes = durationMinutes % 60;
                     let formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
             
-
+                    taskElement.innerHTML = `Total arrêt ligne N°${line} est de ${formattedDuration}`;
+                    tasksList.appendChild(taskElement);
+                    
                     for (let col = result; col <= result1; col++) {
                         cellsToChange.push({ row: line, col: col });
                     }
                 }
             }
         });
-        
-                 //   taskElement.innerHTML = `Total arrêt ligne N°1: ${l1.hours}:${l1.minutes}`;
-                //    tasksList.appendChild(taskElement);
-        
+          
         cellscolor(); // Call to color the cells
+
+        document.querySelector(".loading-container").style.display = "none";
+        
     }).catch((error) => {
         console.error("Error getting tasks: ", error); // Log any errors
     });
