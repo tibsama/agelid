@@ -17,6 +17,56 @@
             height: 100vh;
         }
 
+        /* Style de la page de fond */
+.loading-container {
+  position: fixed;
+ 
+  left: 0;
+  width: 100%;
+  height: 10%;
+  background-color: #e0f7fa; /* couleur de fond foncée */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Style du loader */
+.loader {
+  width: 100px;
+  height: 100px;
+  position: relative;
+}
+
+/* Style des points */
+.loader::before,
+.loader::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 5px solid transparent;
+  border-top-color: #00aaff;
+  animation: spin 1s infinite linear;
+}
+
+/* Deuxième couche de points avec un retard pour un effet de mouvement */
+.loader::after {
+  border-top-color: #0066ff;
+  animation-delay: -0.5s;
+}
+
+/* Animation de rotation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
         .header {
             width: 100%;
             background-color: #4caf50;
@@ -246,6 +296,9 @@
     <div id="allTasks">
     <h3>Total heures d'arrêt:</h3>
     <div id="tasksList"></div>
+    <div class="loading-container">
+  <div class="loader"></div>
+        </div>
 </div>
 
     <script>
@@ -280,12 +333,16 @@
         
 
         function previousDay() {
+            tasksList.innerHTML = '';
+            document.querySelector(".loading-container").style.display = "flex";
             const currentDate = new Date(document.getElementById('date-from-url').textContent);
             currentDate.setDate(currentDate.getDate() - 1);
             updateDateInURL(currentDate);
         }
 
         function nextDay() {
+            tasksList.innerHTML = '';
+            document.querySelector(".loading-container").style.display = "flex";
             const currentDate = new Date(document.getElementById('date-from-url').textContent);
             currentDate.setDate(currentDate.getDate() + 1);
             updateDateInURL(currentDate);
@@ -296,6 +353,7 @@
             const lineNumber = document.getElementById('line-number').textContent;
             window.location.hash = `${lineNumber}&date=${formattedDate}`;
             parseURL();
+            loadAllTasksFromCloud();
         }
 
         function goToZone(zoneName) {
@@ -378,6 +436,7 @@ function cellscolor() {
            }          
             }
         });   cellscolor();
+        document.querySelector(".loading-container").style.display = "none";
     }).catch((error) => {
         console.error("Error getting tasks: ", error);  // Log any errors
     });
