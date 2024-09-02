@@ -283,6 +283,7 @@ const firebaseConfig = {
         }
 
         function previousDay() {
+            tasksList.innerHTML = '';
             document.querySelector(".loading-container").style.display = "flex";
             currentDate.setDate(currentDate.getDate() - 1);
             displayCurrentDay();
@@ -290,6 +291,7 @@ const firebaseConfig = {
         }
 
         function nextDay() {
+            tasksList.innerHTML = '';
             document.querySelector(".loading-container").style.display = "flex";
             currentDate.setDate(currentDate.getDate() + 1);
             displayCurrentDay()
