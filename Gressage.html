@@ -99,87 +99,121 @@
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Fonction pour charger les données depuis Firebase
-    function loadData() {
-        const table = document.getElementById("greasePlanTable");
-        const tbody = table.getElementsByTagName('tbody')[0];
+// Fonction pour charger les données depuis Firebase
+function loadData() {
+    const table = document.getElementById("greasePlanTable");
+    const tbody = table.getElementsByTagName('tbody')[0];
 
-        database.ref('greasePlan/data').once('value')
-            .then(snapshot => {
-                const data = snapshot.val();
-                if (data) {
-                    for (let i = 0; i < tbody.rows.length; i++) {
-                        const row = tbody.rows[i];
-                        const pieceCell = row.cells[0];
-                        const piece = pieceCell.textContent.trim();
-                        if (data[piece]) {
-                            for (let j = 1; j < row.cells.length; j++) {
-                                const cell = row.cells[j];
-                                const dateInput = cell.querySelector('input[type="date"]');
-                                dateInput.value = data[piece]['zone' + j] || '';
-                                colorCell(dateInput);
-                            }
+    // Lire les données depuis Firebase
+    database.ref('greasePlan').once('value')
+        .then(snapshot => {
+            const data = snapshot.val();
+            if (data && data.data) {
+                const dataRows = data.data;
+                // Effacer les lignes existantes sauf l'en-tête
+                while (tbody.rows.length > 0) {
+                    tbody.deleteRow(0);
+                }
+                // Ajouter les lignes aux données
+                for (const piece in dataRows) {
+                    if (dataRows.hasOwnProperty(piece)) {
+                        const newRow = tbody.insertRow();
+                        // Ajouter la cellule pour la pièce
+                        const pieceCell = newRow.insertCell();
+                        const pieceInput = document.createElement('input');
+                        pieceInput.type = 'text';
+                        pieceInput.classList.add('editable');
+                        pieceInput.value = piece;
+                        pieceCell.appendChild(pieceInput);
+                        
+                        // Ajouter les cellules pour chaque zone avec des sélecteurs de date
+                        for (let i = 1; i <= 6; i++) {
+                            const cell = newRow.insertCell();
+                            const dateInput = document.createElement('input');
+                            dateInput.type = 'date';
+                            dateInput.classList.add('editable');
+                            dateInput.value = dataRows[piece]['zone' + i] || '';
+                            cell.appendChild(dateInput);
+                            
+                            // Colorer la cellule en fonction de la date
+                            colorCell(dateInput);
                         }
                     }
                 }
-            })
-            .catch(error => {
-                console.error('Erreur de chargement des données :', error);
-            });
-    }
+            }
+        })
+        .catch(error => {
+            console.error('Erreur de chargement des données :', error);
+        });
+}
 
-    // Fonction pour colorer les cellules en fonction de la date
-    function colorCell(input) {
-        const cellDate = new Date(input.value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);  // Réinitialise les heures de la date d'aujourd'hui
+// Fonction pour colorer les cellules en fonction de la date
+function colorCell(inputElement) {
+    const cell = inputElement.parentElement;
+    const cellDate = new Date(inputElement.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);  // Réinitialise les heures de la date d'aujourd'hui
 
-        if (!input.value) {
-            input.parentElement.classList.remove('today', 'tomorrow', 'future');
-            return;
-        }
-
+    if (inputElement.value) {
         if (cellDate.toDateString() === today.toDateString()) {
-            input.parentElement.classList.add('today');
+            cell.classList.add('today');
         } else if (cellDate.toDateString() === new Date(today.getTime() + 86400000).toDateString()) { // Demain
-            input.parentElement.classList.add('tomorrow');
+            cell.classList.add('tomorrow');
         } else if (cellDate > today) {
-            input.parentElement.classList.add('future');
+            cell.classList.add('future');
         }
+    } else {
+        // Handle empty dates if necessary (e.g., set a default color or leave it unchanged)
+        cell.classList.remove('today', 'tomorrow', 'future'); // Remove any previous color
     }
+}
 
-    // Fonction pour sauvegarder les données dans Firebase
-    function saveData() {
-        const table = document.getElementById("greasePlanTable");
-        const data = {};
-        let rowCount = 0;
 
-        // Boucle à travers les lignes du tableau
-        for (let i = 1, row; row = table.rows[i]; i++) {
-            const pieceCell = row.cells[0];
-            const piece = pieceCell.textContent.trim();
-            data[piece] = {};
+// Fonction pour sauvegarder les données dans Firebase
+function saveData() {
+    const table = document.getElementById("greasePlanTable");
+    const data = {};
+    let rowCount = 0;
+
+    // Boucle à travers les lignes du tableau
+    for (let i = 1, row; row = table.rows[i]; i++) {
+        const pieceCell = row.cells[0];
+        const pieceInput = pieceCell.querySelector('input');
+        const piece = pieceInput ? pieceInput.value.trim() : '';
+
+        if (piece) {  // Vérifier si 'piece' n'est pas vide
+            const sanitizedPiece = sanitizeKey(piece);  // Sanitize the piece name
+            data[sanitizedPiece] = {};
             
             // Boucle à travers les colonnes du tableau (en commençant par l'index 1 pour ignorer la colonne 'Pièce')
             for (let j = 1, col; col = row.cells[j]; j++) {
                 const dateInput = col.querySelector('input[type="date"]');
-                data[piece]['zone' + j] = dateInput.value.trim() || '';  // Save empty string if no date
+                data[sanitizedPiece]['zone' + j] = dateInput ? dateInput.value.trim() : '';  // Save empty string if no date
             }
             rowCount++;
         }
-
-        // Sauvegarder dans Firebase
-        database.ref('greasePlan').set({
-            data: data,
-            rowCount: rowCount
-        })
-        .then(() => {
-            alert('Données sauvegardées avec succès !');
-        })
-        .catch((error) => {
-            console.error('Erreur de sauvegarde :', error);
-        });
     }
+
+    // Sauvegarder dans Firebase
+    database.ref('greasePlan').set({
+        data: data,
+        rowCount: rowCount
+    })
+    .then(() => {
+        alert('Données sauvegardées avec succès !');
+    })
+    .catch((error) => {
+        console.error('Erreur de sauvegarde :', error);
+    });
+}
+
+// Fonction pour sanitiser les clés
+function sanitizeKey(key) {
+    // Retirer les caractères invalides et les espaces en début/fin
+    return key.replace(/[\.\#\$\[\]\/\s]/g, '_');
+}
+
+
 
     // Fonction pour ajouter une ligne
     function addRow() {
