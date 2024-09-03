@@ -6,6 +6,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plan de Graissage Mensuel</title>
     <style>
+/* Style de la page de fond */
+.loading-container {
+  position: fixed;
+ 
+  left: 0;
+  width: 100%;
+  height: 10%;
+  background-color: #e0f7fa; /* couleur de fond foncée */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Style du loader */
+.loader {
+  width: 100px;
+  height: 100px;
+  position: relative;
+}
+
+/* Style des points */
+.loader::before,
+.loader::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 5px solid transparent;
+  border-top-color: #00aaff;
+  animation: spin 1s infinite linear;
+}
+
+/* Deuxième couche de points avec un retard pour un effet de mouvement */
+.loader::after {
+  border-top-color: #0066ff;
+  animation-delay: -0.5s;
+}
+
+/* Animation de rotation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+        
         table {
             width: 100%;
             border-collapse: collapse;
@@ -49,7 +99,9 @@
 <body onload="loadData()">
 
 <h2>Plan de Graissage Mensuel</h2>
-
+<div class="loading-container">
+  <div class="loader"></div>
+</div>
 <!-- Boutons de contrôle en haut de la page -->
 <div class="control-buttons">
     <button onclick="addRow()">Ajouter une ligne</button>
@@ -142,6 +194,7 @@ function loadData() {
                 }
             }
         })
+        document.querySelector(".loading-container").style.display = "none";
         .catch(error => {
             console.error('Erreur de chargement des données :', error);
         });
