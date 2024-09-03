@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier Cliquable avec Effets 3D</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+            perspective: 1000px;
+        }
+
+        #calendar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-style: preserve-3d;
+            border: 3px solid #4a90e2; /* Ajout d'un cadre autour du calendrier */
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background-color: #fff;
+        }
+
+        #calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            width: 350px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            transition: transform 0.5s;
+        }
+
+        .header {
+            font-weight: bold;
+            background-color: #4a90e2;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .day {
+            background-color: #e3f2fd;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .day.empty {
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .day:hover {
+            transform: translateY(-10px) rotateX(15deg);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            background-color: #64b5f6;
+            color: white;
+        }
+
+        .today {
+            background-color: #ffca28;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        }
+
+        .weekend {
+            background-color: #fce4ec;
+        }
+
+        .selected {
+            background-color: #8e24aa !important;
+            color: white !important;
+            transform: translateY(-10px) rotateX(15deg);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            width: 350px;
+            margin-bottom: 20px;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-button:hover {
+            background-color: #357ABD;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <div id="calendar-container">
+        <div class="navigation">
+            <button class="nav-button" id="prev-month">Mois Précédent</button>
+            <button class="nav-button" id="next-month">Mois Suivant</button>
+        </div>
+        <div id="calendar"></div>
+    </div>
+
+    <script>
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        function generateCalendar(month, year) {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = ''; // Effacer le calendrier existant
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysOfWeek = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+
+            // Affichage des en-têtes de jours de la semaine
+            daysOfWeek.forEach(day => {
+                const headerCell = document.createElement('div');
+                headerCell.classList.add('header');
+                headerCell.textContent = day;
+                calendar.appendChild(headerCell);
+            });
+
+            // Affichage des cellules vides avant le premier jour du mois
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.classList.add('day', 'empty');
+                calendar.appendChild(emptyCell);
+            }
+
+            // Déterminer le jour actuel
+            const today = new Date();
+            const isCurrentMonth = month === today.getMonth() && year === today.getFullYear();
+
+            // Affichage des jours du mois
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.classList.add('day');
+                dayCell.textContent = day;
+
+                // Ajouter une classe spéciale pour aujourd'hui
+                if (isCurrentMonth && day === today.getDate()) {
+                    dayCell.classList.add('today');
+                }
+
+                // Ajouter une classe spéciale pour les week-ends
+                const date = new Date(year, month, day);
+                if (date.getDay() === 5 || date.getDay() === 6) {
+                    dayCell.classList.add('weekend');
+                }
+
+                // Ajout de l'événement pour changer la couleur de la cellule
+                dayCell.onclick = () => {
+                    changeCellColor(dayCell);
+                    redirectToDate(year, month, day);
+                };
+
+                calendar.appendChild(dayCell);
+            }
+        }
+
+        // Fonction pour changer la couleur de la cellule sélectionnée
+        function changeCellColor(cell) {
+            // Supprimer la classe 'selected' de toutes les cellules
+            document.querySelectorAll('.day').forEach(day => day.classList.remove('selected'));
+            // Ajouter la classe 'selected' à la cellule cliquée
+            cell.classList.add('selected');
+        }
+
+        // Fonction pour rediriger vers une URL avec la date cliquée
+        function redirectToDate(year, month, day) {
+            const selectedDate = new Date(year, month, day);
+            const dateString = selectedDate.toISOString().split('T')[0];
+            window.location.href = `https://tibsama.github.io/agelid/task.html#date=${dateString}`;
+        }
+
+        // Fonction pour passer au mois précédent
+        document.getElementById('prev-month').onclick = () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar(currentMonth, currentYear);
+        };
+
+        // Fonction pour passer au mois suivant
+        document.getElementById('next-month').onclick = () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar(currentMonth, currentYear);
+        };
+
+        // Génération initiale du calendrier
+        generateCalendar(currentMonth, currentYear);
+    </script>
+</body>
+</html>
