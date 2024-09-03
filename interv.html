@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+        <style>
+            body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    min-height: 100vh;
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto; /* Center horizontally */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+.input-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.input-container input[type="text"] {
+    width: 20%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin: 0 5px;
+}
+
+.input-container button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.input-container button:hover {
+    background-color: #218838;
+}
+
+.columns {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.column {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.column input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.remove-button {
+    background-color: #dc3545;
+    border: none;
+    padding: 5px 10px;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.remove-button:hover {
+    background-color: #c82333;
+}
+
+.file-input {
+    display: none;
+}
+
+.carousel {
+    perspective: 1000px;
+    position: relative;
+    width: 100%;
+    max-width: 300px; /* Adjust max-width for better scaling */
+    height: 200px; /* Adjust height for mobile */
+}
+
+.carousel-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg);
+    transition: transform 1s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.carousel-item {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.controls {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.button-container button {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-container button:hover {
+    background-color: #0056b3;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    margin: 10px auto; /* Center input fields horizontally */
+}
+
+.input-wrapper + .input-wrapper {
+    margin-top: 15px; /* Space between input fields */
+}
+
+.animated-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+.animated-input:focus,
+.animated-input:not(:placeholder-shown) {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+.floating-label {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    font-size: 14px;
+    color: #999;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+}
+
+.animated-input:focus + .floating-label,
+.animated-input:not(:placeholder-shown) + .floating-label {
+    top: -10px;
+    left: 8px;
+    font-size: 12px;
+    color: #007bff;
+}
+
+.order-form {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.order-form input, .order-form button {
+    padding: 10px;
+    margin: 10px auto;
+    font-size: 14px;
+    border: 2px solid #007bff;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block; /* Ensure inputs and buttons are block-level elements */
+}
+
+.order-form button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+.order-form button:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 600px) {
+    /* Adjustments for mobile */
+    body {
+        padding: 10px;
+    }
+
+    .carousel {
+        height: 180px;
+    }
+
+    .button-container button {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .animated-input {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .floating-label {
+        font-size: 12px;
+    }
+
+    .order-form input, .order-form button {
+        font-size: 12px;
+        padding: 8px;
+    }
+ .spinner-container {
+            margin-left: 20px 0;
+        }
+        .spinner-label {
+            margin-left: 10px;
+        }
+}
+            </style>
+</head>
+<body>
+    <div class="container">
+        
+<div class="spinner-container">
+    <label for="spinner1" class="spinner-label">Zone:</label>
+    <select id="spinner1" onchange="updateSpinner2()">
+        <option value="1">PMP</option>
+            <option value="2">presse</option>
+            <option value="3">ligne d'émaillage</option>
+            <option value="4">Kerajet</option>
+            <option value="5">Four</option>
+            <option value="6">triage</option>
+    </select>
+</div>
+
+<div class="spinner-container">
+    <label for="spinner2" class="spinner-label">Schema:</label>
+    <select id="spinner2" onchange="redirectToLink()">
+        <!-- Options will be dynamically populated based on spinner1 -->
+    </select>
+</div>
+        <button onclick="downloadAndOpenPDF()">Drive V1000</button>
+
+        <h1>Liste des tâches</h1>
+        <div class="input-container">
+
+           <div class="order-form">
+    <!--    <div class="input-wrapper">
+            <input type="tel" id="taskInput1" class="animated-input" placeholder=" " required>
+            <label for="customer-name" class="floating-label">numero de ligne</label>
+        </div>
+        <div class="input-wrapper">
+            <input type="email" id="taskInput2" class="animated-input" placeholder=" " required>
+            <label for="customer-email" class="floating-label">designation</label>
+        </div>
+        <div class="input-wrapper">
+            <input type="tel" id="taskInput3" class="animated-input" placeholder=" " required>
+            <label for="customer-address" class="floating-label">urgence</label>
+        </div>
+        <div class="input-wrapper">
+            <input type="date" id="taskInput4" class="animated-input" placeholder=" " required>
+            <label for="customer-phone" class="floating-label">date</label>
+        </div>
+    </div>         -->
+
+            <button onclick="addTask()">Ajouter fiche d intervention</button>
+         <!--   <input type="file" id="fileInput" class="file-input" accept=".json" onchange="loadTasks(event)"> -->
+        </div>
+        <div id="tasksList" class="columns"></div>
+    </div>
+
+
+    <script>
+        const tasks = [];
+        const apiKey = "$2a$10$Ro4u7k0o7xdL5C3Guu/RmOH2p0kVyZTtdQfjXe0gqUk.HEKxtdLxi";
+        const binId = "66c26fb3e41b4d34e42223dc";
+
+     loadTasksFromCloud();
+
+
+        // Mapping of spinner1 options to spinner2 options
+const spinner2Options = {
+    1: [
+        { text: "Sub Option 1-1", link: "https://example.com/plan1/sub1" },
+        { text: "Sub Option 1-2", link: "https://example.com/plan1/sub2" },
+        { text: "Sub Option 1-3", link: "https://example.com/plan1/sub3" }
+    ],
+    2: [
+        { text: "Sub Option 2-1", link: "https://example.com/plan2/sub1" },
+        { text: "Sub Option 2-2", link: "https://example.com/plan2/sub2" },
+        { text: "Sub Option 2-3", link: "https://example.com/plan2/sub3" }
+    ],
+    3: [
+        { text: "Sub Option 3-1", link: "https://example.com/plan3/sub1" },
+        { text: "Sub Option 3-2", link: "https://example.com/plan3/sub2" },
+        { text: "Sub Option 3-3", link: "https://example.com/plan3/sub3" }
+    ],
+    4: [
+        { text: "Sub Option 4-1", link: "https://example.com/plan4/sub1" },
+        { text: "Sub Option 4-2", link: "https://example.com/plan4/sub2" },
+        { text: "Sub Option 4-3", link: "https://example.com/plan4/sub3" }
+    ],
+    5: [
+        { text: "Sub Option 5-1", link: "https://tibsama.github.io/agelid/" },
+        { text: "Sub Option 5-2", link: "https://tibsama.github.io/agelid/" },
+        { text: "Sub Option 5-3", link: "https://tibsama.github.io/agelid/" }
+    ],
+    6: [
+        { text: "Schema", link:""},
+        { text: "Schema elec new check", link: "https://tibsama.github.io/agelid/SCHEMAS NEW TCHECK.pdf" },
+        { text: "Sub Option 4-2", link: "https://tibsama.github.io/agelid/" },
+        { text: "Sub Option 4-3", link: "https://tibsama.github.io/agelid/" }
+    ]
+
+    
+};
+
+// Update spinner2 options based on spinner1 selection
+function updateSpinner2() {
+    const spinner1 = document.getElementById("spinner1");
+    const spinner2 = document.getElementById("spinner2");
+    
+    const selectedValue = spinner1.value;
+    const options = spinner2Options[selectedValue] || [];
+
+    // Clear spinner2 options
+    spinner2.innerHTML = "";
+
+    // Populate spinner2 with new options
+    options.forEach(option => {
+        const optionElement = document.createElement("option");
+        optionElement.value = option.link;
+        optionElement.textContent = option.text;
+        spinner2.appendChild(optionElement);
+    });
+}
+
+// Redirect to a link based on spinner2 selection
+function redirectToLink() {
+    const spinner2 = document.getElementById("spinner2");
+    const selectedLink = spinner2.value;
+    
+    if (selectedLink) {
+        window.location.href = selectedLink;
+    }
+}
+        
+
+        function addTask() {
+            const inputs = [
+                document.getElementById("taskInput1").value,
+                document.getElementById("taskInput2").value,
+                document.getElementById("taskInput3").value,
+                document.getElementById("taskInput4").value
+            ];
+
+            if (inputs.every(input => input.trim() === "")) {
+                alert("Please enter a task in all fields.");
+                return;
+            }
+
+            const task = {
+                text: inputs,
+                checked: false, // Initial checkbox state
+                category: selectedVariable,
+                id: new Date().getTime()
+            };
+            tasks.push(task);
+            renderTasks();
+            inputs.forEach((_, index) => {
+                document.getElementById("taskInput" + (index + 1)).value = "";
+            });
+
+             saveTasksToCloud();
+        }
+
+        function renderTasks() {
+            const tasksList = document.getElementById("tasksList");
+            tasksList.innerHTML = "";
+
+               tasks.forEach(task => {
+//tasks.filter(task => task.category === selectedVariable).forEach(task => {
+                const column = document.createElement("div");
+                column.className = "column";
+                
+                task.text.forEach(text => {
+                    const span = document.createElement("span");
+                    span.textContent = text;
+                    column.appendChild(span);
+                });
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = task.checked;
+                checkbox.onchange = function() {
+                    task.checked = checkbox.checked; // Update task's checked state
+
+                saveTasksToCloud();
+                    
+                };
+                column.appendChild(checkbox);
+
+                const removeButton = document.createElement("button");
+                removeButton.textContent = "x";
+                removeButton.className = "remove-button";
+                removeButton.onclick = function() {
+                    removeTask(task.id);
+                };
+                column.appendChild(removeButton);
+
+                tasksList.appendChild(column);
+            });
+        }
+
+        function removeTask(taskId) {
+            const index = tasks.findIndex(task => task.id === taskId);
+            if (index > -1) {
+                tasks.splice(index, 1);
+            }
+            renderTasks();
+            saveTasksToCloud();
+        }
+
+
+    function saveTasksToCloud() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("PUT", `https://api.jsonbin.io/v3/b/${binId}`, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("X-Master-Key", apiKey);
+            xhr.onreadystatechange = function () {
+             //   if (xhr.readyState === 4 && xhr.status === 200) {
+               //     alert("Tasks saved to cloud!");
+              //  }
+            };
+            xhr.send(JSON.stringify({ tasks }));
+        }
+
+        function loadTasksFromCloud() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `https://api.jsonbin.io/v3/b/${binId}/latest`, true);
+            xhr.setRequestHeader("X-Master-Key", apiKey);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    tasks.length = 0;
+                    tasks.push(...response.record.tasks);
+                    renderTasks();
+                }
+            };
+            xhr.send();
+        }
+
+          function downloadAndOpenPDF() {
+            const pdfUrl = "https://tibsama.github.io/agelid/Variateur de vitesse YASKAWA.pdf"; // Replace with your PDF URL
+
+            // Create an anchor element and simulate a click to download the PDF
+            const a = document.createElement("a");
+            a.href = pdfUrl;
+            a.download = "filename.pdf"; // Optional: specify the download filename
+            a.target = "_blank"; // Open the PDF in a new tab
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            // Alternatively, you can directly open the PDF in a new tab without download
+            window.open(pdfUrl, '_blank');
+                               }
+
+
+    </script>
+</body>
+</html>
