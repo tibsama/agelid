@@ -195,7 +195,7 @@ function loadData() {
                 }
             }
         })
-        document.querySelector(".loading-container").style.display = "none";
+        
         .catch(error => {
             console.error('Erreur de chargement des données :', error);
         });
@@ -220,6 +220,7 @@ function colorCell(inputElement) {
         // Handle empty dates if necessary (e.g., set a default color or leave it unchanged)
         cell.classList.remove('today', 'tomorrow', 'future'); // Remove any previous color
     }
+    document.querySelector(".loading-container").style.display = "none";
 }
 
 
