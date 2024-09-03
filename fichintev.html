@@ -1,1 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche d'Intervention</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #80deea);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 95%;
+            max-width: 600px;
+            margin: 20px;
+            transform: perspective(1000px);
+            transition: transform 0.3s;
+        }
+
+        .form-container:hover {
+            transform: perspective(1000px) rotateY(5deg);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #00796b;
+            font-size: 24px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #00796b;
+        }
+
+        .form-group select, .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #00796b;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            transition: box-shadow 0.3s;
+        }
+
+        .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group input[type="time"] {
+            width: 48%;
+            display: inline-block;
+            margin-right: 4%;
+        }
+
+        .form-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .form-group .photo-upload {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-group .photo-upload input {
+            width: auto;
+        }
+
+        .form-group button {
+            background-color: #00796b;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .form-group button:hover {
+            background-color: #004d40;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 600px) {
+            .form-group input[type="time"] {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Fiche d'Intervention</h1>
+        <form id="intervention-form">
+            <div class="form-group">
+                <label for="zone">Zone</label>
+                <select id="zone" name="zone">
+                    <option value="zone1">Zone 1</option>
+                    <option value="zone2">Zone 2</option>
+                    <option value="zone3">Zone 3</option>
+                    <!-- Ajoutez d'autres zones ici -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="equipe">Équipe</label>
+                <select id="equipe" name="equipe">
+                    <option value="a">Équipe A</option>
+                    <option value="b">Équipe B</option>
+                    <option value="c">Équipe C</option>
+                    <option value="d">Équipe D</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ligne">Numéro de ligne</label>
+                <select id="ligne" name="ligne">
+                    <option value="1">Ligne 1</option>
+                    <option value="2">Ligne 2</option>
+                    <option value="3">Ligne 3</option>
+                    <option value="4">Ligne 4</option>
+                    <option value="5">Ligne 5</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="heure-debut">Heure de début</label>
+                <input type="time" id="heure-debut" name="heure-debut">
+            </div>
+
+            <div class="form-group">
+                <label for="heure-fin">Heure de fin</label>
+                <input type="time" id="heure-fin" name="heure-fin">
+            </div>
+
+            <div class="form-group">
+                <label for="arret-production">Arrêt de production</label>
+                <input type="checkbox" id="arret-production" name="arret-production">
+                <label for="arret-production">Oui</label>
+            </div>
+
+            <div class="form-group">
+                <label for="nom-intervenant">Nom de l'intervenant</label>
+                <input type="text" id="nom-intervenant" name="nom-intervenant">
+            </div>
+
+            <div class="form-group">
+                <label for="designation">Désignation</label>
+                <input type="text" id="designation" name="designation">
+            </div>
+
+            <div class="form-group">
+                <label for="observation">Observation</label>
+                <textarea id="observation" name="observation" rows="4"></textarea>
+            </div>
+
+            <div class="form-group photo-upload">
+                <label for="photo">Joindre une photo</label>
+                <input type="file" id="photo" name="photo" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <button type="submit">Soumettre</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
