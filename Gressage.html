@@ -188,7 +188,7 @@ function loadData() {
                         pieceCell.appendChild(pieceInput);
                         
                         // Ajouter les cellules pour chaque zone avec des sélecteurs de date
-                        for (let i = 1; i <= 6; i++) {
+                        for (let i = 1; i <= 7; i++) {
                             const cell = newRow.insertCell();
                             const dateInput = document.createElement('input');
                             dateInput.type = 'date';
@@ -293,7 +293,7 @@ function sanitizeKey(key) {
         pieceCell.appendChild(pieceInput);
 
         // Ajouter des cellules pour chaque zone avec des sélecteurs de date
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 7; i++) {
             const cell = newRow.insertCell();
             const dateInput = document.createElement('input');
             dateInput.type = 'date';
