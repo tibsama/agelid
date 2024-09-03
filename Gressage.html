@@ -5,15 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plan de Graissage Mensuel</title>
-    <style>
-html, body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* Prevent scrolling if desired */
-}
-        
+    <style>  
         
 /* Style de la page de fond */
 .loading-container {
@@ -162,6 +154,10 @@ html, body {
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
+    
+    document.body.style.zoom = "100%";
+
+    
 // Fonction pour charger les données depuis Firebase
 function loadData() {
     const table = document.getElementById("greasePlanTable");
