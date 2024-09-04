@@ -244,9 +244,10 @@
    alert("0");
             const url = window.location.href; // Récupère l'URL complète
             const keyIndex = url.indexOf("key="); // Trouve l'index de "date=" dans l'URL
+            
             if (keyIndex !== -1) {
                 alert("1");
-                return url.substring(keyIndex + 4); // Extrait la date après "date="
+               const keys= url.substring(keyIndex + 4); // Extrait la date après "date="
                 document.getElementById('submit').style.display = 'none';
                 loadkey();
             }
