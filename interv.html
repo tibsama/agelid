@@ -5,34 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <style>
-        /* Styles de la page */
+        /* Vos styles CSS ici */
     </style>
 </head>
 <body>
     <h1>Fiches d'intervention</h1>
 
     <div class="input-container">
-        <!-- Champ pour saisir la date -->
-        <input type="date" id="dateInput" placeholder="Sélectionnez une date">
-
         <!-- Bouton pour envoyer la date vers la nouvelle URL -->
-        <button id="submitButton">Ajouter fiche d'intervention</button>
+        <button id="redirectButton">Ajouter fiche d'intervention</button>
     </div>
 
     <script>
-        document.getElementById('submitButton').addEventListener('click', function() {
-            // Récupérer la date sélectionnée dans le champ de saisie
-            const date = document.getElementById('dateInput').value;
+        // Fonction pour récupérer la date à partir de l'URL de la page
+        function getDateFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('date');
+        }
 
-            // Vérifier si une date a été saisie
+        // Ajout d'un écouteur d'événement au bouton
+        document.getElementById('redirectButton').addEventListener('click', function() {
+            // Récupération de la date à partir de l'URL actuelle
+            const date = getDateFromUrl();
+
+            // Vérification si la date est présente dans l'URL
             if (date) {
-                // Construire l'URL avec la date sélectionnée
+                // Construction de l'URL avec la date récupérée
                 const url = `https://tibsama.github.io/agelid/fichinterv.html#date=${date}`;
 
-                // Rediriger vers l'URL construite
+                // Redirection vers l'URL construite
                 window.location.href = url;
             } else {
-                alert("Veuillez sélectionner une date.");
+                alert("Aucune date n'a été trouvée dans l'URL.");
             }
         });
     </script>
