@@ -206,7 +206,7 @@
             </div>
 
             <div class="form-group">
-                <label for="check">Approbation du chef de zones</label>
+                <label for="check">Approbation du chef de zone</label>
                 <input type="checkbox" id="check" name="check">
             </div>
 
@@ -242,14 +242,20 @@
         const database = firebase.database();
         const storage = firebase.storage();
 
+            const url = window.location.href; // Récupère l'URL complète
+            const keyIndex = url.indexOf("key="); // Trouve l'index de "date=" dans l'URL
+            if (keyIndex !== -1) {
+                return url.substring(keyIndex + 4); // Extrait la date après "date="
+                document.getElementById('submit').style.display = 'none';
+                loadkey();
+            }
+
         // Function to get date from URL
         function getDateFromUrl() {
             const url = window.location.href; // Récupère l'URL complète
             const dateIndex = url.indexOf("date="); // Trouve l'index de "date=" dans l'URL
-            alert("0");
             if (dateIndex !== -1) {
                 return url.substring(dateIndex + 5); // Extrait la date après "date="
-         alert("1");
             }
             return null; // Retourne null si "date=" n'est pas trouvé
         }
@@ -273,18 +279,9 @@
             const photoFile = document.getElementById('photo').files[0];
             const date = getDateFromUrl(); // Get date from URL
 
-            if (!date) {
-                const url = window.location.href; // Récupère l'URL complète
-            const keyIndex = url.indexOf("key="); // Trouve l'index de "date=" dans l'URL
-            alert("2");
-            if (keyIndex !== -1) {
-                return url.substring(keyIndex + 4); // Extrait la date après "date="
-                document.getElementById('submit').style.display = 'none';
-                alert("3");
-                loadkey();
-            }
-            return null; 
-               
+           if (!date) {
+                alert('Date not found in URL');
+                return;
             }
 
             let interventionData = {
@@ -354,7 +351,6 @@
         });
 
       function loadkey() {
-          alert("4");
     // Get the key from the URL
     const url = window.location.href;
     const keyIndex = url.indexOf("key=");
