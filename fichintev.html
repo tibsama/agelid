@@ -116,6 +116,7 @@
             }
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
 </head>
 <body>
     <div class="form-container">
@@ -200,6 +201,11 @@
                 <textarea id="observation" name="observation" rows="4"></textarea>
             </div>
 
+            <div class="form-group">
+                <label for="check">approbation du chef de zone</label>
+                <input type="checkbox" id="check" name="check">
+            </div>
+
             <div class="form-group photo-upload">
                 <label for="photo">Joindre une photo</label>
                 <input type="file" id="photo" name="photo" accept="image/*">
@@ -216,6 +222,21 @@
     </div>
 
     <script>
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
+            authDomain: "herher-d121a.firebaseapp.com",
+            databaseURL: "https://herher-d121a.firebaseio.com",
+            projectId: "herher-d121a",
+            storageBucket: "herher-d121a.appspot.com",
+            messagingSenderId: "626438737297",
+            appId: "1:626438737297:web:bf6524275291ec695fde30"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
         document.getElementById('photo').addEventListener('change', function(event) {
             const file = event.target.files[0];
             const preview = document.getElementById('photo-preview');
