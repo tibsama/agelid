@@ -3,28 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiche d'Intervention</title>
+    <title>Task Manager</title>
+    <style>
+        /* Styles de la page */
+    </style>
 </head>
 <body>
-    <h1>Fiche d'Intervention</h1>
-    <p>Date sélectionnée : <span id="selectedDate"></span></p>
+    <h1>Fiches d'intervention</h1>
+
+    <div class="input-container">
+        <!-- Champ pour saisir la date -->
+        <input type="date" id="dateInput" placeholder="Sélectionnez une date">
+
+        <!-- Bouton pour envoyer la date vers la nouvelle URL -->
+        <button id="submitButton">Ajouter fiche d'intervention</button>
+    </div>
 
     <script>
-        // Fonction pour récupérer les paramètres de l'URL
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
+        document.getElementById('submitButton').addEventListener('click', function() {
+            // Récupérer la date sélectionnée dans le champ de saisie
+            const date = document.getElementById('dateInput').value;
 
-        // Récupérer la date depuis l'URL
-        const date = getQueryParam('date');
+            // Vérifier si une date a été saisie
+            if (date) {
+                // Construire l'URL avec la date sélectionnée
+                const url = `https://tibsama.github.io/agelid/fichinterv.html#date=${date}`;
 
-        // Afficher la date sur la page
-        if (date) {
-            document.getElementById('selectedDate').textContent = date;
-        } else {
-            document.getElementById('selectedDate').textContent = "Aucune date sélectionnée.";
-        }
+                // Rediriger vers l'URL construite
+                window.location.href = url;
+            } else {
+                alert("Veuillez sélectionner une date.");
+            }
+        });
     </script>
 </body>
 </html>
