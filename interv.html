@@ -17,7 +17,7 @@
     </div>
 
     <script>
-        // Fonction pour récupérer la date à partir de l'URL de la page
+        // Fonction pour récupérer la date à partir de l'URL après "date="
         function getDateFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('date');
