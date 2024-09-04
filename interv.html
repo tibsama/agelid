@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <style>
+        /* Vos styles CSS ici */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -25,26 +26,6 @@
         <button id="redirectButton">Ajouter fiche d'intervention</button>
     </div>
 
-    <h2>Filtrer les interventions</h2>
-    <div class="filter-container">
-        <label for="zone">Zone:</label>
-        <input type="text" id="zone">
-        
-        <label for="equipe">Équipe:</label>
-        <input type="text" id="equipe">
-        
-        <label for="ligne">Ligne:</label>
-        <input type="text" id="ligne">
-        
-        <label for="equipment">Équipement:</label>
-        <input type="text" id="Equipment">
-        
-        <label for="nom-intervenant">Nom de l'intervenant:</label>
-        <input type="text" id="nom-intervenant">
-        
-        <button id="filterButton">Filtrer</button>
-    </div>
-
     <h2>Résultats</h2>
     <table id="resultsTable">
         <thead>
@@ -62,7 +43,8 @@
         </tbody>
     </table>
 
-<script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
     <script>
         // Configuration de Firebase
         const firebaseConfig = {
@@ -88,13 +70,8 @@
             return null;
         }
 
-        // Fonction pour filtrer les interventions et afficher les résultats
-        function filterInterventions() {
-            const zone = document.getElementById('zone').value;
-            const equipe = document.getElementById('equipe').value;
-            const ligne = document.getElementById('ligne').value;
-            const equipment = document.getElementById('Equipment').value;
-            const nomIntervenant = document.getElementById('nom-intervenant').value;
+        // Fonction pour charger les interventions pour la date spécifiée et afficher les résultats
+        function loadInterventions() {
             const date = getDateFromUrl();
 
             if (!date) {
@@ -109,25 +86,21 @@
                 
                 snapshot.forEach(childSnapshot => {
                     const data = childSnapshot.val();
-                    if ((zone === '' || data.zone === zone) &&
-                        (equipe === '' || data.equipe === equipe) &&
-                        (ligne === '' || data.ligne === ligne) &&
-                        (equipment === '' || data.equipment === equipment) &&
-                        (nomIntervenant === '' || data.nomIntervenant === nomIntervenant)) {
-                        
-                        const newRow = resultsTable.insertRow();
-                        newRow.insertCell().textContent = data.zone || '';
-                        newRow.insertCell().textContent = data.equipe || '';
-                        newRow.insertCell().textContent = data.ligne || '';
-                        newRow.insertCell().textContent = data.equipment || '';
-                        newRow.insertCell().textContent = data.nomIntervenant || '';
-                        newRow.insertCell().textContent = data.date || '';
-                    }
+                    const newRow = resultsTable.insertRow();
+                    newRow.insertCell().textContent = data.zone || '';
+                    newRow.insertCell().textContent = data.equipe || '';
+                    newRow.insertCell().textContent = data.ligne || '';
+                    newRow.insertCell().textContent = data.equipment || '';
+                    newRow.insertCell().textContent = data.nomIntervenant || '';
+                    newRow.insertCell().textContent = data.date || '';
                 });
             });
         }
 
-        // Ajout des écouteurs d'événements
+        // Charger les interventions lorsque la page est chargée
+        window.onload = loadInterventions;
+
+        // Ajout d'un écouteur d'événement au bouton
         document.getElementById('redirectButton').addEventListener('click', function() {
             const date = getDateFromUrl();
             if (date) {
@@ -137,8 +110,6 @@
                 alert("Aucune date n'a été trouvée dans l'URL.");
             }
         });
-
-        document.getElementById('filterButton').addEventListener('click', filterInterventions);
     </script>
 </body>
 </html>
