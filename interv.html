@@ -5,45 +5,140 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <style>
-        /* Vos styles CSS ici */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
     <h1>Fiches d'intervention</h1>
 
     <div class="input-container">
-        <!-- Bouton pour envoyer la date vers la nouvelle URL -->
         <button id="redirectButton">Ajouter fiche d'intervention</button>
     </div>
 
+    <h2>Filtrer les interventions</h2>
+    <div class="filter-container">
+        <label for="zone">Zone:</label>
+        <input type="text" id="zone">
+        
+        <label for="equipe">Équipe:</label>
+        <input type="text" id="equipe">
+        
+        <label for="ligne">Ligne:</label>
+        <input type="text" id="ligne">
+        
+        <label for="equipment">Équipement:</label>
+        <input type="text" id="Equipment">
+        
+        <label for="nom-intervenant">Nom de l'intervenant:</label>
+        <input type="text" id="nom-intervenant">
+        
+        <button id="filterButton">Filtrer</button>
+    </div>
+
+    <h2>Résultats</h2>
+    <table id="resultsTable">
+        <thead>
+            <tr>
+                <th>Zone</th>
+                <th>Équipe</th>
+                <th>Ligne</th>
+                <th>Équipement</th>
+                <th>Nom de l'intervenant</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Les lignes de tableau seront ajoutées ici dynamiquement -->
+        </tbody>
+    </table>
+
+<script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
     <script>
+        // Configuration de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
+            authDomain: "herher-d121a.firebaseapp.com",
+            databaseURL: "https://herher-d121a.firebaseio.com",
+            projectId: "herher-d121a",
+            storageBucket: "herher-d121a.appspot.com",
+            messagingSenderId: "626438737297",
+            appId: "1:626438737297:web:bf6524275291ec695fde30"
+        };
+        // Initialisation de Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         // Fonction pour récupérer la date à partir de l'URL en utilisant l'index après "date="
         function getDateFromUrl() {
-            const url = window.location.href; // Récupère l'URL complète
-            const dateIndex = url.indexOf("date="); // Trouve l'index de "date=" dans l'URL
-            
+            const url = window.location.href;
+            const dateIndex = url.indexOf("date=");
             if (dateIndex !== -1) {
-                return url.substring(dateIndex + 5); // Extrait la date après "date="
+                return url.substring(dateIndex + 5);
             }
-            return null; // Retourne null si "date=" n'est pas trouvé
+            return null;
         }
 
-        // Ajout d'un écouteur d'événement au bouton
-        document.getElementById('redirectButton').addEventListener('click', function() {
-            // Récupération de la date à partir de l'URL actuelle
+        // Fonction pour filtrer les interventions et afficher les résultats
+        function filterInterventions() {
+            const zone = document.getElementById('zone').value;
+            const equipe = document.getElementById('equipe').value;
+            const ligne = document.getElementById('ligne').value;
+            const equipment = document.getElementById('Equipment').value;
+            const nomIntervenant = document.getElementById('nom-intervenant').value;
             const date = getDateFromUrl();
 
-            // Vérification si la date est présente dans l'URL
-            if (date) {
-                // Construction de l'URL avec la date récupérée
-                const url = `https://tibsama.github.io/agelid/fichintev.html#date=${date}`;
+            if (!date) {
+                alert("Aucune date n'a été trouvée dans l'URL.");
+                return;
+            }
 
-                // Redirection vers l'URL construite
+            const ref = database.ref('interventions');
+            ref.orderByChild('date').equalTo(date).once('value', snapshot => {
+                const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+                resultsTable.innerHTML = ''; // Efface les résultats précédents
+                
+                snapshot.forEach(childSnapshot => {
+                    const data = childSnapshot.val();
+                    if ((zone === '' || data.zone === zone) &&
+                        (equipe === '' || data.equipe === equipe) &&
+                        (ligne === '' || data.ligne === ligne) &&
+                        (equipment === '' || data.equipment === equipment) &&
+                        (nomIntervenant === '' || data.nomIntervenant === nomIntervenant)) {
+                        
+                        const newRow = resultsTable.insertRow();
+                        newRow.insertCell().textContent = data.zone || '';
+                        newRow.insertCell().textContent = data.equipe || '';
+                        newRow.insertCell().textContent = data.ligne || '';
+                        newRow.insertCell().textContent = data.equipment || '';
+                        newRow.insertCell().textContent = data.nomIntervenant || '';
+                        newRow.insertCell().textContent = data.date || '';
+                    }
+                });
+            });
+        }
+
+        // Ajout des écouteurs d'événements
+        document.getElementById('redirectButton').addEventListener('click', function() {
+            const date = getDateFromUrl();
+            if (date) {
+                const url = `https://tibsama.github.io/agelid/fichintev.html#date=${date}`;
                 window.location.href = url;
             } else {
                 alert("Aucune date n'a été trouvée dans l'URL.");
             }
         });
+
+        document.getElementById('filterButton').addEventListener('click', filterInterventions);
     </script>
 </body>
 </html>
