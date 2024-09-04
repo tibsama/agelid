@@ -122,6 +122,13 @@
             transform: translateY(-3px);
         }
 
+        #month-year {
+            font-size: 16px; /* Ajuster la taille de la police */
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4a90e2; /* Couleur pour correspondre au thème */
+        }
+
         @media (max-width: 400px) {
             .day {
                 padding: 6px;
@@ -149,6 +156,7 @@
             <button class="nav-button" id="prev-month">Mois Précédent</button>
             <button class="nav-button" id="next-month">Mois Suivant</button>
         </div>
+        <div id="month-year"></div> <!-- Élément pour afficher le mois et l'année -->
         <div id="calendar"></div>
     </div>
 
@@ -158,7 +166,16 @@
 
         function generateCalendar(month, year) {
             const calendar = document.getElementById('calendar');
+            const monthYear = document.getElementById('month-year');
             calendar.innerHTML = ''; // Effacer le calendrier existant
+
+            // Déterminer le nom du mois
+            const monthNames = [
+                'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+            ];
+            monthYear.textContent = `${monthNames[month]} ${year}`; // Afficher le mois et l'année
+
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const firstDayOfMonth = new Date(year, month, 1).getDay();
             const daysOfWeek = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
@@ -219,7 +236,7 @@
 
         // Fonction pour rediriger vers une URL avec la date cliquée
         function redirectToDate(year, month, day) {
-            const selectedDate = new Date(year, month, day+1);
+            const selectedDate = new Date(year, month, day - 1); // Décaler la date de -1 jour
             const dateString = selectedDate.toISOString().split('T')[0];
             window.location.href = `https://tibsama.github.io/agelid/interv.html#date=${dateString}`;
         }
