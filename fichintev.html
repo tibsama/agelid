@@ -124,9 +124,12 @@
             <div class="form-group">
                 <label for="zone">Zone</label>
                 <select id="zone" name="zone">
-                    <option value="zone1">Zone 1</option>
-                    <option value="zone2">Zone 2</option>
-                    <option value="zone3">Zone 3</option>
+                    <option value="zone1">PMP</option>
+                    <option value="zone2">Presse</option>
+                    <option value="zone3">Ligne d'émaillage</option>
+                    <option value="zone4">Impression digitale</option>
+                    <option value="zone5">Four</option>
+                    <option value="zone6">Triage</option>
                 </select>
             </div>
 
@@ -152,6 +155,11 @@
             </div>
 
             <div class="form-group">
+                <label for="Equipment">Équipements</label>
+                <input type="text" id="Equipment" name="Equipment">
+            </div>
+
+            <div class="form-group">
                 <label for="heure-debut">Heure de début</label>
                 <input type="time" id="heure-debut" name="heure-debut">
             </div>
@@ -162,14 +170,24 @@
             </div>
 
             <div class="form-group">
-                <label for="arret-production">Arrêt de production</label>
+                <label for="arret-production">Arrêt de production(vide four)</label>
                 <input type="checkbox" id="arret-production" name="arret-production">
                 <label for="arret-production">Oui</label>
             </div>
 
             <div class="form-group">
+                <label for="vide">début vide</label>
+                <input type="time" id="vide" name="vide">
+            </div>
+
+            <div class="form-group">
+                <label for="reprise">reprise</label>
+                <input type="time" id="reprise" name="reprise">
+            </div>
+
+            <div class="form-group">
                 <label for="nom-intervenant">Nom de l'intervenant</label>
-                <input type="text" id="nom-intervenant" name="nom-intervenant">
+                <textarea id="nom-intervenant" name="nom-intervenant" rows="4"></textarea>
             </div>
 
             <div class="form-group">
