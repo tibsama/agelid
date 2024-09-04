@@ -172,7 +172,7 @@
             });
 
             // Affichage des cellules vides avant le premier jour du mois
-            for (let i = 1; i < firstDayOfMonth; i++) {
+            for (let i = 0; i < firstDayOfMonth; i++) {
                 const emptyCell = document.createElement('div');
                 emptyCell.classList.add('day', 'empty');
                 calendar.appendChild(emptyCell);
@@ -219,7 +219,7 @@
 
         // Fonction pour rediriger vers une URL avec la date cliquée
         function redirectToDate(year, month, day) {
-            const selectedDate = new Date(year, month, day);
+            const selectedDate = new Date(year, month, day+1);
             const dateString = selectedDate.toISOString().split('T')[0];
             window.location.href = `https://tibsama.github.io/agelid/interv.html#date=${dateString}`;
         }
