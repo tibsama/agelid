@@ -242,106 +242,113 @@
         const database = firebase.database();
         const storage = firebase.storage();
 
-        // Function to get date from URL
-        function getDateFromUrl() {
+        // Function to get a parameter from the URL
+        function getParameterFromUrl(param) {
             const url = window.location.href; // Récupère l'URL complète
-            const dateIndex = url.indexOf("date="); // Trouve l'index de "date=" dans l'URL
+            const paramIndex = url.indexOf(param + "="); // Trouve l'index de "param=" dans l'URL
             
-            if (dateIndex !== -1) {
-                return url.substring(dateIndex + 5); // Extrait la date après "date="
+            if (paramIndex !== -1) {
+                return url.substring(paramIndex + param.length + 1); // Extrait la valeur après "param="
             }
-            return null; // Retourne null si "date=" n'est pas trouvé
+            return null; // Retourne null si "param=" n'est pas trouvé
         }
 
-        document.getElementById('intervention-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const zone = document.getElementById('zone').value;
-            const equipe = document.getElementById('equipe').value;
-            const ligne = document.getElementById('ligne').value;
-            const equipment = document.getElementById('Equipment').value;
-            const heureDebut = document.getElementById('heure-debut').value;
-            const heureFin = document.getElementById('heure-fin').value;
-            const arretProduction = document.getElementById('arret-production').checked;
-            const vide = document.getElementById('vide').value;
-            const reprise = document.getElementById('reprise').value;
-            const nomIntervenant = document.getElementById('nom-intervenant').value;
-            const designation = document.getElementById('designation').value;
-            const observation = document.getElementById('observation').value;
-            const approbationChef = document.getElementById('check').checked;
-            const photoFile = document.getElementById('photo').files[0];
-            const date = getDateFromUrl(); // Get date from URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const date = getParameterFromUrl('date'); // Get the date parameter from the URL
+            const key = getParameterFromUrl('key'); // Get the key parameter from the URL
 
             if (!date) {
-                alert('Date not found in URL');
+                console.log('Date not found in URL');
                 return;
             }
 
-            let interventionData = {
-                zone: zone,
-                equipe: equipe,
-                ligne: ligne,
-                equipment: equipment,
-                heureDebut: heureDebut,
-                heureFin: heureFin,
-                arretProduction: arretProduction,
-                vide: vide,
-                reprise: reprise,
-                nomIntervenant: nomIntervenant,
-                designation: designation,
-                observation: observation,
-                approbationChef: approbationChef,
-                date: date // Add date to the data
+            // If 'key' exists and its index in the URL is not 0
+            if (key && window.location.href.indexOf("key=") !== 0) {
+                document.querySelector('button[type="submit"]').style.display = 'none'; // Hide the submit button
+                loadInterventionData(key); // Load the data using the key
+            }
+
+            function loadInterventionData(key) {
+                database.ref('interventions/' + key).once('value').then(function(snapshot) {
+                    const data = snapshot.val();
+                    if (data) {
+                        // Populate the form with the data
+                        document.getElementById('zone').value = data.zone;
+                        document.getElementById('equipe').value = data.equipe;
+                        document.getElementById('ligne').value = data.ligne;
+                        document.getElementById('Equipment').value = data.equipment;
+                        document.getElementById('heure-debut').value = data.heureDebut;
+                        document.getElementById('heure-fin').value = data.heureFin;
+                        document.getElementById('arret-production').checked = data.arretProduction;
+                        document.getElementById('vide').value = data.vide;
+                        document.getElementById('reprise').value = data.reprise;
+                        document.getElementById('nom-intervenant').value = data.nomIntervenant;
+                        document.getElementById('designation').value = data.designation;
+                        document.getElementById('observation').value = data.observation;
+                        document.getElementById('check').checked = data.approbationChef;
+                        if (data.photoURL) {
+                            const preview = document.getElementById('photo-preview');
+                            preview.src = data.photoURL;
+                            preview.style.display = 'block';
+                        }
+                    }
+                }).catch(function(error) {
+                    console.error('Data loading failed:', error);
+                });
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('intervention-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form from submitting normally
+
+            const intervention = {
+                zone: document.getElementById('zone').value,
+                equipe: document.getElementById('equipe').value,
+                ligne: document.getElementById('ligne').value,
+                equipment: document.getElementById('Equipment').value,
+                heureDebut: document.getElementById('heure-debut').value,
+                heureFin: document.getElementById('heure-fin').value,
+                arretProduction: document.getElementById('arret-production').checked,
+                vide: document.getElementById('vide').value,
+                reprise: document.getElementById('reprise').value,
+                nomIntervenant: document.getElementById('nom-intervenant').value,
+                designation: document.getElementById('designation').value,
+                observation: document.getElementById('observation').value,
+                approbationChef: document.getElementById('check').checked
             };
 
-            if (photoFile) {
-                const storageRef = storage.ref('photos/' + Date.now() + '-' + photoFile.name);
-                const uploadTask = storageRef.put(photoFile);
+            const photo = document.getElementById('photo').files[0];
 
-                uploadTask.on('state_changed', function(snapshot) {
-                    // Handle progress, if needed
-                }, function(error) {
-                    console.error('Image upload failed:', error);
-                }, function() {
-                    uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                        interventionData.photoURL = downloadURL;
-
-                        // Save data to Realtime Database using push()
-                        database.ref('interventions').push(interventionData).then(function() {
-                            alert('Intervention data saved successfully!');
-                        }).catch(function(error) {
-                            console.error('Data saving failed:', error);
-                        });
+            if (photo) {
+                const storageRef = storage.ref('photos/' + photo.name);
+                storageRef.put(photo).then(function(snapshot) {
+                    snapshot.ref.getDownloadURL().then(function(url) {
+                        intervention.photoURL = url;
+                        saveIntervention(intervention);
                     });
                 });
             } else {
-                // Save data without photo using push()
-                database.ref('interventions').push(interventionData).then(function() {
-                    alert('Intervention data saved successfully!');
-                }).catch(function(error) {
-                    console.error('Data saving failed:', error);
+                saveIntervention(intervention);
+            }
+        });
+
+        function saveIntervention(intervention) {
+            const date = getParameterFromUrl('date'); // Get the date parameter from the URL
+            if (date) {
+                const key = database.ref('interventions').push().key;
+                database.ref('interventions/' + key).set(intervention)
+                .then(function() {
+                    alert('Intervention enregistrée avec succès !');
+                    window.location.href = window.location.href.split('?')[0] + '?date=' + date; // Redirect to the same page without the key
+                })
+                .catch(function(error) {
+                    console.error('Error saving intervention:', error);
                 });
-            }
-        });
-
-        document.getElementById('photo').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('photo-preview');
-
-            if (file) {
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-
-                reader.readAsDataURL(file);
             } else {
-                preview.src = '';
-                preview.style.display = 'none';
+                console.error('Date not found in URL');
             }
-        });
+        }
     </script>
 </body>
 </html>
