@@ -5,17 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <style>
-    
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
+
         table, th, td {
-            border: 1px solid black;
+            border: 1px solid #ddd;
         }
+
         th, td {
-            padding: 8px;
+            padding: 12px;
             text-align: left;
+        }
+
+        th {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+            cursor: pointer;
+        }
+
+        .highlight {
+            background-color: #ddd !important;
         }
     </style>
 </head>
@@ -43,7 +93,7 @@
         </tbody>
     </table>
 
-<script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
     <script>
         // Configuration de Firebase
         const firebaseConfig = {
@@ -85,13 +135,25 @@
                 
                 snapshot.forEach(childSnapshot => {
                     const data = childSnapshot.val();
+                    const key = childSnapshot.key; // Récupère la clé de la ligne
                     const newRow = resultsTable.insertRow();
+                    newRow.dataset.key = key; // Ajoute la clé comme un attribut de données
                     newRow.insertCell().textContent = data.zone || '';
                     newRow.insertCell().textContent = data.equipe || '';
                     newRow.insertCell().textContent = data.ligne || '';
                     newRow.insertCell().textContent = data.equipment || '';
                     newRow.insertCell().textContent = data.nomIntervenant || '';
                     newRow.insertCell().textContent = data.date || '';
+                    
+                    // Ajoute un écouteur d'événement pour chaque ligne
+                    newRow.addEventListener('click', function() {
+                        const key = this.dataset.key;
+                        const date = getDateFromUrl();
+                        if (key) {
+                            const url = `https://tibsama.github.io/agelid/fichintev.html#date=${date}&key=${key}`;
+                            window.location.href = url;
+                        }
+                    });
                 });
             });
         }
