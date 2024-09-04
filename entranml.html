@@ -172,7 +172,7 @@
             });
 
             // Affichage des cellules vides avant le premier jour du mois
-            for (let i = 0; i < firstDayOfMonth; i++) {
+            for (let i = 1; i < firstDayOfMonth; i++) {
                 const emptyCell = document.createElement('div');
                 emptyCell.classList.add('day', 'empty');
                 calendar.appendChild(emptyCell);
