@@ -175,18 +175,18 @@
             </div>
 
             <div class="form-group">
-                <label for="arret-production">Arrêt de production(vide four)</label>
+                <label for="arret-production">Arrêt de production (vide four)</label>
                 <input type="checkbox" id="arret-production" name="arret-production">
                 <label for="arret-production">Oui</label>
             </div>
 
             <div class="form-group">
-                <label for="vide">début vide</label>
+                <label for="vide">Début vide</label>
                 <input type="time" id="vide" name="vide">
             </div>
 
             <div class="form-group">
-                <label for="reprise">reprise</label>
+                <label for="reprise">Reprise</label>
                 <input type="time" id="reprise" name="reprise">
             </div>
 
@@ -206,7 +206,7 @@
             </div>
 
             <div class="form-group">
-                <label for="check">approbation du chef de zone</label>
+                <label for="check">Approbation du chef de zone</label>
                 <input type="checkbox" id="check" name="check">
             </div>
 
@@ -306,8 +306,8 @@
                     uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
                         interventionData.photoURL = downloadURL;
 
-                        // Save data to Realtime Database
-                        database.ref('interventions').child(date).set(interventionData).then(function() {
+                        // Save data to Realtime Database using push()
+                        database.ref('interventions').push(interventionData).then(function() {
                             alert('Intervention data saved successfully!');
                         }).catch(function(error) {
                             console.error('Data saving failed:', error);
@@ -315,8 +315,8 @@
                     });
                 });
             } else {
-                // Save data without photo
-                database.ref('interventions').child(date).set(interventionData).then(function() {
+                // Save data without photo using push()
+                database.ref('interventions').push(interventionData).then(function() {
                     alert('Intervention data saved successfully!');
                 }).catch(function(error) {
                     console.error('Data saving failed:', error);
