@@ -278,6 +278,7 @@
             
             if (keyIndex !== -1) {
                 return url.substring(keyIndex + 4); // Extrait la date après "date="
+                document.getElementById('submit-btn').style.display = 'none';
                 loadkey();
             }
             return null; 
