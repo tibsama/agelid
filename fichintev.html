@@ -117,6 +117,7 @@
         }
     </style>
     <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase-storage.js"></script>
 </head>
 <body>
     <div class="form-container">
@@ -138,6 +139,7 @@
             <div class="form-group">
                 <label for="equipe">Équipe</label>
                 <select id="equipe" name="equipe">
+                    <option value=" "></option>
                     <option value="a">Équipe A</option>
                     <option value="b">Équipe B</option>
                     <option value="c">Équipe C</option>
@@ -238,6 +240,73 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        const storage = firebase.storage();
+
+
+        document.getElementById('intervention-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const zone = document.getElementById('zone').value;
+        const equipe = document.getElementById('equipe').value;
+        const ligne = document.getElementById('ligne').value;
+        const equipment = document.getElementById('Equipment').value;
+        const heureDebut = document.getElementById('heure-debut').value;
+        const heureFin = document.getElementById('heure-fin').value;
+        const arretProduction = document.getElementById('arret-production').checked;
+        const vide = document.getElementById('vide').value;
+        const reprise = document.getElementById('reprise').value;
+        const nomIntervenant = document.getElementById('nom-intervenant').value;
+        const designation = document.getElementById('designation').value;
+        const observation = document.getElementById('observation').value;
+        const approbationChef = document.getElementById('check').checked;
+        const photoFile = document.getElementById('photo').files[0];
+
+        let interventionData = {
+            zone: zone,
+            equipe: equipe,
+            ligne: ligne,
+            equipment: equipment,
+            heureDebut: heureDebut,
+            heureFin: heureFin,
+            arretProduction: arretProduction,
+            vide: vide,
+            reprise: reprise,
+            nomIntervenant: nomIntervenant,
+            designation: designation,
+            observation: observation,
+            approbationChef: approbationChef
+        };
+
+        if (photoFile) {
+            const storageRef = storage.ref('photos/' + Date.now() + '-' + photoFile.name);
+            const uploadTask = storageRef.put(photoFile);
+
+            uploadTask.on('state_changed', function(snapshot) {
+                // Handle progress, if needed
+            }, function(error) {
+                console.error('Image upload failed:', error);
+            }, function() {
+                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                    interventionData.photoURL = downloadURL;
+
+                    // Save data to Realtime Database
+                    database.ref('interventions').push(interventionData).then(function() {
+                        alert('Intervention data saved successfully!');
+                    }).catch(function(error) {
+                        console.error('Data saving failed:', error);
+                    });
+                });
+            });
+        } else {
+            // Save data without photo
+            database.ref('interventions').push(interventionData).then(function() {
+                alert('Intervention data saved successfully!');
+            }).catch(function(error) {
+                console.error('Data saving failed:', error);
+            });
+        }
+    });
+
         
         document.getElementById('photo').addEventListener('change', function(event) {
             const file = event.target.files[0];
