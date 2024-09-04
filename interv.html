@@ -40,6 +40,13 @@
             transform: scale(1.05);
         }
 
+        .date-display {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -107,6 +114,8 @@
         <button id="redirectButton">Ajouter fiche d'intervention</button>
     </div>
 
+    <div class="date-display" id="dateDisplay">Date: </div>
+
     <h2>Résultats</h2>
     <table id="resultsTable">
         <thead>
@@ -116,7 +125,8 @@
                 <th>Ligne</th>
                 <th>Équipement</th>
                 <th>Nom de l'intervenant</th>
-                <th>Date</th>
+                <th>Vide</th>
+                <th>Reprise</th>
             </tr>
         </thead>
         <tbody>
@@ -154,10 +164,13 @@
         function loadInterventions() {
             const date = getDateFromUrl();
 
-            if (!date) {
-                alert("Aucune date n'a été trouvée dans l'URL.");
-                return;
-            }
+        //    if (!date) {
+          //      alert("Aucune date n'a été trouvée dans l'URL.");
+            //    return;
+           // }
+
+            // Affiche la date au-dessus du tableau
+            document.getElementById('dateDisplay').textContent = `Date: ${date}`;
 
             const ref = database.ref('interventions');
             ref.orderByChild('date').equalTo(date).once('value', snapshot => {
@@ -174,7 +187,10 @@
                     newRow.insertCell().textContent = data.ligne || '';
                     newRow.insertCell().textContent = data.equipment || '';
                     newRow.insertCell().textContent = data.nomIntervenant || '';
-                    newRow.insertCell().textContent = data.date || '';
+                    
+                    // Ajouter les colonnes Vide et Reprise (les données peuvent être vides pour le moment)
+                    newRow.insertCell().textContent = ''; // Vide
+                    newRow.insertCell().textContent = ''; // Reprise
                     
                     // Ajoute un écouteur d'événement pour chaque ligne
                     newRow.addEventListener('click', function() {
