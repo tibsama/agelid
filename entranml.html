@@ -236,7 +236,7 @@
 
         // Fonction pour rediriger vers une URL avec la date cliquée
         function redirectToDate(year, month, day) {
-            const selectedDate = new Date(year, month, day - 1); // Décaler la date de -1 jour
+            const selectedDate = new Date(year, month, day + 1); // Décaler la date de -1 jour
             const dateString = selectedDate.toISOString().split('T')[0];
             window.location.href = `https://tibsama.github.io/agelid/interv.html#date=${dateString}`;
         }
