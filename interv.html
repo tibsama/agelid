@@ -7,16 +7,20 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
             background-color: #f4f4f4;
             color: #333;
         }
 
         h1 {
+            text-align: center;
             color: #2c3e50;
+            margin: 20px 0;
         }
 
         .input-container {
+            text-align: center;
             margin-bottom: 20px;
         }
 
@@ -26,19 +30,24 @@
             border: none;
             padding: 10px 20px;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 10px;
             font-size: 16px;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         button:hover {
             background-color: #2980b9;
+            transform: scale(1.05);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin: 0 auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
         table, th, td {
@@ -56,16 +65,38 @@
         }
 
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f9f9f9;
         }
 
         tr:hover {
-            background-color: #ddd;
+            background-color: #f1f1f1;
             cursor: pointer;
         }
 
-        .highlight {
-            background-color: #ddd !important;
+        /* Effet 3D pour les lignes du tableau */
+        tr {
+            transition: transform 0.3s ease;
+        }
+
+        tr:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            button {
+                width: 100%;
+                font-size: 18px;
+                padding: 15px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
         }
     </style>
 </head>
@@ -150,7 +181,7 @@
                         const key = this.dataset.key;
                         const date = getDateFromUrl();
                         if (key) {
-                            const url = `https://tibsama.github.io/agelid/fichintev.html#date=${date}&key=${key}`;
+                            const url = `https://tibsama.github.io/agelid/fichintev.html#key=${key}`;
                             window.location.href = url;
                         }
                     });
@@ -167,9 +198,7 @@
             if (date) {
                 const url = `https://tibsama.github.io/agelid/fichintev.html#date=${date}`;
                 window.location.href = url;
-            } else {
-                alert("Aucune date n'a été trouvée dans l'URL.");
-            }
+            } 
         });
     </script>
 </body>
