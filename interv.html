@@ -17,10 +17,15 @@
     </div>
 
     <script>
-        // Fonction pour récupérer la date à partir de l'URL après "date="
+        // Fonction pour récupérer la date à partir de l'URL en utilisant l'index après "date="
         function getDateFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('date');
+            const url = window.location.href; // Récupère l'URL complète
+            const dateIndex = url.indexOf("date="); // Trouve l'index de "date=" dans l'URL
+            
+            if (dateIndex !== -1) {
+                return url.substring(dateIndex + 5); // Extrait la date après "date="
+            }
+            return null; // Retourne null si "date=" n'est pas trouvé
         }
 
         // Ajout d'un écouteur d'événement au bouton
@@ -31,7 +36,7 @@
             // Vérification si la date est présente dans l'URL
             if (date) {
                 // Construction de l'URL avec la date récupérée
-                const url = `https://tibsama.github.io/agelid/fichinterv.html#date=${date}`;
+                const url = `https://tibsama.github.io/agelid/fichintev.html#date=${date}`;
 
                 // Redirection vers l'URL construite
                 window.location.href = url;
