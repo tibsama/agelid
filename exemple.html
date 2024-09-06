@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Worker Simple</title>
+</head>
+<body>
+    <h1>Exemple Service Worker</h1>
+    <button onclick="loadImage()">Charger une image</button>
+    <div id="image-container"></div>
+
+    <script>
+        // Enregistrer le service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+            .then(function(registration) {
+                console.log('Service Worker enregistré avec succès:', registration);
+            })
+            .catch(function(error) {
+                console.log('Échec de l\'enregistrement du Service Worker:', error);
+            });
+        }
+
+        // Fonction pour charger une image
+        function loadImage() {
+            const img = document.createElement('img');
+            img.src = '/images/mon-image.jpg'; // Chemin de l'image
+            img.alt = 'Image depuis le cache';
+            img.width = 300;
+            document.getElementById('image-container').appendChild(img);
+        }
+    </script>
+</body>
+</html>
