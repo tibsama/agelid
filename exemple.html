@@ -16,11 +16,11 @@
             navigator.serviceWorker.register('/service-worker.js')
             .then(function(registration) {
                 console.log('Service Worker enregistré avec succès:', registration);
-           alarm("1");
+           alert("1");
             })
             .catch(function(error) {
                 console.log('Échec de l\'enregistrement du Service Worker:', error);
-           alarm("2");
+           alert("2");
             });
         }
 
