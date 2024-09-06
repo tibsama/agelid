@@ -4,8 +4,8 @@ const CACHE_NAME = 'mon-cache-v1';
 // Liste des fichiers à mettre en cache
 const urlsToCache = [
   '/',
-  '/index.html',
-  '/images/mon-image.jpg'
+  '/exemple.html',
+  '/images%20(9).png'
 ];
 
 // Installation du Service Worker et mise en cache des fichiers
