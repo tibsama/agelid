@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin: 20px 0;
+        }
+
+        .input-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .date-display {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        /* Effet 3D pour les lignes du tableau */
+        tr {
+            transition: transform 0.3s ease;
+        }
+
+        tr:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            button {
+                width: 100%;
+                font-size: 18px;
+                padding: 15px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Fiches d'intervention</h1>
+
+    <div class="input-container">
+        <button id="redirectButton">Ajouter fiche d'intervention</button>
+    </div>
+
+    <div class="date-display" id="dateDisplay">Date: </div>
+
+    <h2>Résultats</h2>
+    <table id="resultsTable">
+        <thead>
+            <tr>
+                <th>Zone</th>
+                <th>Équipe</th>
+                <th>Ligne</th>
+                <th>Équipement</th>
+                <th>Nom de l'intervenant</th>
+                <th>Vide</th>
+                <th>Reprise</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Les lignes de tableau seront ajoutées ici dynamiquement -->
+        </tbody>
+    </table>
+
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+    <script>
+        // Configuration de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
+            authDomain: "herher-d121a.firebaseapp.com",
+            databaseURL: "https://herher-d121a.firebaseio.com",
+            projectId: "herher-d121a",
+            storageBucket: "herher-d121a.appspot.com",
+            messagingSenderId: "626438737297",
+            appId: "1:626438737297:web:bf6524275291ec695fde30"
+        };
+        // Initialisation de Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Fonction pour récupérer la date à partir de l'URL en utilisant l'index après "date="
+        function getDateFromUrl() {
+            const url = window.location.href;
+            const dateIndex = url.indexOf("date=");
+            if (dateIndex !== -1) {
+                return url.substring(dateIndex + 5);
+            }
+            return null;
+        }
+
+        // Fonction pour charger les interventions pour la date spécifiée et afficher les résultats
+        function loadInterventions() {
+            const date = getDateFromUrl();
+
+        //    if (!date) {
+          //      alert("Aucune date n'a été trouvée dans l'URL.");
+            //    return;
+           // }
+
+            // Affiche la date au-dessus du tableau
+            document.getElementById('dateDisplay').textContent = `Date: ${date}`;
+
+            const ref = database.ref('interventions');
+            ref.orderByChild('date').equalTo(date).once('value', snapshot => {
+                const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+                resultsTable.innerHTML = ''; // Efface les résultats précédents
+                
+                snapshot.forEach(childSnapshot => {
+                    const data = childSnapshot.val();
+                    const key = childSnapshot.key; // Récupère la clé de la ligne
+                    const newRow = resultsTable.insertRow();
+                    newRow.dataset.key = key; // Ajoute la clé comme un attribut de données
+                    newRow.insertCell().textContent = data.zone || '';
+                    newRow.insertCell().textContent = data.equipe || '';
+                    newRow.insertCell().textContent = data.ligne || '';
+                    newRow.insertCell().textContent = data.equipment || '';
+                    newRow.insertCell().textContent = data.nomIntervenant || '';
+                    
+                    // Ajouter les colonnes Vide et Reprise (les données peuvent être vides pour le moment)
+                    newRow.insertCell().textContent = ''; // Vide
+                    newRow.insertCell().textContent = ''; // Reprise
+                    
+                    // Ajoute un écouteur d'événement pour chaque ligne
+                    newRow.addEventListener('click', function() {
+                        const key = this.dataset.key;
+                        const date = getDateFromUrl();
+                        if (key) {
+                            const url = `https://tibsama.github.io/agelid/fichintev.html#key=${key}`;
+                            window.location.href = url;
+                        }
+                    });
+                });
+            });
+        }
+
+        // Charger les interventions lorsque la page est chargée
+        window.onload = loadInterventions;
+
+        // Ajout d'un écouteur d'événement au bouton
+        document.getElementById('redirectButton').addEventListener('click', function() {
+            const date = getDateFromUrl();
+            if (date) {
+                const url = `https://tibsama.github.io/agelid/fichintev.html#date=${date}`;
+                window.location.href = url;
+            } 
+        });
+    </script>
+</body>
+</html>
