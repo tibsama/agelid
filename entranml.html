@@ -154,7 +154,7 @@
     <div id="calendar-container">
         <div class="navigation">
             <button class="nav-button" id="prev-month">Mois Précédent</button>
-            <button class="nav-button" id="intervm">intervention du mois</button>
+            <button class="nav-button" onclick="window.location.href = 'https://tibsama.github.io/agelid/intervm.html#date=${date}';">intervention du mois</button>
             <button class="nav-button" id="next-month">Mois Suivant</button>
         </div>
         <div id="month-year"></div> <!-- Élément pour afficher le mois et l'année -->
@@ -265,13 +265,6 @@
         // Génération initiale du calendrier
         generateCalendar(currentMonth, currentYear);
 
-        document.getElementById('intervm').addEventListener('click', function() {
-            const date = getDateFromUrl();
-            if (date) {
-                const url = `https://tibsama.github.io/agelid/intervm.html#date=${date}`;
-                window.location.href = url;
-            } 
-        });
         
     </script>
 </body>
