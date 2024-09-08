@@ -179,7 +179,6 @@
         <!-- Day Switcher Buttons -->
         <div class="day-switcher">
             <button onclick="previousDay()">Previous Day</button>
-            <button onclick="intrvm()">intervention du mois</button>
             <button onclick="nextDay()">Next Day</button>
         </div>
 
@@ -395,14 +394,6 @@ const firebaseConfig = {
         }
 
         loadAllTasksFromCloud();
-
-        document.getElementById('intervm').addEventListener('click', function() {
-            const date = getDateFromUrl();
-            if (date) {
-                const url = `https://tibsama.github.io/agelid/intervm.html#date=${date}`;
-                window.location.href = url;
-            } 
-        });
         
     </script>
 </body>
