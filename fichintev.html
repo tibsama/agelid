@@ -373,8 +373,10 @@
                         // Save data to Realtime Database using push()
                         database.ref('interventions').push(interventionData).then(function() {
                             alert('Intervention data saved successfully!');
+                            document.querySelector(".loading-container").style.display = "none";
                         }).catch(function(error) {
                             console.error('Data saving failed:', error);
+                            document.querySelector(".loading-container").style.display = "none";
                         });
                     }); 
                 });
@@ -382,10 +384,12 @@
                 // Save data without photo using push()
                 database.ref('interventions').push(interventionData).then(function() {
                     alert('Intervention data saved successfully!');
+                    document.querySelector(".loading-container").style.display = "none";
                 }).catch(function(error) {
                     console.error('Data saving failed:', error);
+                    document.querySelector(".loading-container").style.display = "none";
                 });
-            }document.querySelector(".loading-container").style.display = "none";
+            }
         });
 
         document.getElementById('photo').addEventListener('change', function(event) {
