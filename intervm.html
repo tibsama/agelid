@@ -114,7 +114,7 @@
         <button id="redirectButton">Ajouter fiche d'intervention</button>
     </div>
 
-    <div class="date-display" id="dateDisplay">Date: </div>
+    <div class="date-display" id="dateDisplay">Mois: </div>
 
     <h2>Résultats</h2>
     <table id="resultsTable">
@@ -150,71 +150,83 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Fonction pour récupérer la date à partir de l'URL en utilisant l'index après "date="
-        function getDateFromUrl() {
+        // Function to get the year and month from the URL
+        function getMonthAndYearFromUrl() {
             const url = window.location.href;
             const dateIndex = url.indexOf("date=");
             if (dateIndex !== -1) {
-                return url.substring(dateIndex + 5);
+                const dateString = url.substring(dateIndex + 5);
+                const date = new Date(dateString);
+                return {
+                    month: date.getMonth() + 1, // Months are zero-based
+                    year: date.getFullYear()
+                };
             }
             return null;
         }
 
-        // Fonction pour charger les interventions pour la date spécifiée et afficher les résultats
-        function loadInterventions() {
-            const date = getDateFromUrl();
+        // Function to load interventions for the entire month
+        function loadInterventionsForMonth() {
+            const dateObj = getMonthAndYearFromUrl();
 
-        //    if (!date) {
-          //      alert("Aucune date n'a été trouvée dans l'URL.");
-            //    return;
-           // }
+            if (!dateObj) {
+                alert("Aucune date n'a été trouvée dans l'URL.");
+                return;
+            }
 
-            // Affiche la date au-dessus du tableau
-            document.getElementById('dateDisplay').textContent = `Date: ${date}`;
+            const { month, year } = dateObj;
+            document.getElementById('dateDisplay').textContent = `Mois: ${month}/${year}`;
 
             const ref = database.ref('interventions');
-            ref.orderByChild('date').equalTo(date).once('value', snapshot => {
+            
+            // Query to fetch all interventions within the given month and year
+            ref.once('value', snapshot => {
                 const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
-                resultsTable.innerHTML = ''; // Efface les résultats précédents
+                resultsTable.innerHTML = ''; // Clear previous results
                 
                 snapshot.forEach(childSnapshot => {
                     const data = childSnapshot.val();
-                    const key = childSnapshot.key; // Récupère la clé de la ligne
-                    const newRow = resultsTable.insertRow();
-                    newRow.dataset.key = key; // Ajoute la clé comme un attribut de données
-                    newRow.insertCell().textContent = data.zone || '';
-                    newRow.insertCell().textContent = data.equipe || '';
-                    newRow.insertCell().textContent = data.ligne || '';
-                    newRow.insertCell().textContent = data.equipment || '';
-                    newRow.insertCell().textContent = data.nomIntervenant || '';
+                    const interventionDate = new Date(data.date); // Convert stored date to Date object
                     
-                    // Ajouter les colonnes Vide et Reprise (les données peuvent être vides pour le moment)
-                    newRow.insertCell().textContent = ''; // Vide
-                    newRow.insertCell().textContent = ''; // Reprise
-                    
-                    // Ajoute un écouteur d'événement pour chaque ligne
-                    newRow.addEventListener('click', function() {
-                        const key = this.dataset.key;
-                        const date = getDateFromUrl();
-                        if (key) {
-                            const url = `https://tibsama.github.io/agelid/fichintev.html#key=${key}`;
-                            window.location.href = url;
-                        }
-                    });
+                    // Only add interventions for the given month and year
+                    if (interventionDate.getMonth() + 1 === month && interventionDate.getFullYear() === year) {
+                        const key = childSnapshot.key;
+                        const newRow = resultsTable.insertRow();
+                        newRow.dataset.key = key;
+                        newRow.insertCell().textContent = data.zone || '';
+                        newRow.insertCell().textContent = data.equipe || '';
+                        newRow.insertCell().textContent = data.ligne || '';
+                        newRow.insertCell().textContent = data.equipment || '';
+                        newRow.insertCell().textContent = data.nomIntervenant || '';
+
+                        // Add the "Vide" and "Reprise" columns
+                        newRow.insertCell().textContent = ''; // Vide
+                        newRow.insertCell().textContent = ''; // Reprise
+
+                        // Add event listener for row click
+                        newRow.addEventListener('click', function() {
+                            const key = this.dataset.key;
+                            if (key) {
+                                const url = `https://tibsama.github.io/agelid/fichintev.html#key=${key}`;
+                                window.location.href = url;
+                            }
+                        });
+                    }
                 });
             });
         }
 
-        // Charger les interventions lorsque la page est chargée
-        window.onload = loadInterventions;
+        // Load interventions for the entire month when the page loads
+        window.onload = loadInterventionsForMonth;
 
-        // Ajout d'un écouteur d'événement au bouton
+        // Add event listener to the button
         document.getElementById('redirectButton').addEventListener('click', function() {
-            const date = getDateFromUrl();
-            if (date) {
-                const url = `https://tibsama.github.io/agelid/fichintev.html#date=${date}`;
+            const dateObj = getMonthAndYearFromUrl();
+            if (dateObj) {
+                const { month, year } = dateObj;
+                const url = `https://tibsama.github.io/agelid/fichintev.html#date=${year}-${month}`;
                 window.location.href = url;
-            } 
+            }
         });
     </script>
 </body>
