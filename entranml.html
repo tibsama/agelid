@@ -268,8 +268,8 @@
         document.getElementById('intervm').onclick = () => {
             const selectedDate = new Date(year, month, day + 1); // Décaler la date de -1 jour
             const dateString = selectedDate.toISOString().split('T')[0];
-        window.location.href = `https://tibsama.github.io/agelid/intervm.html#date=${dateString}`;
-       };
+        window.location.href = 'https://tibsama.github.io/agelid/intervm.html#date=' + dateString;
+        };
         
     </script>
 </body>
