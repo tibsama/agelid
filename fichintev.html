@@ -315,10 +315,10 @@
             return null; // Retourne null si "date=" n'est pas trouvé
         }
 
-        document.getElementById('intervention-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-
+        document.getElementById('intervention-form').addEventListener('submit', function(event) { 
             document.querySelector(".loading-container").style.display = "flex";
+          
+            event.preventDefault();
 
             const zone = document.getElementById('zone').value;
             const equipe = document.getElementById('equipe').value;
