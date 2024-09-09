@@ -310,6 +310,7 @@
             const url = window.location.href; // Récupère l'URL complète
             const dateIndex = url.indexOf("date="); // Trouve l'index de "date=" dans l'URL
             if (dateIndex !== -1) {
+                document.querySelector(".loading-container").style.display = "none";
                 return url.substring(dateIndex + 5); // Extrait la date après "date="
             }
             return null; // Retourne null si "date=" n'est pas trouvé
@@ -376,7 +377,7 @@
                         }).catch(function(error) {
                             console.error('Data saving failed:', error);
                         });
-                    }); document.querySelector(".loading-container").style.display = "none";
+                    }); 
                 });
             } else {
                 // Save data without photo using push()
@@ -385,7 +386,7 @@
                 }).catch(function(error) {
                     console.error('Data saving failed:', error);
                 });
-            }
+            }document.querySelector(".loading-container").style.display = "none";
         });
 
         document.getElementById('photo').addEventListener('change', function(event) {
