@@ -14,6 +14,56 @@
             margin: 0;
         }
 
+        /* Style de la page de fond */
+.loading-container {
+  position: fixed;
+ 
+  left: 0;
+  width: 100%;
+  height: 10%;
+  background-color: #e0f7fa; /* couleur de fond foncée */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Style du loader */
+.loader {
+  width: 100px;
+  height: 100px;
+  position: relative;
+}
+
+/* Style des points */
+.loader::before,
+.loader::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 5px solid transparent;
+  border-top-color: #00aaff;
+  animation: spin 1s infinite linear;
+}
+
+/* Deuxième couche de points avec un retard pour un effet de mouvement */
+.loader::after {
+  border-top-color: #0066ff;
+  animation-delay: -0.5s;
+}
+
+/* Animation de rotation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
         .form-container {
             background-color: #fff;
             padding: 30px;
@@ -219,6 +269,10 @@
                 <img id="photo-preview" alt="Aperçu de la photo" />
             </div>
 
+            <div class="loading-container">
+            <div class="loader"></div>
+            </div>
+
             <div class="form-group">
                 <button id="submitButton" type="submit">Soumettre</button>
             </div>
@@ -263,6 +317,8 @@
 
         document.getElementById('intervention-form').addEventListener('submit', function(event) {
             event.preventDefault();
+
+            document.querySelector(".loading-container").style.display = "flex";
 
             const zone = document.getElementById('zone').value;
             const equipe = document.getElementById('equipe').value;
@@ -320,7 +376,7 @@
                         }).catch(function(error) {
                             console.error('Data saving failed:', error);
                         });
-                    });
+                    }); document.querySelector(".loading-container").style.display = "none";
                 });
             } else {
                 // Save data without photo using push()
@@ -390,7 +446,7 @@
             }
         }).catch(function(error) {
             console.error('Error fetching data:', error);
-        });
+        }); document.querySelector(".loading-container").style.display = "none";
     } else {
         alert('No key ');
     }
