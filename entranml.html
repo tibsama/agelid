@@ -266,10 +266,16 @@
         generateCalendar(currentMonth, currentYear);
 
         document.getElementById('intervm').onclick = () => {
-            const selectedDate = new Date(year, month, day + 1); // Décaler la date de -1 jour
-            const dateString = selectedDate.toISOString().split('T')[0];
-        window.location.href = `https://tibsama.github.io/agelid/intervm.html#date=` ;
-        };
+    // Get the current date (today)
+    const today = new Date();
+    const selectedDate = new Date(currentYear, currentMonth, today.getDate() + 1); // Adjust by 1 day
+    const dateString = selectedDate.toISOString().split('T')[0];
+    
+    // Redirect with the calculated date in the URL
+    window.location.href = `https://tibsama.github.io/agelid/intervm.html#date=${dateString}`;
+};
+        
+    
         
     </script>
 </body>
