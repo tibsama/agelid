@@ -303,14 +303,13 @@
                const keys= url.substring(keyIndex + 4); // Extrait la date après "date="
                 document.getElementById('submitButton').style.display = 'none';
                 loadkey();
-            }
+            } else {document.querySelector(".loading-container").style.display = "none";}
 
         // Function to get date from URL
         function getDateFromUrl() {
             const url = window.location.href; // Récupère l'URL complète
             const dateIndex = url.indexOf("date="); // Trouve l'index de "date=" dans l'URL
             if (dateIndex !== -1) {
-                document.querySelector(".loading-container").style.display = "none";
                 return url.substring(dateIndex + 5); // Extrait la date après "date="
             }
             return null; // Retourne null si "date=" n'est pas trouvé
