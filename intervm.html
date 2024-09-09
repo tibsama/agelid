@@ -125,8 +125,7 @@
                 <th>Ligne</th>
                 <th>Équipement</th>
                 <th>Nom de l'intervenant</th>
-                <th>Vide</th>
-                <th>Reprise</th>
+                <th>date</th>
             </tr>
         </thead>
         <tbody>
@@ -200,8 +199,7 @@
                         newRow.insertCell().textContent = data.nomIntervenant || '';
 
                         // Add the "Vide" and "Reprise" columns
-                        newRow.insertCell().textContent = ''; // Vide
-                        newRow.insertCell().textContent = ''; // Reprise
+                        newRow.insertCell().textContent =data.date || ''; 
 
                         // Add event listener for row click
                         newRow.addEventListener('click', function() {
