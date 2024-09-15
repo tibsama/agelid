@@ -186,16 +186,6 @@
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="equipe">Équipe</label>
-                <select id="equipe" name="equipe">
-                    <option value=" "></option>
-                    <option value="a">Équipe A</option>
-                    <option value="b">Équipe B</option>
-                    <option value="c">Équipe C</option>
-                    <option value="d">Équipe D</option>
-                </select>
-            </div>
 
             <div class="form-group">
                 <label for="ligne">Numéro de ligne</label>
@@ -215,45 +205,15 @@
             </div>
 
             <div class="form-group">
-                <label for="heure-debut">Heure de début</label>
-                <input type="time" id="heure-debut" name="heure-debut">
-            </div>
-
-            <div class="form-group">
-                <label for="heure-fin">Heure de fin</label>
-                <input type="time" id="heure-fin" name="heure-fin">
-            </div>
-
-            <div class="form-group">
-                <label for="arret-production">Arrêt de production (vide four)</label>
-                <input type="checkbox" id="arret-production" name="arret-production">
-                <label for="arret-production">Oui</label>
-            </div>
-
-            <div class="form-group">
-                <label for="vide">Début vide</label>
-                <input type="time" id="vide" name="vide">
-            </div>
-
-            <div class="form-group">
-                <label for="reprise">Reprise</label>
-                <input type="time" id="reprise" name="reprise">
-            </div>
-
-            <div class="form-group">
                 <label for="nom-intervenant">Nom de l'intervenant</label>
                 <textarea id="nom-intervenant" name="nom-intervenant" rows="4"></textarea>
             </div>
 
             <div class="form-group">
-                <label for="designation">Désignation</label>
-                <textarea id="designation" name="designation" rows="4"></textarea>
+                <label for="designation">Anomalie</label>
+                <textarea id="designation" name="anomalie" rows="4"></textarea>
             </div>
             
-            <div class="form-group">
-                <label for="observation">Observation</label>
-                <textarea id="observation" name="observation" rows="4"></textarea>
-            </div>
 
             <div class="form-group">
                 <label for="check">Approbation du chef de zone</label>
@@ -321,17 +281,10 @@
             event.preventDefault();
 
             const zone = document.getElementById('zone').value;
-            const equipe = document.getElementById('equipe').value;
             const ligne = document.getElementById('ligne').value;
             const equipment = document.getElementById('Equipment').value;
-            const heureDebut = document.getElementById('heure-debut').value;
-            const heureFin = document.getElementById('heure-fin').value;
-            const arretProduction = document.getElementById('arret-production').checked;
-            const vide = document.getElementById('vide').value;
-            const reprise = document.getElementById('reprise').value;
             const nomIntervenant = document.getElementById('nom-intervenant').value;
-            const designation = document.getElementById('designation').value;
-            const observation = document.getElementById('observation').value;
+            const anomalie = document.getElementById('designation').value;
             const approbationChef = document.getElementById('check').checked;
             const photoFile = document.getElementById('photo').files[0];
             const date = getDateFromUrl(); // Get date from URL
@@ -410,51 +363,6 @@
                 preview.style.display = 'none';
             }
         });
-
-      function loadkey() {
-    // Get the key from the URL
-    const url = window.location.href;
-    const keyIndex = url.indexOf("key=");
-
-    if (keyIndex !== -1) {
-        const key = url.substring(keyIndex + 4); // Extract the key after "key="
-
-        // Query Firebase to get data for the specific key
-        database.ref('interventions/' + key).once('value').then(function(snapshot) {
-            const interventionData = snapshot.val();
-
-            if (interventionData) {
-                // Populate the form fields with the retrieved data
-                document.getElementById('zone').value = interventionData.zone;
-                document.getElementById('equipe').value = interventionData.equipe;
-                document.getElementById('ligne').value = interventionData.ligne;
-                document.getElementById('Equipment').value = interventionData.equipment;
-                document.getElementById('heure-debut').value = interventionData.heureDebut;
-                document.getElementById('heure-fin').value = interventionData.heureFin;
-                document.getElementById('arret-production').checked = interventionData.arretProduction;
-                document.getElementById('vide').value = interventionData.vide;
-                document.getElementById('reprise').value = interventionData.reprise;
-                document.getElementById('nom-intervenant').value = interventionData.nomIntervenant;
-                document.getElementById('designation').value = interventionData.designation;
-                document.getElementById('observation').value = interventionData.observation;
-                document.getElementById('check').checked = interventionData.approbationChef;
-
-                // If photoURL exists, show the image
-                if (interventionData.photoURL) {
-                    const preview = document.getElementById('photo-preview');
-                    preview.src = interventionData.photoURL;
-                    preview.style.display = 'block';
-                }
-            } else {
-                alert('No data found for the given key.');
-            }
-        }).catch(function(error) {
-            console.error('Error fetching data:', error);
-        }); document.querySelector(".loading-container").style.display = "none";
-    } else {
-        alert('No key ');
-    }
-}
 
 
 
