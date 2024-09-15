@@ -15,47 +15,30 @@
         }
 
         .loading-container {
-            position: fixed;
-            left: 0;
-            width: 100%;
-            height: 10%;
-            background-color: #e0f7fa;
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
             z-index: 1000;
         }
 
         .loader {
-            width: 100px;
-            height: 100px;
-            position: relative;
-        }
-
-        .loader::before,
-        .loader::after {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
+            border: 5px solid #f3f3f3;
             border-radius: 50%;
-            border: 5px solid transparent;
-            border-top-color: #00aaff;
-            animation: spin 1s infinite linear;
-        }
-
-        .loader::after {
-            border-top-color: #0066ff;
-            animation-delay: -0.5s;
+            border-top: 5px solid #3498db;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .form-container {
@@ -66,34 +49,8 @@
             width: 95%;
             max-width: 600px;
             margin: 20px;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #00796b;
-            font-size: 24px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #00796b;
-        }
-
-        .form-group select, .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #00796b;
-            border-radius: 6px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
+            transform: perspective(1000px);
+            transition: transform 0.3s;
         }
 
         .form-group button {
@@ -113,94 +70,44 @@
             transform: translateY(-3px);
         }
 
-        /* Progress bar styling */
-        #progress-bar-container {
+        .form-group img {
+            margin-top: 20px;
+            max-width: 100%;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .progress-bar-container {
+            display: none;
             margin-top: 10px;
         }
 
-        progress {
+        .progress-bar-container progress {
             width: 100%;
-            height: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .form-group input[type="time"] {
-                width: 100%;
-                margin-right: 0;
-            }
         }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase-storage.js"></script>
 </head>
 <body>
+    <div class="loading-container" id="loading-container">
+        <div class="loader"></div>
+    </div>
+
     <div class="form-container">
-        <h1>Anomalies</h1>
+        <h1>Fiche d'Intervention</h1>
         <form id="intervention-form">
-            <div class="form-group">
-                <label for="zone">Zone</label>
-                <select id="zone" name="zone">
-                    <option value=""></option>
-                    <option value="PMP">PMP</option>
-                    <option value="Presse">Presse</option>
-                    <option value="Ligne d'émaillage">Ligne d'émaillage</option>
-                    <option value="Impression digitale">Impression digitale</option>
-                    <option value="Four">Four</option>
-                    <option value="Triage">Triage</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="ligne">Numéro de ligne</label>
-                <select id="ligne" name="ligne">
-                    <option value=""></option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="Equipment">Équipements</label>
-                <input type="text" id="Equipment" name="Equipment">
-            </div>
-
-            <div class="form-group">
-                <label for="nom-intervenant">Nom de l'intervenant</label>
-                <textarea id="nom-intervenant" name="nom-intervenant" rows="4"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="designation">Anomalie</label>
-                <textarea id="designation" name="anomalie" rows="4"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="check">Approbation du chef de zone</label>
-                <input type="checkbox" id="check" name="check">
-            </div>
-
             <div class="form-group">
                 <label for="photo">Joindre une photo</label>
                 <input type="file" id="photo" name="photo" accept="image/*">
-            </div>
-
-            <!-- Progress bar container -->
-            <div class="form-group">
-                <div id="progress-bar-container" style="display: none;">
-                    <progress id="upload-progress" value="0" max="100"></progress>
-                    <span id="progress-percent">0%</span>
-                </div>
             </div>
 
             <div class="form-group">
                 <img id="photo-preview" alt="Aperçu de la photo" />
             </div>
 
-            <div class="loading-container" style="display: none;">
-                <div class="loader"></div>
+            <div class="progress-bar-container" id="progress-bar-container">
+                <progress id="upload-progress" value="0" max="100"></progress>
+                <p id="progress-percent">0%</p>
             </div>
 
             <div class="form-group">
@@ -209,6 +116,8 @@
         </form>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase-storage.js"></script>
     <script>
         // Firebase configuration
         const firebaseConfig = {
@@ -223,56 +132,44 @@
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
         const storage = firebase.storage();
 
-        // Function to get date from URL
-        function getDateFromUrl() {
-            const url = window.location.href;
-            const dateIndex = url.indexOf("date=");
-            if (dateIndex !== -1) {
-                return url.substring(dateIndex + 5);
-            }
-            return null;
-        }
+        // Image preview before upload
+        document.getElementById('photo').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('photo-preview');
 
-        document.getElementById('intervention-form').addEventListener('submit', function(event) { 
-            document.querySelector(".loading-container").style.display = "flex";
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+        });
+
+        // Form submission with photo upload
+        document.getElementById('intervention-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
-            const zone = document.getElementById('zone').value;
-            const ligne = document.getElementById('ligne').value;
-            const equipment = document.getElementById('Equipment').value;
-            const nomIntervenant = document.getElementById('nom-intervenant').value;
-            const anomalie = document.getElementById('designation').value;
-            const approbationChef = document.getElementById('check').checked;
             const photoFile = document.getElementById('photo').files[0];
-            const date = getDateFromUrl(); 
-
-            if (!date) {
-                alert('Date not found in URL');
-                return;
-            }
-
-            let interventionData = {
-                zone: zone,
-                ligne: ligne,
-                equipment: equipment,
-                nomIntervenant: nomIntervenant,
-                anomalie: anomalie,
-                approbationChef: approbationChef,
-                date: date 
-            };
-
             if (photoFile) {
                 const storageRef = storage.ref('photos/' + Date.now() + '-' + photoFile.name);
                 const uploadTask = storageRef.put(photoFile);
 
-                // Show the progress bar
+                // Show progress bar and loading spinner
+                document.getElementById('submitButton').style.display = 'none';
+                document.getElementById('loading-container').style.display = 'flex';
                 document.getElementById('progress-bar-container').style.display = 'block';
 
                 uploadTask.on('state_changed', function(snapshot) {
-                    // Get progress percentage
+                    // Update progress bar
                     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     document.getElementById('upload-progress').value = progress;
                     document.getElementById('progress-percent').textContent = Math.round(progress) + '%';
@@ -280,31 +177,18 @@
                     console.error('Image upload failed:', error);
                 }, function() {
                     uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                        interventionData.photoURL = downloadURL;
+                        console.log('File available at', downloadURL);
 
-                        // Save data to Realtime Database
-                        database.ref('anomalie').push(interventionData).then(function() {
-                            alert('Intervention data saved successfully!');
-                            document.querySelector(".loading-container").style.display = "none";
-                            // Hide the progress bar after upload
-                            document.getElementById('progress-bar-container').style.display = 'none';
-                            document.getElementById('upload-progress').value = 0;
-                            document.getElementById('progress-percent').textContent = '0%';
-                        }).catch(function(error) {
-                            console.error('Data saving failed:', error);
-                            document.querySelector(".loading-container").style.display = "none";
-                        });
+                        // Hide progress bar and loading spinner after upload
+                        document.getElementById('loading-container').style.display = 'none';
+                        document.getElementById('progress-bar-container').style.display = 'none';
+                        document.getElementById('submitButton').style.display = 'block';
+                        document.getElementById('upload-progress').value = 0;
+                        document.getElementById('progress-percent').textContent = '0%';
                     });
                 });
             } else {
-                // Save data without photo
-                database.ref('anomalie').push(interventionData).then(function() {
-                  //  alert('Intervention data saved successfully!');
-                    document.querySelector(".loading-container").style.display = "none";
-                }).catch(function(error) {
-                    console.error('Data saving failed:', error);
-                    document.querySelector(".loading-container").style.display = "none";
-                });
+                alert('Veuillez sélectionner une photo à télécharger.');
             }
         });
     </script>
