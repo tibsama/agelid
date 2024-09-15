@@ -14,55 +14,49 @@
             margin: 0;
         }
 
-        /* Style de la page de fond */
-.loading-container {
-  position: fixed;
- 
-  left: 0;
-  width: 100%;
-  height: 10%;
-  background-color: #e0f7fa; /* couleur de fond foncée */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+        .loading-container {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            height: 10%;
+            background-color: #e0f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
 
-/* Style du loader */
-.loader {
-  width: 100px;
-  height: 100px;
-  position: relative;
-}
+        .loader {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
 
-/* Style des points */
-.loader::before,
-.loader::after {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 5px solid transparent;
-  border-top-color: #00aaff;
-  animation: spin 1s infinite linear;
-}
+        .loader::before,
+        .loader::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            border-top-color: #00aaff;
+            animation: spin 1s infinite linear;
+        }
 
-/* Deuxième couche de points avec un retard pour un effet de mouvement */
-.loader::after {
-  border-top-color: #0066ff;
-  animation-delay: -0.5s;
-}
+        .loader::after {
+            border-top-color: #0066ff;
+            animation-delay: -0.5s;
+        }
 
-/* Animation de rotation */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
         .form-container {
             background-color: #fff;
@@ -72,12 +66,6 @@
             width: 95%;
             max-width: 600px;
             margin: 20px;
-            transform: perspective(1000px);
-            transition: transform 0.3s;
-        }
-
-        .form-container:hover {
-            transform: perspective(1000px) rotateY(0deg);
         }
 
         h1 {
@@ -106,32 +94,6 @@
             border-radius: 6px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
-            transition: box-shadow 0.3s;
-        }
-
-        .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .form-group input[type="time"] {
-            width: 48%;
-            display: inline-block;
-            margin-right: 4%;
-        }
-
-        .form-group input[type="checkbox"] {
-            margin-right: 10px;
-        }
-
-        .form-group .photo-upload {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .form-group .photo-upload input {
-            width: auto;
         }
 
         .form-group button {
@@ -151,12 +113,14 @@
             transform: translateY(-3px);
         }
 
-        .form-group img {
-            margin-top: 20px;
-            max-width: 100%;
-            border-radius: 6px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: none; /* Caché par défaut */
+        /* Progress bar styling */
+        #progress-bar-container {
+            margin-top: 10px;
+        }
+
+        progress {
+            width: 100%;
+            height: 20px;
         }
 
         @media (max-width: 600px) {
@@ -171,7 +135,7 @@
 </head>
 <body>
     <div class="form-container">
-        <h1>Fiche d'Intervention</h1>
+        <h1>Anomalies</h1>
         <form id="intervention-form">
             <div class="form-group">
                 <label for="zone">Zone</label>
@@ -185,7 +149,6 @@
                     <option value="Triage">Triage</option>
                 </select>
             </div>
-
 
             <div class="form-group">
                 <label for="ligne">Numéro de ligne</label>
@@ -213,24 +176,31 @@
                 <label for="designation">Anomalie</label>
                 <textarea id="designation" name="anomalie" rows="4"></textarea>
             </div>
-            
 
             <div class="form-group">
                 <label for="check">Approbation du chef de zone</label>
                 <input type="checkbox" id="check" name="check">
             </div>
 
-            <div class="form-group photo-upload">
+            <div class="form-group">
                 <label for="photo">Joindre une photo</label>
                 <input type="file" id="photo" name="photo" accept="image/*">
+            </div>
+
+            <!-- Progress bar container -->
+            <div class="form-group">
+                <div id="progress-bar-container" style="display: none;">
+                    <progress id="upload-progress" value="0" max="100"></progress>
+                    <span id="progress-percent">0%</span>
+                </div>
             </div>
 
             <div class="form-group">
                 <img id="photo-preview" alt="Aperçu de la photo" />
             </div>
 
-            <div class="loading-container">
-            <div class="loader"></div>
+            <div class="loading-container" style="display: none;">
+                <div class="loader"></div>
             </div>
 
             <div class="form-group">
@@ -256,28 +226,18 @@
         const database = firebase.database();
         const storage = firebase.storage();
 
-            const url = window.location.href; // Récupère l'URL complète
-            const keyIndex = url.indexOf("key="); // Trouve l'index de "date=" dans l'URL
-            
-            if (keyIndex !== -1) {
-               const keys= url.substring(keyIndex + 4); // Extrait la date après "date="
-                document.getElementById('submitButton').style.display = 'none';
-                loadkey();
-            } else {document.querySelector(".loading-container").style.display = "none";}
-
         // Function to get date from URL
         function getDateFromUrl() {
-            const url = window.location.href; // Récupère l'URL complète
-            const dateIndex = url.indexOf("date="); // Trouve l'index de "date=" dans l'URL
+            const url = window.location.href;
+            const dateIndex = url.indexOf("date=");
             if (dateIndex !== -1) {
-                return url.substring(dateIndex + 5); // Extrait la date après "date="
+                return url.substring(dateIndex + 5);
             }
-            return null; // Retourne null si "date=" n'est pas trouvé
+            return null;
         }
 
         document.getElementById('intervention-form').addEventListener('submit', function(event) { 
             document.querySelector(".loading-container").style.display = "flex";
-          
             event.preventDefault();
 
             const zone = document.getElementById('zone').value;
@@ -287,56 +247,59 @@
             const anomalie = document.getElementById('designation').value;
             const approbationChef = document.getElementById('check').checked;
             const photoFile = document.getElementById('photo').files[0];
-            const date = getDateFromUrl(); // Get date from URL
+            const date = getDateFromUrl(); 
 
-           if (!date) {
+            if (!date) {
                 alert('Date not found in URL');
                 return;
             }
 
             let interventionData = {
                 zone: zone,
-                equipe: equipe,
                 ligne: ligne,
                 equipment: equipment,
-                heureDebut: heureDebut,
-                heureFin: heureFin,
-                arretProduction: arretProduction,
-                vide: vide,
-                reprise: reprise,
                 nomIntervenant: nomIntervenant,
-                designation: designation,
-                observation: observation,
+                anomalie: anomalie,
                 approbationChef: approbationChef,
-                date: date // Add date to the data
+                date: date 
             };
 
             if (photoFile) {
                 const storageRef = storage.ref('photos/' + Date.now() + '-' + photoFile.name);
                 const uploadTask = storageRef.put(photoFile);
 
+                // Show the progress bar
+                document.getElementById('progress-bar-container').style.display = 'block';
+
                 uploadTask.on('state_changed', function(snapshot) {
-                    // Handle progress, if needed
+                    // Get progress percentage
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    document.getElementById('upload-progress').value = progress;
+                    document.getElementById('progress-percent').textContent = Math.round(progress) + '%';
                 }, function(error) {
                     console.error('Image upload failed:', error);
                 }, function() {
                     uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
                         interventionData.photoURL = downloadURL;
 
-                        // Save data to Realtime Database using push()
-                        database.ref('interventions').push(interventionData).then(function() {
+                        // Save data to Realtime Database
+                        database.ref('anomalie').push(interventionData).then(function() {
                             alert('Intervention data saved successfully!');
                             document.querySelector(".loading-container").style.display = "none";
+                            // Hide the progress bar after upload
+                            document.getElementById('progress-bar-container').style.display = 'none';
+                            document.getElementById('upload-progress').value = 0;
+                            document.getElementById('progress-percent').textContent = '0%';
                         }).catch(function(error) {
                             console.error('Data saving failed:', error);
                             document.querySelector(".loading-container").style.display = "none";
                         });
-                    }); 
+                    });
                 });
             } else {
-                // Save data without photo using push()
-                database.ref('interventions').push(interventionData).then(function() {
-                    alert('Intervention data saved successfully!');
+                // Save data without photo
+                database.ref('anomalie').push(interventionData).then(function() {
+                  //  alert('Intervention data saved successfully!');
                     document.querySelector(".loading-container").style.display = "none";
                 }).catch(function(error) {
                     console.error('Data saving failed:', error);
@@ -344,30 +307,6 @@
                 });
             }
         });
-
-        document.getElementById('photo').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('photo-preview');
-
-            if (file) {
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-
-                reader.readAsDataURL(file);
-            } else {
-                preview.src = '';
-                preview.style.display = 'none';
-            }
-        });
-
-
-
-
-            
     </script>
 </body>
 </html>
