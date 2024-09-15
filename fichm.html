@@ -126,11 +126,29 @@
 
         .progress-bar-container {
             display: none;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
-        .progress-bar-container progress {
+        .progress-bar {
             width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 6px;
+            overflow: hidden;
+            height: 20px;
+        }
+
+        .progress-bar span {
+            display: block;
+            height: 100%;
+            background-color: #00796b;
+            width: 0;
+            transition: width 0.3s;
+        }
+
+        .progress-percent {
+            text-align: center;
+            font-weight: bold;
+            color: #00796b;
         }
 
         @media (max-width: 600px) {
@@ -140,14 +158,12 @@
             }
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase-storage.js"></script>
 </head>
 <body>
-    <div class="loading-container" id="loading-container">
-        <div class="loader"></div>
-    </div>
-
     <div class="form-container">
-        <h1>Fiche d'Intervention</h1>
+        <h1>Anomalie</h1>
         <form id="intervention-form">
             <div class="form-group">
                 <label for="zone">Zone</label>
@@ -195,7 +211,7 @@
             </div>
 
             <div class="form-group photo-upload">
-                <label for="photo">Joindre une photo (optionnel)</label>
+                <label for="photo">Joindre une photo</label>
                 <input type="file" id="photo" name="photo" accept="image/*">
             </div>
 
@@ -203,9 +219,15 @@
                 <img id="photo-preview" alt="Aperçu de la photo" />
             </div>
 
-            <div class="progress-bar-container" id="progress-bar-container">
-                <progress id="upload-progress" value="0" max="100"></progress>
-                <p id="progress-percent">0%</p>
+            <div id="loading-container" class="loading-container">
+                <div class="loader"></div>
+            </div>
+
+            <div id="progress-bar-container" class="progress-bar-container">
+                <div class="progress-bar">
+                    <span id="upload-progress"></span>
+                </div>
+                <div class="progress-percent" id="progress-percent">0%</div>
             </div>
 
             <div class="form-group">
@@ -214,8 +236,6 @@
         </form>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase-storage.js"></script>
     <script>
         // Firebase configuration
         const firebaseConfig = {
@@ -230,74 +250,105 @@
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
         const storage = firebase.storage();
 
-        // Image preview before upload
-        document.getElementById('photo').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('photo-preview');
-
-            if (file) {
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-
-                reader.readAsDataURL(file);
-            } else {
-                preview.src = '';
-                preview.style.display = 'none';
+        function getDateFromUrl() {
+            const url = window.location.href; // Récupère l'URL complète
+            const dateIndex = url.indexOf("date="); // Trouve l'index de "date=" dans l'URL
+            if (dateIndex !== -1) {
+                return url.substring(dateIndex + 5); // Extrait la date
             }
-        });
+            return ''; // Retourne une chaîne vide si la date n'est pas trouvée
+        }
 
-        // Form submission with photo upload
-        document.getElementById('intervention-form').addEventListener('submit', function(event) {
-            event.preventDefault();
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('intervention-form');
+            const photoInput = document.getElementById('photo');
+            const photoPreview = document.getElementById('photo-preview');
+            const submitButton = document.getElementById('submitButton');
+            const loadingContainer = document.getElementById('loading-container');
+            const progressBarContainer = document.getElementById('progress-bar-container');
+            const uploadProgress = document.getElementById('upload-progress');
+            const progressPercent = document.getElementById('progress-percent');
 
-            const photoFile = document.getElementById('photo').files[0];
-            const zone = document.getElementById('zone').value;
-            const ligne = document.getElementById('ligne').value;
-            const equipment = document.getElementById('Equipment').value;
-            const nomIntervenant = document.getElementById('nom-intervenant').value;
-            const anomalie = document.getElementById('designation').value;
-            const check = document.getElementById('check').checked;
+            // Affiche l'aperçu de la photo avant l'upload
+            photoInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        photoPreview.src = e.target.result;
+                        photoPreview.style.display = 'block'; // Affiche l'aperçu
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    photoPreview.src = '';
+                    photoPreview.style.display = 'none'; // Cache l'aperçu si aucun fichier
+                }
+            });
 
-            // Handle form data without photo
-            if (!photoFile) {
-                console.log('Form data:', { zone, ligne, equipment, nomIntervenant, anomalie, check });
-                // Here you would typically handle form submission, e.g., send data to a server
-                return;
-            }
+            // Envoi des données du formulaire
+            form.addEventListener('submit', (event) => {
+                event.preventDefault(); // Empêche le comportement par défaut du formulaire
 
-            // Handle photo upload
-            const storageRef = storage.ref('photos/' + Date.now() + '-' + photoFile.name);
-            const uploadTask = storageRef.put(photoFile);
+                const date = getDateFromUrl();
+                const file = photoInput.files[0];
+                const storageRef = storage.ref();
+                const anomaliesRef = database.ref('anomalies'); // Référence à la collection 'anomalies'
 
-            // Show progress bar and loading spinner
-            document.getElementById('submitButton').style.display = 'none';
-            document.getElementById('loading-container').style.display = 'flex';
-            document.getElementById('progress-bar-container').style.display = 'block';
+                if (file) {
+                    const uploadTask = storageRef.child(`photos/${file.name}`).put(file);
 
-            uploadTask.on('state_changed', function(snapshot) {
-                // Update progress bar
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                document.getElementById('upload-progress').value = progress;
-                document.getElementById('progress-percent').textContent = Math.round(progress) + '%';
-            }, function(error) {
-                console.error('Image upload failed:', error);
-            }, function() {
-                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                    console.log('File available at', downloadURL);
+                    // Affiche la barre de chargement et la roue d'attente
+                    loadingContainer.style.display = 'flex';
+                    progressBarContainer.style.display = 'block';
+                    submitButton.style.display = 'none';
 
-                    // Hide progress bar and loading spinner after upload
-                    document.getElementById('loading-container').style.display = 'none';
-                    document.getElementById('progress-bar-container').style.display = 'none';
-                    document.getElementById('submitButton').style.display = 'block';
-                    document.getElementById('upload-progress').value = 0;
-                    document.getElementById('progress-percent').textContent = '0%';
-                });
+                    uploadTask.on('state_changed',
+                        (snapshot) => {
+                            // Calcul du pourcentage de chargement
+                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            uploadProgress.style.width = progress + '%';
+                            progressPercent.textContent = Math.round(progress) + '%';
+                        },
+                        (error) => {
+                            console.error('Erreur de téléchargement :', error);
+                        },
+                        () => {
+                            // Upload terminé
+                            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                const data = {
+                                    date: date,
+                                    photoURL: downloadURL,
+                                    // Ajoutez d'autres champs si nécessaire
+                                };
+
+                                anomaliesRef.push(data).then(() => {
+                                    // Masque la barre de chargement et la roue d'attente
+                                    loadingContainer.style.display = 'none';
+                                    progressBarContainer.style.display = 'none';
+                                    submitButton.style.display = 'block';
+                                    form.reset(); // Réinitialise le formulaire
+                                    photoPreview.style.display = 'none'; // Cache l'aperçu de la photo
+                                    uploadProgress.style.width = '0'; // Réinitialise la barre de chargement
+                                    progressPercent.textContent = '0%'; // Réinitialise le pourcentage
+                                }).catch((error) => {
+                                    console.error('Erreur lors de l\'enregistrement des données :', error);
+                                });
+                            });
+                        }
+                    );
+                } else {
+                    // Pas de fichier photo, juste enregistrer la date
+                    anomaliesRef.push({ date: date }).then(() => {
+                        form.reset();
+                        photoPreview.style.display = 'none';
+                        submitButton.style.display = 'block';
+                    }).catch((error) => {
+                        console.error('Erreur lors de l\'enregistrement des données :', error);
+                    });
+                }
             });
         });
     </script>
