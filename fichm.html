@@ -53,6 +53,52 @@
             transition: transform 0.3s;
         }
 
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #00796b;
+        }
+
+        .form-group select, .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #00796b;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            transition: box-shadow 0.3s;
+        }
+
+        .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group input[type="time"] {
+            width: 48%;
+            display: inline-block;
+            margin-right: 4%;
+        }
+
+        .form-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .form-group .photo-upload {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-group .photo-upload input {
+            width: auto;
+        }
+
         .form-group button {
             background-color: #00796b;
             color: white;
@@ -75,7 +121,7 @@
             max-width: 100%;
             border-radius: 6px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: none;
+            display: none; /* Caché par défaut */
         }
 
         .progress-bar-container {
@@ -85,6 +131,13 @@
 
         .progress-bar-container progress {
             width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            .form-group input[type="time"] {
+                width: 100%;
+                margin-right: 0;
+            }
         }
     </style>
 </head>
@@ -97,7 +150,52 @@
         <h1>Fiche d'Intervention</h1>
         <form id="intervention-form">
             <div class="form-group">
-                <label for="photo">Joindre une photo</label>
+                <label for="zone">Zone</label>
+                <select id="zone" name="zone">
+                    <option value=""></option>
+                    <option value="PMP">PMP</option>
+                    <option value="Presse">Presse</option>
+                    <option value="Ligne d'émaillage">Ligne d'émaillage</option>
+                    <option value="Impression digitale">Impression digitale</option>
+                    <option value="Four">Four</option>
+                    <option value="Triage">Triage</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ligne">Numéro de ligne</label>
+                <select id="ligne" name="ligne">
+                    <option value=""></option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Equipment">Équipements</label>
+                <input type="text" id="Equipment" name="Equipment">
+            </div>
+
+            <div class="form-group">
+                <label for="nom-intervenant">Nom de l'intervenant</label>
+                <textarea id="nom-intervenant" name="nom-intervenant" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="designation">Anomalie</label>
+                <textarea id="designation" name="anomalie" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="check">Approbation du chef de zone</label>
+                <input type="checkbox" id="check" name="check">
+            </div>
+
+            <div class="form-group photo-upload">
+                <label for="photo">Joindre une photo (optionnel)</label>
                 <input type="file" id="photo" name="photo" accept="image/*">
             </div>
 
@@ -159,37 +257,48 @@
             event.preventDefault();
 
             const photoFile = document.getElementById('photo').files[0];
-            if (photoFile) {
-                const storageRef = storage.ref('photos/' + Date.now() + '-' + photoFile.name);
-                const uploadTask = storageRef.put(photoFile);
+            const zone = document.getElementById('zone').value;
+            const ligne = document.getElementById('ligne').value;
+            const equipment = document.getElementById('Equipment').value;
+            const nomIntervenant = document.getElementById('nom-intervenant').value;
+            const anomalie = document.getElementById('designation').value;
+            const check = document.getElementById('check').checked;
 
-                // Show progress bar and loading spinner
-                document.getElementById('submitButton').style.display = 'none';
-                document.getElementById('loading-container').style.display = 'flex';
-                document.getElementById('progress-bar-container').style.display = 'block';
-
-                uploadTask.on('state_changed', function(snapshot) {
-                    // Update progress bar
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    document.getElementById('upload-progress').value = progress;
-                    document.getElementById('progress-percent').textContent = Math.round(progress) + '%';
-                }, function(error) {
-                    console.error('Image upload failed:', error);
-                }, function() {
-                    uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                        console.log('File available at', downloadURL);
-
-                        // Hide progress bar and loading spinner after upload
-                        document.getElementById('loading-container').style.display = 'none';
-                        document.getElementById('progress-bar-container').style.display = 'none';
-                        document.getElementById('submitButton').style.display = 'block';
-                        document.getElementById('upload-progress').value = 0;
-                        document.getElementById('progress-percent').textContent = '0%';
-                    });
-                });
-            } else {
-                alert('Veuillez sélectionner une photo à télécharger.');
+            // Handle form data without photo
+            if (!photoFile) {
+                console.log('Form data:', { zone, ligne, equipment, nomIntervenant, anomalie, check });
+                // Here you would typically handle form submission, e.g., send data to a server
+                return;
             }
+
+            // Handle photo upload
+            const storageRef = storage.ref('photos/' + Date.now() + '-' + photoFile.name);
+            const uploadTask = storageRef.put(photoFile);
+
+            // Show progress bar and loading spinner
+            document.getElementById('submitButton').style.display = 'none';
+            document.getElementById('loading-container').style.display = 'flex';
+            document.getElementById('progress-bar-container').style.display = 'block';
+
+            uploadTask.on('state_changed', function(snapshot) {
+                // Update progress bar
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                document.getElementById('upload-progress').value = progress;
+                document.getElementById('progress-percent').textContent = Math.round(progress) + '%';
+            }, function(error) {
+                console.error('Image upload failed:', error);
+            }, function() {
+                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                    console.log('File available at', downloadURL);
+
+                    // Hide progress bar and loading spinner after upload
+                    document.getElementById('loading-container').style.display = 'none';
+                    document.getElementById('progress-bar-container').style.display = 'none';
+                    document.getElementById('submitButton').style.display = 'block';
+                    document.getElementById('upload-progress').value = 0;
+                    document.getElementById('progress-percent').textContent = '0%';
+                });
+            });
         });
     </script>
 </body>
