@@ -276,19 +276,13 @@
         const storage = firebase.storage();
 
         // Fonction pour récupérer la date depuis l'URL
-        function getDateFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('date');
-        }
-
-        // Récupérer la date de l'URL et la remplir dans le formulaire si disponible
-        const dateFromUrl = getDateFromUrl();
-        if (dateFromUrl) {
-            const dateInput = document.createElement('input');
-            dateInput.type = 'hidden';
-            dateInput.id = 'date';
-            dateInput.value = dateFromUrl;
-            document.getElementById('intervention-form').appendChild(dateInput);
+       function getDateFromUrl() {
+            const url = window.location.href; // Récupère l'URL complète
+            const dateIndex = url.indexOf("date="); // Trouve l'index de "date=" dans l'URL
+            if (dateIndex !== -1) {
+                return url.substring(dateIndex + 5); // Extrait la date après "date="
+            }
+            return null; // Retourne null si "date=" n'est pas trouvé
         }
 
         document.getElementById('intervention-form').addEventListener('submit', function(event) {
@@ -329,7 +323,7 @@
                             designation: formData.get('anomalie'),
                             approbationChef: formData.get('check') === 'on',
                             photoUrl: downloadURL,
-                            date: dateFromUrl // Inclure la date depuis l'URL
+                            date = getDateFromUrl(); 
                         };
 
                         const ref = database.ref('anomalie');
