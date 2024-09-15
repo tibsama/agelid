@@ -294,7 +294,7 @@
             document.getElementById('submitButton').style.display = 'none';
 
             const formData = new FormData(event.target);
-            const date = formData.get('date');
+            const date = getDateFromUrl();
 
             const photoFile = formData.get('photo');
             const photoRef = storage.ref().child(`photos/${photoFile.name}`);
@@ -323,7 +323,7 @@
                             designation: formData.get('anomalie'),
                             approbationChef: formData.get('check') === 'on',
                             photoUrl: downloadURL,
-                            date = getDateFromUrl(); 
+                            date: date
                         };
 
                         const ref = database.ref('anomalie');
