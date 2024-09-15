@@ -112,6 +112,7 @@
 
     <div class="input-container">
         <button id="redirectButton">Ajouter fiche d'intervention</button>
+        <button id="redirectButtons">Ajouter anomalie</button>
     </div>
 
     <div class="date-display" id="dateDisplay">Date: </div>
@@ -216,6 +217,15 @@
                 window.location.href = url;
             } 
         });
+
+        document.getElementById('redirectButtons').addEventListener('click', function() {
+            const date = getDateFromUrl();
+            if (date) {
+                const url = `https://tibsama.github.io/agelid/fichintev.html#date=${date}`;
+                window.location.href = url;
+            } 
+        });
+        
     </script>
 </body>
 </html>
