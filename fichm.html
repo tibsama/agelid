@@ -285,6 +285,52 @@
             return null; // Retourne null si "date=" n'est pas trouvé
         }
 
+             function getKeyFromUrl() {
+            const url = window.location.hash; // Récupère la partie après le #
+            const keyIndex = url.indexOf("key="); // Cherche "key="
+            if (keyIndex !== -1) {
+                return url.substring(keyIndex + 4); // Extrait la clé après "key="
+            }
+            return null; // Si "key=" n'est pas trouvé, retourne null
+        }
+
+
+  function loadInterventionData(key) {
+            if (key) {
+                const ref = database.ref('anomalie/' + key);
+                ref.once('value').then(snapshot => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        document.getElementById('zone').value = data.zone || '';
+                        document.getElementById('ligne').value = data.ligne || '';
+                        document.getElementById('Equipment').value = data.equipment || '';
+                        document.getElementById('nom-intervenant').value = data.nomIntervenant || '';
+                        document.getElementById('anomalie').value = data.designation || '';
+                        document.getElementById('check').checked = data.approbationChef || false;
+
+                        // Si une photo est disponible, la prévisualiser
+                        if (data.photoUrl) {
+                            document.getElementById('photo-preview').src = data.photoUrl;
+                            document.getElementById('photo-preview').style.display = 'block';
+                        }
+                    } else {
+                        console.error('Aucune donnée trouvée pour la clé :', key);
+                    }
+                }).catch(error => {
+                    console.error('Erreur lors du chargement des données:', error);
+                });
+            }
+        }
+
+                window.onload = function() {
+            const key = getKeyFromUrl();
+            if (key) {
+                loadInterventionData(key); // Charger les données si une clé est présente
+                 document.getElementById('submitButton').style.display = 'none';
+            }
+        };
+        
+
         document.getElementById('intervention-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
