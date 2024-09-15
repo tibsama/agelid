@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager</title>
+    <title>Anomalie Manager</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
+            margin: 0;
             padding: 20px;
+            box-sizing: border-box;
+            min-height: 100vh;
+            overflow-y: auto;
         }
 
         .container {
@@ -17,55 +21,92 @@
             margin: 0 auto;
         }
 
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
 
-        table, th, td {
-            border: 1px solid black;
-        }
-
-        th, td {
-            padding: 10px;
+        table th, table td {
+            padding: 12px;
+            border: 1px solid #ccc;
             text-align: left;
         }
 
-        tr.green {
+        table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table tr.green-row {
             background-color: #d4edda;
         }
 
-        tr.red {
+        table tr.red-row {
             background-color: #f8d7da;
         }
 
         input[type="checkbox"] {
-            margin-right: 10px;
+            transform: scale(1.5);
+        }
+
+        .save-button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .save-button:hover {
+            background-color: #218838;
+        }
+
+        @media (max-width: 600px) {
+            table {
+                font-size: 12px;
+            }
+
+            .save-button {
+                width: 100%;
+                padding: 15px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Liste des anomalies</h1>
-        <table id="tasksTable">
+        <h1>Liste des Anomalies</h1>
+        <table id="anomaliesTable">
             <thead>
                 <tr>
-                    <th>Numéro de Ligne</th>
-                    <th>Désignation</th>
-                    <th>Urgence</th>
+                    <th>Zone</th>
+                    <th>Ligne</th>
+                    <th>Équipement</th>
+                    <th>Nom Intervenant</th>
+                    <th>Anomalie</th>
                     <th>Date</th>
-                    <th>Résolu</th>
+                    <th>Approbation Chef</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Les données seront insérées ici -->
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
     <script>
-        // Config Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
             authDomain: "herher-d121a.firebaseapp.com",
@@ -75,51 +116,54 @@
             messagingSenderId: "626438737297",
             appId: "1:626438737297:web:bf6524275291ec695fde30"
         };
-
-        // Initialiser Firebase
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
 
-        // Récupérer les données depuis la référence 'anomalie'
-        function loadTasks() {
-            const tableBody = document.querySelector("#tasksTable tbody");
-            database.ref('anomalie').once('value', (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const anomaly = childSnapshot.val();
+        const dbRef = firebase.database().ref('anomalie');
 
-                    // Créer une nouvelle ligne de tableau
-                    const row = document.createElement('tr');
-                    row.classList.add('red'); // Rouge par défaut si non cochée
+        function renderTable(data) {
+            const tableBody = document.querySelector('#anomaliesTable tbody');
+            tableBody.innerHTML = ''; // Clear previous rows
 
-                    // Ajouter les cellules avec les données
-                    row.innerHTML = `
-                        <td>${anomaly.numero_ligne}</td>
-                        <td>${anomaly.designation}</td>
-                        <td>${anomaly.urgence}</td>
-                        <td>${anomaly.date}</td>
-                        <td><input type="checkbox"></td>
-                    `;
+            data.forEach(anomalie => {
+                const row = document.createElement('tr');
+                row.className = anomalie.approbationChef ? 'green-row' : 'red-row';
 
-                    // Ajouter un événement pour changer la couleur de la ligne
-                    const checkbox = row.querySelector('input[type="checkbox"]');
-                    checkbox.addEventListener('change', function () {
-                        if (this.checked) {
-                            row.classList.remove('red');
-                            row.classList.add('green');
-                        } else {
-                            row.classList.remove('green');
-                            row.classList.add('red');
-                        }
-                    });
+                row.innerHTML = `
+                    <td>${anomalie.zone}</td>
+                    <td>${anomalie.ligne}</td>
+                    <td>${anomalie.equipment}</td>
+                    <td>${anomalie.nomIntervenant}</td>
+                    <td>${anomalie.designation}</td>
+                    <td>${anomalie.date}</td>
+                    <td><input type="checkbox" ${anomalie.approbationChef ? 'checked' : ''} onchange="toggleApproval('${anomalie.id}', this.checked)"></td>
+                `;
 
-                    // Ajouter la ligne au tableau
-                    tableBody.appendChild(row);
-                });
+                tableBody.appendChild(row);
             });
         }
 
-        // Charger les tâches au chargement de la page
-        window.onload = loadTasks;
+        function toggleApproval(id, isChecked) {
+            const updateData = { approbationChef: isChecked };
+            firebase.database().ref('anomalie/' + id).update(updateData).then(() => {
+                loadData(); // Refresh table
+            });
+        }
+
+        function loadData() {
+            dbRef.once('value', snapshot => {
+                const data = [];
+                snapshot.forEach(childSnapshot => {
+                    const id = childSnapshot.key;
+                    const anomalie = { id, ...childSnapshot.val() };
+                    data.push(anomalie);
+                });
+                renderTable(data);
+            });
+        }
+
+        window.onload = function() {
+            loadData(); // Load data when page is ready
+        };
     </script>
 </body>
 </html>
