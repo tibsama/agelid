@@ -170,14 +170,12 @@
             <h2>Enter Password</h2>
             <input type="password" id="modal-password-input" placeholder="Enter Password">
             <button onclick="validatePassword()">Submit</button>
-            <p id="modal-error-message" style="color: red; display: none;">Incorrect password.</p>
+            <p id="modal-error-message" style="color: red; display: none;">Incorrect password, but you still have access.</p>
         </div>
     </div>
 
-    <div id="password-feedback"></div>
-
-    <!-- Main content (hidden initially) -->
-    <div id="content" style="display: none;">
+    <!-- Main content (visible regardless of password) -->
+    <div id="content">
         <div class="top-left-text">Mot de pass niveau 0</div>
         <div class="header-container">
             <img src="https://tibsama.github.io/agelid/download (2).jpeg" alt="Header Image">
@@ -219,10 +217,18 @@
         </div>
     </div>
 
+    <!-- Change Password Section -->
+    <div style="text-align: center; margin-top: 40px;">
+        <h2>Change Password</h2>
+        <input type="password" id="new-password-input" placeholder="Enter New Password">
+        <button onclick="changePassword()">Change Password</button>
+        <p id="change-password-feedback" style="color: green; display: none;">Password successfully changed!</p>
+    </div>
+
     <script>
         const apiKey = "$2a$10$Ro4u7k0o7xdL5C3Guu/RmOH2p0kVyZTtdQfjXe0gqUk.HEKxtdLxi";
         const binId = "66c26fb3e41b4d34e42223dc";
-        let pw = 0;  // Variable to be set if password is correct
+        let pw = 0;  // Variable for setting password status
 
         // Function to show modal
         function showModal() {
@@ -243,20 +249,43 @@
             .then(data => {
                 const storedPassword = data.record.password;
 
-                // Check password and give access if correct
+                // Check password, but don't restrict access
                 if (enteredPassword === storedPassword) {
+                    pw = 1;  // Correct password
                     document.getElementById('password-modal').style.display = 'none';  // Hide the modal
-                    document.getElementById('content').style.display = 'block';  // Show content
-                    pw = 1;  // Set pw to 1
                 } else {
-                    document.getElementById('modal-error-message').style.display = 'block';  // Show error
+                    pw = 0;  // Incorrect password
+                    document.getElementById('modal-error-message').style.display = 'block';
                 }
             })
             .catch(error => {
                 console.error('Error fetching password:', error);
             });
         }
-        
+
+        // Function to change the password
+        function changePassword() {
+            const newPassword = document.getElementById('new-password-input').value;
+
+            if (newPassword) {
+                // Update the password in JSONBin
+                fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'X-Master-Key': apiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password: newPassword })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('change-password-feedback').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error updating password:', error);
+                });
+            }
+        }
     </script>
 </body>
 </html>
