@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protected Page</title>
+    <title>Password Prompt Without Restriction</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,9 +13,8 @@
         }
 
         #password-prompt {
-            display: none;
             text-align: center;
-            margin-top: 100px;
+            margin-top: 50px;
         }
 
         #password-prompt input {
@@ -33,17 +32,103 @@
             cursor: pointer;
         }
 
-        #content {
-            display: none;
+        #password-feedback {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: green;
+        }
+
+        .top-left-text {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .header-container {
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .header-container img {
+            width: 100px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .header-container h1 {
+            font-size: 24px;
+            color: #007BFF;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .image-button {
+            background-color: #fff;
+            border: 2px solid #007BFF;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .image-button img {
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .image-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-text {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .full-width-images {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .full-width-images a {
+            display: block;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .full-width-images img {
+            width: 100%;
+            height: auto;
         }
     </style>
 </head>
 <body>
     <div id="password-prompt">
-        <h2>Enter Password to Access the Page</h2>
-        <input type="password" id="password-input" placeholder="Password">
-        <button onclick="verifyPassword()">Submit</button>
-        <p id="error-message" style="color: red; display: none;">Incorrect password. Please try again.</p>
+        <h2>Enter Password (You will still have access even if it's incorrect)</h2>
+        <input type="password" id="password-input" placeholder="Enter Password">
+        <button onclick="handlePassword()">Submit</button>
+        <p id="error-message" style="color: red; display: none;">Incorrect password.</p>
     </div>
 
     <div id="content">
@@ -52,29 +137,49 @@
             <img src="https://tibsama.github.io/agelid/download (2).jpeg" alt="Header Image">
             <h1>Plan maintenance de SARL Corso Ceram</h1>
         </div>
+
         <div class="button-container">
             <a href="https://tibsama.github.io/agelid/Gressage.html" class="image-button">
                 <div class="button-text">Gressage</div>
                 <img src="https://tibsama.github.io/agelid/images%20(30).jpeg" alt="Image 1">
             </a>
-            <!-- Other buttons go here -->
+
+            <a href="https://tibsama.github.io/agelid/entranml.html" class="image-button">
+                <div class="button-text">Entretien et Anomalie</div>
+                <img src="https://tibsama.github.io/agelid/images%20(9).png" alt="Image 2">
+            </a>
+
+            <a href="https://tibsama.github.io/agelid/cnst.html" class="image-button">
+                <div class="button-text">Préconisations Constructeurs</div>
+                <img src="https://tibsama.github.io/agelid/images%20(31).jpeg" alt="Image 3">
+            </a>
+
+            <a href="https://tibsama.github.io/agelid/task.html" class="image-button">
+                <div class="button-text">Anomalies</div>
+                <img src="https://tibsama.github.io/agelid/images%20(32).jpeg" alt="Image 4">
+            </a>
         </div>
+
         <div class="full-width-images">
             <a href="https://tibsama.github.io/agelid/ex.html">
                 <img src="https://tibsama.github.io/agelid/images%20(10).png" alt="Full Width Image 1">
             </a>
-            <!-- Other images go here -->
+            <a href="https://example.com/image2">
+                <img src="https://via.placeholder.com/1200x600" alt="Full Width Image 2">
+            </a>
+            <a href="https://example.com/image3">
+                <img src="https://via.placeholder.com/1200x600" alt="Full Width Image 3">
+            </a>
         </div>
     </div>
+
+    <div id="password-feedback"></div>
 
     <script>
         const apiKey = "$2a$10$Ro4u7k0o7xdL5C3Guu/RmOH2p0kVyZTtdQfjXe0gqUk.HEKxtdLxi";
         const binId = "66c26fb3e41b4d34e42223dc";
 
-        // Display password prompt on page load
-        document.getElementById('password-prompt').style.display = 'block';
-
-        function verifyPassword() {
+        function handlePassword() {
             const enteredPassword = document.getElementById('password-input').value;
 
             // Fetch the stored password from JSONBin
@@ -86,14 +191,15 @@
             .then(response => response.json())
             .then(data => {
                 const storedPassword = data.record.password;
-                
-                // Verify the password
+
+                // Display feedback based on password
+                const feedbackElement = document.getElementById('password-feedback');
                 if (enteredPassword === storedPassword) {
-                    // Hide password prompt and show content
-                    document.getElementById('password-prompt').style.display = 'none';
-                    document.getElementById('content').style.display = 'block';
+                    feedbackElement.textContent = "Correct password entered!";
+                    feedbackElement.style.color = "green";
                 } else {
-                    document.getElementById('error-message').style.display = 'block';
+                    feedbackElement.textContent = "Password entered is incorrect, but you still have access!";
+                    feedbackElement.style.color = "orange";
                 }
             })
             .catch(error => {
