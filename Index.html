@@ -121,17 +121,63 @@
             width: 100%;
             height: auto;
         }
+
+        /* Modal styles */
+        #password-modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        #modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        #modal-content input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        #modal-content button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <div id="password-prompt">
-        <h2>Enter Password (You will still have access even if it's incorrect)</h2>
-        <input type="password" id="password-input" placeholder="Enter Password">
-        <button onclick="handlePassword()">Submit</button>
-        <p id="error-message" style="color: red; display: none;">Incorrect password.</p>
+    <!-- Button to show password modal -->
+    <button onclick="showModal()" style="position: absolute; top: 20px; right: 20px; padding: 10px; background-color: #007BFF; color: white; border: none; cursor: pointer;">
+        Enter Password
+    </button>
+
+    <!-- Password Modal -->
+    <div id="password-modal">
+        <div id="modal-content">
+            <h2>Enter Password</h2>
+            <input type="password" id="modal-password-input" placeholder="Enter Password">
+            <button onclick="validatePassword()">Submit</button>
+            <p id="modal-error-message" style="color: red; display: none;">Incorrect password.</p>
+        </div>
     </div>
 
-    <div id="content">
+    <div id="password-feedback"></div>
+
+    <!-- Main content (hidden initially) -->
+    <div id="content" style="display: none;">
         <div class="top-left-text">Mot de pass niveau 0</div>
         <div class="header-container">
             <img src="https://tibsama.github.io/agelid/download (2).jpeg" alt="Header Image">
@@ -173,14 +219,19 @@
         </div>
     </div>
 
-    <div id="password-feedback"></div>
-
     <script>
         const apiKey = "$2a$10$Ro4u7k0o7xdL5C3Guu/RmOH2p0kVyZTtdQfjXe0gqUk.HEKxtdLxi";
         const binId = "66c26fb3e41b4d34e42223dc";
+        let pw = 0;  // Variable to be set if password is correct
 
-        function handlePassword() {
-            const enteredPassword = document.getElementById('password-input').value;
+        // Function to show modal
+        function showModal() {
+            document.getElementById('password-modal').style.display = 'block';
+        }
+
+        // Function to validate password
+        function validatePassword() {
+            const enteredPassword = document.getElementById('modal-password-input').value;
 
             // Fetch the stored password from JSONBin
             fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
@@ -192,14 +243,13 @@
             .then(data => {
                 const storedPassword = data.record.password;
 
-                // Display feedback based on password
-                const feedbackElement = document.getElementById('password-feedback');
+                // Check password and give access if correct
                 if (enteredPassword === storedPassword) {
-                    feedbackElement.textContent = "Correct password entered!";
-                    feedbackElement.style.color = "green";
+                    document.getElementById('password-modal').style.display = 'none';  // Hide the modal
+                    document.getElementById('content').style.display = 'block';  // Show content
+                    pw = 1;  // Set pw to 1
                 } else {
-                    feedbackElement.textContent = "Password entered is incorrect, but you still have access!";
-                    feedbackElement.style.color = "orange";
+                    document.getElementById('modal-error-message').style.display = 'block';  // Show error
                 }
             })
             .catch(error => {
