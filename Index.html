@@ -259,11 +259,12 @@
 
                 if (enteredPassword === storedPassword) {
                     document.getElementById('password-modal').style.display = 'none';
-                    alert('Password is correct');
+                    document.querySelector('.top-left-text').textContent = 'Mot de pass niveau 1';
                     pw = 1;  // Update password status
                 } else {
                     document.getElementById('modal-error-message').style.display = 'block';
                     document.getElementById('password-modal').style.display = 'none';
+                    document.querySelector('.top-left-text').textContent = 'Mot de pass niveau 0';
                     pw = 0;  // Update password status
                 }
             })
@@ -272,6 +273,7 @@
 
         // Function to change password
         function changePassword() {
+            if (pw === 1) {
             const newPassword = document.getElementById('new-password-input').value;
             
             // Update password in the API
@@ -290,7 +292,9 @@
                 alert('Password successfully changed!');
             })
             .catch(error => console.error('Error:', error));
-        }
+        }    } 
+
+        
     </script>
 </body>
 </html>
