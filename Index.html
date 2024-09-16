@@ -3,140 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buttons with Text and Images</title>
+    <title>Protected Page</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             margin: 0;
             padding: 20px;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-            position: relative;
         }
 
-        .top-left-text {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .header-container {
+        #password-prompt {
+            display: none;
             text-align: center;
-            margin-top: 60px; /* Space between top text and header container */
+            margin-top: 100px;
         }
 
-        .header-container img {
-            width: 100px; /* Set the width of the image */
-            height: auto; /* Maintain aspect ratio */
-            margin-bottom: 20px; /* Space between image and heading */
-        }
-
-        .header-container h1 {
-            font-size: 24px;
-            color: #007BFF;
-        }
-
-        .button-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columns for a square layout */
-            gap: 20px; /* Space between buttons */
-            justify-content: center; /* Center the buttons horizontally */
-            margin-top: 40px; /* Space between heading and buttons */
-        }
-
-        .image-button {
-            background-color: #fff;
-            border: 2px solid #007BFF;
-            border-radius: 10px;
+        #password-prompt input {
             padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        #password-prompt button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-align: center;
-            text-decoration: none; /* Remove underline from links */
-            color: inherit; /* Inherit text color */
         }
 
-        .image-button img {
-            width: 80px;  /* Set the width of the images */
-            height: 80px; /* Set the height of the images */
-            border-radius: 5px;
-            display: block;
-            margin: 0 auto; /* Center the image */
-        }
-
-        .image-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .button-text {
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .full-width-images {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 40px; /* Space between buttons and images */
-        }
-
-        .full-width-images a {
-            display: block;
-            width: 100%;
-            margin-bottom: 20px; /* Space between images */
-        }
-
-        .full-width-images img {
-            width: 100%;
-            height: auto; /* Maintain aspect ratio */
+        #content {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="top-left-text">Mot de pass niveau 0</div>
-
-    <div class="header-container">
-        <img src="https://tibsama.github.io/agelid/download (2).jpeg" alt="Header Image"> <!-- Replace with your image URL -->
-        <h1>Plan maintenance de SARL Corso Ceram</h1>
+    <div id="password-prompt">
+        <h2>Enter Password to Access the Page</h2>
+        <input type="password" id="password-input" placeholder="Password">
+        <button onclick="verifyPassword()">Submit</button>
+        <p id="error-message" style="color: red; display: none;">Incorrect password. Please try again.</p>
     </div>
 
-    <div class="button-container">
-        <a href="https://tibsama.github.io/agelid/Gressage.html" class="image-button">
-            <div class="button-text">Gressage</div>
-            <img src="https://tibsama.github.io/agelid/images%20(30).jpeg" alt="Image 1">
-        </a>
-
-        <a href="https://tibsama.github.io/agelid/entranml.html" class="image-button">
-            <div class="button-text">entretien et anomalie</div>
-            <img src="https://tibsama.github.io/agelid/images%20(9).png" alt="Image 2">
-        </a>
-
-        <a href="https://tibsama.github.io/agelid/cnst.html" class="image-button">
-            <div class="button-text">Préconisations Constructeurs</div>
-            <img src="https://tibsama.github.io/agelid/images%20(31).jpeg" alt="Image 3">
-        </a>
-
-        <a href="https://tibsama.github.io/agelid/task.html" class="image-button">
-            <div class="button-text">anomalies</div>
-            <img src="https://tibsama.github.io/agelid/images%20(32).jpeg" alt="Image 4">
-        </a>
+    <div id="content">
+        <div class="top-left-text">Mot de pass niveau 0</div>
+        <div class="header-container">
+            <img src="https://tibsama.github.io/agelid/download (2).jpeg" alt="Header Image">
+            <h1>Plan maintenance de SARL Corso Ceram</h1>
+        </div>
+        <div class="button-container">
+            <a href="https://tibsama.github.io/agelid/Gressage.html" class="image-button">
+                <div class="button-text">Gressage</div>
+                <img src="https://tibsama.github.io/agelid/images%20(30).jpeg" alt="Image 1">
+            </a>
+            <!-- Other buttons go here -->
+        </div>
+        <div class="full-width-images">
+            <a href="https://tibsama.github.io/agelid/ex.html">
+                <img src="https://tibsama.github.io/agelid/images%20(10).png" alt="Full Width Image 1">
+            </a>
+            <!-- Other images go here -->
+        </div>
     </div>
 
-    <div class="full-width-images">
-        <a href="https://tibsama.github.io/agelid/ex.html">
-            <img src="https://tibsama.github.io/agelid/images%20(10).png" alt="Full Width Image 1"> <!-- Replace with your image URL -->
-        </a>
-        <a href="https://example.com/image2">
-            <img src="https://via.placeholder.com/1200x600" alt="Full Width Image 2"> <!-- Replace with your image URL -->
-        </a>
-        <a href="https://example.com/image3">
-            <img src="https://via.placeholder.com/1200x600" alt="Full Width Image 3"> <!-- Replace with your image URL -->
-        </a>
-    </div>
+    <script>
+        const apiKey = "$2a$10$Ro4u7k0o7xdL5C3Guu/RmOH2p0kVyZTtdQfjXe0gqUk.HEKxtdLxi";
+        const binId = "66c26fb3e41b4d34e42223dc";
+
+        // Display password prompt on page load
+        document.getElementById('password-prompt').style.display = 'block';
+
+        function verifyPassword() {
+            const enteredPassword = document.getElementById('password-input').value;
+
+            // Fetch the stored password from JSONBin
+            fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+                headers: {
+                    'X-Master-Key': apiKey
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const storedPassword = data.record.password;
+                
+                // Verify the password
+                if (enteredPassword === storedPassword) {
+                    // Hide password prompt and show content
+                    document.getElementById('password-prompt').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+                } else {
+                    document.getElementById('error-message').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching password:', error);
+            });
+        }
+    </script>
 </body>
 </html>
