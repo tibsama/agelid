@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bibliothèque Personnelle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    .button {
+      padding: 10px 20px;
+      margin: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+    img {
+      max-width: 200px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Ma Bibliothèque Personnelle</h1>
+
+  <!-- Image Display -->
+  <h2>Image</h2>
+  <img id="displayImage" src="image_placeholder.jpg" alt="Image" />
+
+  <!-- Button -->
+  <h2>Bouton</h2>
+  <button class="button" onclick="alert('Bouton cliqué !')">Cliquez moi</button>
+
+  <!-- Save Data -->
+  <h2>Sauvegarder et Récupérer des Données</h2>
+  <input type="text" id="dataInput" placeholder="Entrez des données">
+  <button class="button" onclick="saveData()">Sauvegarder</button>
+  <button class="button" onclick="retrieveData()">Récupérer</button>
+  <p id="retrievedData"></p>
+
+  <!-- Communication Bluetooth -->
+  <h2>Bluetooth</h2>
+  <button class="button" onclick="connectBluetooth()">Se connecter au Bluetooth</button>
+
+  <!-- Communication Wi-Fi Local -->
+  <h2>Wi-Fi Local</h2>
+  <button class="button" onclick="connectWiFi()">Se connecter au Wi-Fi Local</button>
+
+<h1>Afficher un fichier PDF</h1>
+    <embed src="https://raw.githubusercontent.com/tibsama/agelid/main/Variateur%20de%20vitesse%20YASKAWA.pdf
+" type="application/pdf" width="100%" height="600px">
+
+
+  <script>
+    // Sauvegarder les données dans localStorage
+    function saveData() {
+      let data = document.getElementById('dataInput').value;
+      localStorage.setItem('savedData', data);
+      alert('Données sauvegardées!');
+    }
+
+    // Récupérer les données depuis localStorage
+    function retrieveData() {
+      let data = localStorage.getItem('savedData');
+      document.getElementById('retrievedData').innerText = data ? 'Données : ' + data : 'Aucune donnée trouvée.';
+    }
+
+    // Fonction Bluetooth
+    async function connectBluetooth() {
+      try {
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true
+        });
+        alert('Appareil Bluetooth connecté : ' + device.name);
+      } catch (error) {
+        alert('Erreur de connexion Bluetooth : ' + error);
+      }
+    }
+
+    // Fonction Wi-Fi (nécessite des API spécifiques, exemple basique)
+    function connectWiFi() {
+      alert('Connexion Wi-Fi Local (nécessite une implémentation serveur).');
+    }
+  </script>
+</body>
+</html>
