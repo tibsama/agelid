@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Prompt Without Restriction</title>
+    <title>Password Prompt With Change Password</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -123,7 +123,7 @@
         }
 
         /* Modal styles */
-        #password-modal {
+        #password-modal, #change-password-modal {
             display: none;
             position: fixed;
             z-index: 1;
@@ -146,7 +146,7 @@
         #modal-content input {
             padding: 10px;
             margin: 10px 0;
-            width: 100%;
+            width: 90%;
         }
 
         #modal-content button {
@@ -171,6 +171,18 @@
             <input type="password" id="modal-password-input" placeholder="Enter Password">
             <button onclick="validatePassword()">Submit</button>
             <p id="modal-error-message" style="color: red; display: none;">Incorrect password, but you still have access.</p>
+            <!-- New Button to open Change Password Modal -->
+            <button onclick="showChangePasswordModal()">Change Password</button>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="change-password-modal">
+        <div id="modal-content">
+            <h2>Change Password</h2>
+            <input type="password" id="new-password-input" placeholder="Enter New Password">
+            <button onclick="changePassword()">Submit</button>
+            <p id="change-password-feedback" style="color: green; display: none;">Password successfully changed!</p>
         </div>
     </div>
 
@@ -217,14 +229,6 @@
         </div>
     </div>
 
-    <!-- Change Password Section -->
-    <div style="text-align: center; margin-top: 40px;">
-        <h2>Change Password</h2>
-        <input type="password" id="new-password-input" placeholder="Enter New Password">
-        <button onclick="changePassword()">Change Password</button>
-        <p id="change-password-feedback" style="color: green; display: none;">Password successfully changed!</p>
-    </div>
-
     <script>
         const apiKey = "$2a$10$Ro4u7k0o7xdL5C3Guu/RmOH2p0kVyZTtdQfjXe0gqUk.HEKxtdLxi";
         const binId = "66bd10b3e41b4d34e4207244";
@@ -235,56 +239,57 @@
             document.getElementById('password-modal').style.display = 'block';
         }
 
+        // Function to show change password modal
+        function showChangePasswordModal() {
+            document.getElementById('password-modal').style.display = 'none';
+            document.getElementById('change-password-modal').style.display = 'block';
+        }
+
         // Function to validate password
         function validatePassword() {
             const enteredPassword = document.getElementById('modal-password-input').value;
-
-            // Fetch the stored password from JSONBin
-            fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+            fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
                 headers: {
-                    'X-Master-Key': apiKey
+                    "X-Master-Key": apiKey
                 }
             })
             .then(response => response.json())
             .then(data => {
-                const storedPassword = data.record.password;
+                const storedPassword = data.record.mdp;
 
-                // Check password, but don't restrict access
                 if (enteredPassword === storedPassword) {
-                    pw = 1;  // Correct password
-                    document.getElementById('password-modal').style.display = 'none';  // Hide the modal
+                    document.getElementById('password-modal').style.display = 'none';
+                    alert('Password is correct');
+                    pw = 1;  // Update password status
                 } else {
-                    pw = 0;  // Incorrect password
                     document.getElementById('modal-error-message').style.display = 'block';
+                    document.getElementById('password-modal').style.display = 'none';
+                    pw = 0;  // Update password status
                 }
             })
-            .catch(error => {
-                console.error('Error fetching password:', error);
-            });
+            .catch(error => console.error('Error:', error));
         }
 
-        // Function to change the password
+        // Function to change password
         function changePassword() {
             const newPassword = document.getElementById('new-password-input').value;
-
-            if (newPassword) {
-                // Update the password in JSONBin
-                fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'X-Master-Key': apiKey,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ password: newPassword })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('change-password-feedback').style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Error updating password:', error);
-                });
-            }
+            
+            // Update password in the API
+            fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                method: 'PUT',
+                headers: {
+                    "X-Master-Key": apiKey,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ "mdp": newPassword })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('change-password-modal').style.display = 'none';
+                document.getElementById('change-password-feedback').style.display = 'block';
+                alert('Password successfully changed!');
+            })
+            .catch(error => console.error('Error:', error));
         }
     </script>
 </body>
