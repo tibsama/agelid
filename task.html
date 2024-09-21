@@ -187,7 +187,7 @@
             const originalContents = document.body.innerHTML;
 
             document.body.innerHTML = printContents;
-            window.print();
+          //  window.print();
              setTimeout(function() {
     // Restaurer le contenu original de la page
     document.body.innerHTML = originalContents;
@@ -199,7 +199,7 @@
         }
     // Recharger la page
     location.reload();
-}, 2000);
+}, 500);
         }
 
         window.onload = function() {
