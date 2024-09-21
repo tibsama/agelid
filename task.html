@@ -191,11 +191,11 @@
              setTimeout(function() {
     // Restaurer le contenu original de la page
     document.body.innerHTML = originalContents;
-                 console.log("Tentative d'appel de Android.printPage()");
+                 alert("Tentative d'appel de Android.printPage()");
         if (typeof Android !== 'undefined' && typeof Android.printPage === 'function') {
             Android.printPage();  // Appeler la méthode d'impression Android
         } else {
-            console.log("L'objet Android n'est pas défini ou la méthode printPage n'existe pas.");
+            alert("L'objet Android n'est pas défini ou la méthode printPage n'existe pas.");
         }
     // Recharger la page
     location.reload();
