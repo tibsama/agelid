@@ -188,7 +188,6 @@
 
             document.body.innerHTML = printContents;
             window.print();
-            return new Promise(resolve => setTimeout(resolve, 1000));
             document.body.innerHTML = originalContents;
             location.reload(); // Refresh the page after printing
         }
