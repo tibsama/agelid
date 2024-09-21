@@ -188,8 +188,13 @@
 
             document.body.innerHTML = printContents;
             window.print();
-            document.body.innerHTML = originalContents;
-            location.reload(); // Refresh the page after printing
+             setTimeout(function() {
+    // Restaurer le contenu original de la page
+    document.body.innerHTML = originalContents;
+
+    // Recharger la page
+    location.reload();
+}, 1000);
         }
 
         window.onload = function() {
