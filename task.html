@@ -73,12 +73,27 @@
             background-color: #218838;
         }
 
+        .print-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .print-button:hover {
+            background-color: #0056b3;
+        }
+
         @media (max-width: 600px) {
             table {
                 font-size: 12px;
             }
 
-            .save-button {
+            .save-button, .print-button {
                 width: 100%;
                 padding: 15px;
                 font-size: 14px;
@@ -103,6 +118,7 @@
             </thead>
             <tbody></tbody>
         </table>
+        <button class="print-button" onclick="printTable()">Imprimer la Table</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
@@ -164,6 +180,16 @@
                 });
                 renderTable(data);
             });
+        }
+
+        function printTable() {
+            const printContents = document.querySelector('#anomaliesTable').outerHTML;
+            const originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+            location.reload(); // Refresh the page after printing
         }
 
         window.onload = function() {
