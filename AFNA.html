@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<html
+<head>
+<meta charset="utf-8">
+<title>AFNA.DZ</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<style>
+.container {  margin: auto; text-align: center;}
+.sys {  margin: auto; text-align: center;font-size:90%;}
+.btn {background-color: #AAAAAA;  border: none;  color: black;  padding: 15px 32px;  text-align: center;  text-decoration: none;  display: inline-block;  font-size: 20px;  margin: 4px 2px;  cursor: pointer;}
+.button {background-color: #AAAAAA;  border: none;  color: black;  padding: 15px 32px;  text-align: center;  text-decoration: none;  display: inline-block;  font-size: 20px;  margin: 4px 2px;  cursor: pointer;}
+</style>
+</head>
+<body style="background-color:black;">
+
+
+  <div class="container"> <h1>
+     <button onclick="fbs()" ><img src="https://zupimages.net/up/23/49/goro.png" alt="Snow" width="80%" ></button>
+      <input type="text" placeholder="Search.." id="search"> 
+      <button onclick="fb()" ><img src="https://zupimages.net/up/23/49/ws77.png" alt="Snow" width="80%" ></button>
+      <button onclick="fc()" > <img id="sd" src="https://zupimages.net/up/23/49/m4ea.png" alt="Snow" width="80%" ></button>
+                </div>
+
+
+ <h2><img src="https://drive.google.com/uc?export=view&id=162dDv3Fhh70SbNh_n0RzGXIKpkAfKEpU" alt="Snow" width="5%"><font color="white"> AFNA creation</font></h2>
+
+<div class="container">
+  <img src="https://drive.google.com/uc?export=view&id=10t02_uWhmDnMZCCOB7UhvzK0q_kWNXQE" alt="Snow" width="30%">
+  <img src="https://drive.google.com/uc?export=view&id=1rTKvYNaN5UQcqe3AAn6fNpEz8z_65Y1i" alt="Snow" width="30%">
+  <img src="https://drive.google.com/uc?export=view&id=1B67cqZnsN66myd33AHqL4DD_9_IDTQW3" alt="Snow" width="30%">
+
+ </div>
+
+
+		<div>
+			<h1><font color="white">produits</h1>
+			<div id="page" >
+		</div>
+
+<div id="result"></div>
+
+<div class="container">
+<p id="dem"></p>
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/7.24.0/firebase.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/7.9.0/firebase-analytics.js"></script>
+
+<script> 
+
+var p=0; var ordr=""; var ordrs=""; var tar="";  var liv=0; var total=0; 
+var n=0; var qnt=""; var nom=""; var num=""; var adrs=""; var em=""; var note="";
+var link=window.location.href;
+ var firebaseConfig = { apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA", authDomain: "herher-d121a.firebaseapp.com", databaseURL: "https://herher-d121a.firebaseio.com", projectId: "herher-d121a", storageBucket: "herher-d121a.appspot.com", messagingSenderId: "626438737297", appId: "1:626438737297:web:bf6524275291ec695fde30"};
+
+  firebase.initializeApp(firebaseConfig); firebase.analytics();
+
+
+  var rootRef =firebase.database().ref().child('orders');
+  var firebaseOrders = firebase.database().ref().child('info');
+
+ 
+
+var h=link.substring(link.indexOf("html")+5, link.length);
+ link= link.substring(0, link.length-4);
+if (link.includes("html")) { 
+h=h.replace("%20", " ");
+  rootRef.on('value',function(orders){   var allOrdersHtml = "";			
+	orders.forEach(function(firebaseOrderReference){
+	    var order = firebaseOrderReference.val();   console.log(order);
+var text =order.dsg; 
+if (text.includes(h)) { 
+		var individialOrderHtml =	`
+  <div class="container">  
+    <div>      <h1 id="`+order.dsg+`">`+order.dsg+`</h1>   </div>
+               <img src=`+order.img+` width="95%" id="`+order.dsg+`"/> 
+    <div>
+               <h2>prix: `+order.prx+` DZ</h2>
+               <h2>quantite: `+order.qnt+`</h2>
+ <p>-------------------------------------------------------------</p>
+                  </div>	          </div>   `; 
+allOrdersHtml = allOrdersHtml + individialOrderHtml;  }	 });  
+
+$('#page').html(allOrdersHtml);});
+} else {
+  rootRef.on('value',function(orders){   var allOrdersHtml = "";			
+	orders.forEach(function(firebaseOrderReference){
+	    var order = firebaseOrderReference.val();   console.log(order); 
+		var individialOrderHtml =	`
+    <div class="container">  <a href="#`+order.dsg+`">
+    <div>      <h1 id="`+order.dsg+`">`+order.dsg+`</h1>   </div> 
+               <img src=`+order.img+` width="95%" id="`+order.dsg+`"/> 
+    </a>   <div>
+               <h2>prix: `+order.prx+` DZ</h2>
+               <h2>quantite: `+order.qnt+`</h2>
+ <p>-------------------------------------------------------------</p>
+                  </div>	          </div>   `;
+allOrdersHtml = allOrdersHtml + individialOrderHtml;	});
+$('#page').html(allOrdersHtml);});  p=0; } 
+
+
+
+function fbs() {   
+  rootRef.on('value',function(orders){   var allOrdersHtml = "";			
+	orders.forEach(function(firebaseOrderReference){
+	    var order = firebaseOrderReference.val();   console.log(order); 
+		var individialOrderHtml =	`
+    <div class="container">  <a href="#`+order.dsg+`">
+    <div>      <h1 id="`+order.dsg+`">`+order.dsg+`</h1>   </div> 
+               <img src=`+order.img+` width="95%" id="`+order.dsg+`"/> 
+    </a>   <div>
+               <h2>prix: `+order.prx+` DZ</h2>
+               <h2>quantite: `+order.qnt+`</h2>
+ <p>-------------------------------------------------------------</p>
+                  </div>	          </div>   `;
+allOrdersHtml = allOrdersHtml + individialOrderHtml;	});
+$('#page').html(allOrdersHtml);});  p=0; } 
+
+
+function fb() {
+
+var txt = $('#search').val(); txt = txt.toUpperCase();
+
+  rootRef.on('value',function(orders){   var allOrdersHtml = "";			
+	orders.forEach(function(firebaseOrderReference){
+	    var order = firebaseOrderReference.val();   console.log(order);
+var text =order.dsg; text = text.toUpperCase();
+
+if (text.includes(txt)) { 
+		var individialOrderHtml =	`
+  <div class="container">  
+    <div>      <h1 id="`+order.dsg+`">`+order.dsg+`</h1>   </div>
+               <img src=`+order.img+` width="95%" id="`+order.dsg+`"/> 
+    <div>
+               <h2>prix: `+order.prx+` DZ</h2>
+               <h2>quantite: `+order.qnt+`</h2>
+ <p>-------------------------------------------------------------</p>
+                  </div>	          </div>   `; 
+allOrdersHtml = allOrdersHtml + individialOrderHtml;  }	 });  
+
+$('#page').html(allOrdersHtml);});
+}
+
+ 
+page.addEventListener("click", (event) => {
+
+n=0;
+//var text = document.getElementById("ss").innerHTML ; 
+ // $('#search').val(text);
+// let tar = e.target.id;   
+// let result = tar.substring(0, tar.length-3);
+})
+
+
+const buttons = document.getElementsByTagName("div");
+const result = document.getElementById("result");
+
+
+const buttonPressed = e => { 
+ let tar = e.target.id;  
+ let result = tar.substring(0, tar.length-3);
+
+if (tar==result+".,.") { if (n==0 && (document.getElementById(result+"q").innerHTML>1)) {
+document.getElementById(result+"q").innerHTML=parseInt((document.getElementById(result+"q").innerHTML) -(1));
+document.getElementById(result+"pt").innerHTML=parseInt((document.getElementById(result+"p").innerHTML) *(parseInt(document.getElementById(result+"q").innerHTML)));
+total=total-parseInt(document.getElementById(result+"p").innerHTML);
+let originalText = qnt;
+let newText = originalText.replace("#.#"+result+".#.", '');
+qnt=newText;
+document.getElementById("total").innerHTML="total= "+total+" dz ";
+if (liv==1) {
+document.getElementById("totals").innerHTML= parseInt(total+1000)+" dz ";
+} else {document.getElementById("totals").innerHTML= parseInt(total+400)+" dz ";}
+n=1; }
+} else if (tar==result+",.,") { if (n==0 && (document.getElementById(result+"m").innerHTML>document.getElementById(result+"q").innerHTML) ) {
+document.getElementById(result+"q").innerHTML=parseInt(parseInt(document.getElementById(result+"q").innerHTML) +(1));
+document.getElementById(result+"pt").innerHTML=parseInt((document.getElementById(result+"p").innerHTML) *(parseInt(document.getElementById(result+"q").innerHTML)));
+total=total+parseInt(document.getElementById(result+"p").innerHTML);
+qnt=qnt+"#.#"+result+".#.";
+document.getElementById("total").innerHTML="total= "+total+" dz ";
+if (liv==1) {
+document.getElementById("totals").innerHTML= parseInt(total+1000)+" dz ";
+} else {document.getElementById("totals").innerHTML= parseInt(total+400)+" dz ";}
+n=1; }
+} else
+if (tar==result+"xxx") { if (n==0) {   
+let originalText = ordrs;
+let newText = originalText.replace("#.#"+result+".#.", '');
+ordrs=newText;
+let originalTex = qnt;
+let newTex = originalTex.replace("#.#"+result+".#.", '');
+qnt=newTex;
+submitOrder();
+}} else
+if (tar!=="search" && tar!=="" && tar!=="sd") {
+if (p==0) { 
+  rootRef.on('value',function(orders){   var allOrdersHtml = "";			
+	orders.forEach(function(firebaseOrderReference){
+	    var order = firebaseOrderReference.val();   console.log(order);
+var text =order.dsg; 
+
+if (text.includes(tar)) { ordr=text; 
+		var individialOrderHtml =	`
+  <div class="container">  
+    <div>      <h1>`+order.dsg+`  </h1>   </div>
+               <img src=`+order.img+` width="95%" /> 
+    <div>
+               <h2>prix: `+order.prx+` DZ</h2>
+                <h2>quantite: `+order.qnt+`</h2>
+               <h2>detail: `+order.dtl+`</h2>
+
+	<div class="container"> <div class="jumbotron"> <form><h2>
+         <a class="btn btn-default" onclick="submitOrder()">commander maintenant</a>
+         <a class="btn btn-default" onclick="addOrder()">ajouter au panier</a>
+			</form> </div> <div>
+
+                  </div>	          </div>   `; 
+allOrdersHtml = allOrdersHtml + individialOrderHtml;  }	 });  
+
+$('#page').html(allOrdersHtml);});    p=1; }}
+}
+
+
+
+function addOrder() {
+if (!ordrs.includes(ordr)) { 
+document.getElementById("sd").src = "https://zupimages.net/up/23/49/m10p.png";
+ordrs=ordrs+"#.#"+ordr+".#.";
+fbs();
+alert("commande ajoutee au panier!");
+}}
+
+function submitOrder() {
+if (!ordrs.includes(ordr)) { 
+ordrs=ordrs+"#.#"+ordr+".#.";}
+ordr="";
+total=0;
+  rootRef.on('value',function(orders){   var allOrdersHtml = "";			
+	orders.forEach(function(firebaseOrderReference){
+	    var order = firebaseOrderReference.val();   console.log(order);
+var text =order.dsg; 
+   if (ordrs.includes(text)) { 
+		var individialOrderHtml =	`
+
+
+<div class="container">  <div class="jumbotron">  <form>
+	<div class="form-group">
+                <label>--------------------------------------------------------------------------------</label> <a style="align:right;" class="btn btn-default" id="`+order.dsg+`xxx">X</a>
+            
+		<h1><font color="black"> `+order.dsg+` : </h1>
+                <img src=`+order.img+` width="95%" /> 
+                <h2><h2> 
+                <label id="`+order.dsg+`p">`+order.prx+`</label> 
+                <label> DZ </label>
+                <p></p>
+                <label for="notesField">max:</label>
+                <label id="`+order.dsg+`m">`+order.qnt+`</label>
+                <p></p>
+                <label>Quntite: </label>
+		<a class="btn btn-default" id="`+order.dsg+`.,."><</a>
+                <label for="notesField" id="`+order.dsg+`q"> 1 </label>
+                <a class="btn btn-default" id="`+order.dsg+`,.,">></a>
+                <p></p> <label>total: </label>
+                <label id="`+order.dsg+`pt">`+order.prx+`</label>
+                <label> DZ </label>
+				</div>
+           	</form> </div>  </div>
+                  	             `;  total=total+parseInt(order.prx);
+allOrdersHtml = allOrdersHtml + individialOrderHtml; }	 });  
+
+		var individialOrderHtml =	`
+<div class="container">  <div class="jumbotron"> 
+                      <h1>INFORMATION PERSONNEL</h1>
+ 			<form>
+                     <div class="form-group"> <h2> 
+	<label for="fullNameField">NOM COMPLET: </label>
+	<input type="text" required="required" class="form-control" id="name">
+        <label for="numberField">NUMERO DE TELEPHONE: </label>
+	<input type="text" required="required" class="form-control" id="number">
+        <label for="emailField">VOTRE EMAIL: </label>
+	<input type="text" class="form-control" id="email">
+			</div>      <div class="form-group">  <h2>
+	<label for="notesField">DEMANDE SUPLEMENTAIRE: </label>
+	<textarea class="form-control" id="notes"></textarea>
+				</div>
+
+                      <h1>TYPE D'ENVOIE</h1>
+ 		<h2>	
+            
+        <input type="radio" name="colors" onclick="liv1()" checked> recupere votre colis au post <br>
+         <p>  </p>
+        <input type="radio" name="colors" onclick="liv2()"> livraison a domicile        
+            <p>  </p>
+                           <div class="form-group"><h2>
+        <label for="fullNameField">ADDRESS: </label>
+	<input type="text" required="required" class="form-control" id="ADDRESS">
+				</div>
+
+                      <h1>TOTAL</h1>
+
+                    <h2 id="total">total= `+total+` dz </h2>
+                    <h2 id="livr"> livraison + 400 dz </h2>       
+                    <h2 id="totals"> `+parseInt(total+400)+` dz </h2>  
+           
+         <h2>    <input type="submit" onclick="val()" style="background-color:green;" font color="white" valider >
+           </form> </div>  </div>  `;         
+allOrdersHtml = allOrdersHtml + individialOrderHtml; 
+$('#page').html(allOrdersHtml);});
+if (total==0) { fbs(); }
+}                                       
+
+function fc() { submitOrder(); }
+
+function liv1() {
+liv=0;
+ document.getElementById("livr").innerHTML="livraison + 400 dz";
+ document.getElementById("totals").innerHTML= parseInt(total+400)+" dz ";
+}
+
+function liv2() {
+liv=1;
+document.getElementById("livr").innerHTML="livraison + 1000 dz";
+document.getElementById("totals").innerHTML= parseInt(total+1000)+" dz ";
+}
+
+
+	function val() {
+          nom=$('#name').val();
+          num=$('#number').val();
+          em=$('#email').val();
+          note=$('#notes').val();
+          adrs=$('#ADDRESS').val();
+			var info = {
+		name:nom,
+	        num:num,
+                em:em,
+		notes:note,
+                orders:ordrs,
+                qnt:qnt,
+                liv:liv,
+                adres:adrs,
+			};		
+if (nom!=="" && num!=="" && adrs!=="") {	
+firebaseOrders.push(info); 
+ordrs=""; qnt=""; fbs()	
+ alert("merci pour votre commande nous tacherons de vous rapller pour la confirmation");		
+ }	};
+
+
+for (let div of buttons) {
+  div.addEventListener("click", buttonPressed);
+}
+
+
+
+</script>
+
+
+
+
+</body>
+</html> 
