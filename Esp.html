@@ -76,6 +76,13 @@
                 font-size: 1.5rem;
             }
         }
+
+        /* Disposition horizontale */
+        .selectors-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
     </style>
 </head>
 <body>
@@ -84,14 +91,27 @@
     <!-- Spinner en haut -->
     <div id="spinner" class="spinner"></div>
 
-    <!-- Sélecteur de ligne -->
-    <select id="lineSelector" class="selector" onchange="updateLineData();">
-        <option value="ligne1">Ligne 1</option>
-        <option value="ligne2">Ligne 2</option>
-        <option value="ligne3">Ligne 3</option>
-        <option value="ligne4">Ligne 4</option>
-        <option value="ligne5">Ligne 5</option>
-    </select>
+    <!-- Sélecteurs horizontaux -->
+    <div class="selectors-container">
+        <!-- Sélecteur de ligne -->
+        <select id="lineSelector" class="selector" onchange="updateLineData();">
+            <option value="ligne1">Ligne 1</option>
+            <option value="ligne2">Ligne 2</option>
+            <option value="ligne3">Ligne 3</option>
+            <option value="ligne4">Ligne 4</option>
+            <option value="ligne5">Ligne 5</option>
+        </select>
+
+        <!-- Sélecteur de date -->
+        <input type="date" id="dateSelector" class="selector" onchange="updateLineData();" />
+
+        <!-- Sélecteur de section -->
+        <select id="sectionSelector" class="selector" onchange="updateLineData();">
+            <option value="6h-14h">6h-14h</option>
+            <option value="14h-22h">14h-22h</option>
+            <option value="22h-6h">22h-6h</option>
+        </select>
+    </div>
 
     <canvas id="barChart" width="350" height="200"></canvas>
 
@@ -121,7 +141,9 @@
         // Fonction pour récupérer et afficher les données graphiques
         function fetchDataAndPlot() {
             const selectedLine = document.getElementById("lineSelector").value;
-            const dbRef = firebase.database().ref("/" + selectedLine);
+            const selectedDate = document.getElementById("dateSelector").value;
+            const selectedSection = document.getElementById("sectionSelector").value;
+            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
 
             dbRef.once("value").then(snapshot => {
                 const data = snapshot.val();
@@ -170,7 +192,9 @@
         // Fonction pour mettre à jour les informations standards
         function updateLineData() {
             const selectedLine = document.getElementById("lineSelector").value;
-            const dbRef = firebase.database().ref("/" + selectedLine);
+            const selectedDate = document.getElementById("dateSelector").value;
+            const selectedSection = document.getElementById("sectionSelector").value;
+            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
 
             // Activer le spinner
             document.getElementById("spinner").style.display = "inline-block";
@@ -193,8 +217,31 @@
             fetchDataAndPlot();
         }
 
-        // Charger les données initiales
-        window.onload = updateLineData;
+        // Initialiser la date du jour et la section par défaut
+        function initializeDefaultValues() {
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0]; // Formater en YYYY-MM-DD
+            const currentHour = today.getHours();
+            let section = '';
+
+            // Sélectionner la section basée sur l'heure actuelle
+            if (currentHour >= 6 && currentHour < 14) {
+                section = '6h-14h';
+            } else if (currentHour >= 14 && currentHour < 22) {
+                section = '14h-22h';
+            } else {
+                section = '22h-6h';
+            }
+
+            document.getElementById("dateSelector").value = dateStr;
+            document.getElementById("sectionSelector").value = section;
+        }
+
+        // Charger les données initiales et définir les valeurs par défaut
+        window.onload = () => {
+            initializeDefaultValues();
+            updateLineData();
+        };
     </script>
 </body>
 </html>
