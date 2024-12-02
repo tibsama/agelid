@@ -6,7 +6,6 @@
     <title>Graphique Firebase en 3D</title>
     <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-3d"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,11 +26,49 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
+        .spinner {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .selector {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
         canvas {
             margin-top: 20px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .info {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            width: 80%;
         }
 
         @media (max-width: 768px) {
@@ -43,7 +80,25 @@
 </head>
 <body>
     <h1>Graphique 3D des Données Firebase</h1>
+    
+    <!-- Spinner en haut -->
+    <div id="spinner" class="spinner"></div>
+
+    <!-- Sélecteur de ligne -->
+    <select id="lineSelector" class="selector" onchange="updateLineData();">
+        <option value="ligne1">Ligne 1</option>
+        <option value="ligne2">Ligne 2</option>
+        <option value="ligne3">Ligne 3</option>
+        <option value="ligne4">Ligne 4</option>
+        <option value="ligne5">Ligne 5</option>
+    </select>
+
     <canvas id="barChart" width="350" height="200"></canvas>
+
+    <!-- Section standard -->
+    <div id="infoSection" class="info">
+        Les informations s'afficheront ici.
+    </div>
 
     <script>
         // Configuration Firebase
@@ -61,101 +116,85 @@
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Référence des données dans Firebase
-        const dbRef = firebase.database().ref("/ligne1");
+        let chart = null;
 
-        // Fonction pour récupérer les données
+        // Fonction pour récupérer et afficher les données graphiques
         function fetchDataAndPlot() {
+            const selectedLine = document.getElementById("lineSelector").value;
+            const dbRef = firebase.database().ref("/" + selectedLine);
+
             dbRef.once("value").then(snapshot => {
                 const data = snapshot.val();
                 const labels = [];
                 const values = [];
+                const colors = [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(255, 159, 64, 0.6)'
+                ];
 
-                // Parcourir les données pour les organiser
                 for (const key in data) {
-                    labels.push(key); // Ex: chx1, chx2, ...
-                    values.push(data[key]); // Ex: 10, 20, ...
+                    labels.push(key);
+                    values.push(data[key]);
                 }
 
-                // Créer le graphique
+                if (chart) chart.destroy();
+
                 const ctx = document.getElementById('barChart').getContext('2d');
-                new Chart(ctx, {
+                chart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: labels, // Lignes (ex: chx1, chx2)
+                        labels: labels,
                         datasets: [{
                             label: 'Valeurs',
-                            data: values, // Valeurs (ex: 10, 20)
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.6)',
-                                'rgba(54, 162, 235, 0.6)',
-                                'rgba(255, 206, 86, 0.6)',
-                                'rgba(75, 192, 192, 0.6)',
-                                'rgba(153, 102, 255, 0.6)',
-                                'rgba(255, 159, 64, 0.6)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
+                            data: values,
+                            backgroundColor: colors.slice(0, values.length),
+                            borderColor: colors.slice(0, values.length).map(color => color.replace('0.6', '1')),
                             borderWidth: 1
                         }]
                     },
                     options: {
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: 'white',
-                                    font: {
-                                        size: 14
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                titleColor: '#fff',
-                                bodyColor: '#fff'
-                            }
-                        },
+                        plugins: { legend: { labels: { color: 'white' } } },
                         scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: 'white',
-                                    stepSize: 5
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: 'white'
-                                }
-                            }
-                        },
-                        animation: {
-                            duration: 2000,
-                            easing: 'easeOutElastic'
-                        },
-                        plugins3d: {
-                            depth: 30,
-                            perspective: 50,
-                            shadows: {
-                                enabled: true,
-                                color: 'rgba(0,0,0,0.2)'
-                            }
+                            y: { beginAtZero: true, ticks: { color: 'white' } },
+                            x: { ticks: { color: 'white' } }
                         }
                     }
                 });
-            }).catch(error => {
-                console.error("Erreur lors de la récupération des données :", error);
-            });
+            }).catch(console.error);
         }
 
-        // Charger les données au chargement de la page
-        fetchDataAndPlot();
+        // Fonction pour mettre à jour les informations standards
+        function updateLineData() {
+            const selectedLine = document.getElementById("lineSelector").value;
+            const dbRef = firebase.database().ref("/" + selectedLine);
+
+            // Activer le spinner
+            document.getElementById("spinner").style.display = "inline-block";
+
+            dbRef.once("value").then(snapshot => {
+                const data = snapshot.val();
+                let infoText = "";
+
+                for (const key in data) {
+                    infoText += `${key} = ${data[key]}<br>`;
+                }
+
+                document.getElementById("infoSection").innerHTML = infoText;
+                document.getElementById("spinner").style.display = "none"; // Cacher le spinner
+            }).catch(error => {
+                console.error("Erreur lors de la récupération des données :", error);
+                document.getElementById("spinner").style.display = "none"; // Cacher le spinner
+            });
+
+            fetchDataAndPlot();
+        }
+
+        // Charger les données initiales
+        window.onload = updateLineData;
     </script>
 </body>
 </html>
