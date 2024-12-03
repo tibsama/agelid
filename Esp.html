@@ -148,10 +148,22 @@
 
         let chart = null;
 
+        // Fonction pour normaliser la date
+        function normalizeDate(date) {
+            const parts = date.split("-");
+            if (parts.length === 3) {
+                const year = parts[0];
+                const month = parts[1].padStart(2, '0');
+                const day = parts[2].padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            return date;
+        }
+
         // Récupération des données depuis Firebase
         function fetchDataAndPlot() {
             const selectedLine = document.getElementById("lineSelector").value;
-            const selectedDate = document.getElementById("dateSelector").value;
+            const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
             const selectedSection = document.getElementById("sectionSelector").value;
             const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
 
@@ -196,7 +208,7 @@
         // Mise à jour des données et affichage
         function updateLineData() {
             const selectedLine = document.getElementById("lineSelector").value;
-            const selectedDate = document.getElementById("dateSelector").value;
+            const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
             const selectedSection = document.getElementById("sectionSelector").value;
             const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
 
@@ -228,10 +240,26 @@
             return `rgba(${r}, ${g}, ${b}, 0.6)`;
         }
 
+        // Initialisation des valeurs par défaut
+        function initializeDefaultValues() {
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            const currentHour = today.getHours();
+            let section = '';
+
+            if (currentHour >= 6 && currentHour < 14) section = '6h-14h';
+            else if (currentHour >= 14 && currentHour < 22) section = '14h-22h';
+            else section = '22h-6h';
+
+            document.getElementById('dateSelector').value = dateStr;
+            document.getElementById('sectionSelector').value = section;
+        }
+
         // Initialisation de la page
-        document.addEventListener('DOMContentLoaded', function() {
-            updateLineData();  // Charge les données initiales
-        });
+        window.onload = () => {
+            initializeDefaultValues();
+            updateLineData();
+        };
     </script>
 </body>
 </html>
