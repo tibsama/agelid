@@ -20,29 +20,11 @@
             min-height: 100vh;
             box-sizing: border-box;
         }
-
         h1 {
             margin-top: 20px;
             font-size: 2.5rem;
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
         }
-
-        .spinner {
-            display: none;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1.5s linear infinite;
-            margin-top: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .selector {
             margin-top: 20px;
             font-size: 1rem;
@@ -54,11 +36,6 @@
             cursor: pointer;
             transition: background 0.3s;
         }
-
-        .selector:hover {
-            background: rgba(0, 0, 0, 0.7);
-        }
-
         canvas {
             max-width: 90%;
             height: auto;
@@ -67,7 +44,6 @@
             border-radius: 10px;
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
         }
-
         .info {
             margin-top: 20px;
             font-size: 1.2rem;
@@ -79,33 +55,13 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             width: 90%;
         }
-
-        .add-data-container {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            .selector {
-                font-size: 0.9rem;
-            }
-        }
     </style>
 </head>
 <body>
     <h1>Graphique des Données de Production</h1>
 
-    <div id="spinner" class="spinner"></div>
-
     <div class="selectors-container">
-        <select id="lineSelector" class="selector" onchange="updateLineData();">
+        <select id="lineSelector" class="selector" onchange="setupDataListener();">
             <option value="ligne1">Ligne 1</option>
             <option value="ligne2">Ligne 2</option>
             <option value="ligne3">Ligne 3</option>
@@ -113,9 +69,9 @@
             <option value="ligne5">Ligne 5</option>
         </select>
 
-        <input type="date" id="dateSelector" class="selector" onchange="updateLineData();" />
+        <input type="date" id="dateSelector" class="selector" onchange="setupDataListener();" />
 
-        <select id="sectionSelector" class="selector" onchange="updateLineData();">
+        <select id="sectionSelector" class="selector" onchange="setupDataListener();">
             <option value="6h-14h">6h-14h</option>
             <option value="14h-22h">14h-22h</option>
             <option value="22h-6h">22h-6h</option>
@@ -124,17 +80,12 @@
 
     <canvas id="barChart"></canvas>
 
-    <div class="info" id="infoSection">
+    <div id="infoSection" class="info">
         Les informations s'afficheront ici.
     </div>
 
-    <div class="add-data-container">
-        <input type="text" id="dataKey" class="selector" placeholder="Nom de la clé (ex: ProduitA)" />
-        <input type="number" id="dataValue" class="selector" placeholder="Valeur (ex: 100)" />
-        <button id="addDataButton" class="selector" onclick="addDataToFirebase()">Ajouter une donnée</button>
-    </div>
-
     <script>
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
             authDomain: "herher-d121a.firebaseapp.com",
@@ -145,97 +96,82 @@
             appId: "1:626438737297:web:bf6524275291ec695fde30"
         };
 
+        // Initialisation Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+
         let chart = null;
+        let dbListenerRef = null;
 
-   function normalizeDate(date) {
-    const parts = date.split("-");
-    if (parts.length === 3) {
-        const year = parts[0]; // Année
-        const month = parseInt(parts[1], 10); // Convertir en entier pour supprimer le zéro devant
-        const day = parseInt(parts[2], 10);   // Convertir en entier pour supprimer le zéro devant
-        return `${year}-${month}-${day}`;
-    }
-    return date; // Si la date n'est pas valide, on retourne telle quelle
-}
-
-
-function fetchDataAndPlot() {
-    const selectedLine = document.getElementById("lineSelector").value;
-    const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
-    const selectedSection = document.getElementById("sectionSelector").value;
-
-    const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
-    dbRef.once("value").then(snapshot => {
-        const data = snapshot.val();
-        const labels = [];
-        const values = [];
-        const colors = [];
-
-        for (const key in data) {
-            labels.push(key);
-            values.push(data[key]);
-            colors.push(generateRandomColor());
+        // Normalisation de la date (sans zéro inutile)
+        function normalizeDate(date) {
+            const parts = date.split("-");
+            if (parts.length === 3) {
+                const year = parts[0];
+                const month = parseInt(parts[1], 10); // Enlever le zéro inutile
+                const day = parseInt(parts[2], 10);   // Enlever le zéro inutile
+                return `${year}-${month}-${day}`;
+            }
+            return date;
         }
 
-        if (chart) chart.destroy();
-
-        const ctx = document.getElementById('barChart').getContext('2d');
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Valeurs',
-                    data: values,
-                    backgroundColor: colors,
-                    borderColor: colors.map(color => color.replace('0.6', '1')),
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                plugins: { legend: { labels: { color: 'white' } } },
-                scales: {
-                    y: { beginAtZero: true, ticks: { color: 'white' } },
-                    x: { ticks: { color: 'white' } }
-                }
-            }
-        });
-    }).catch(console.error);
-}
-
- 
-
-        function addDataToFirebase() {
+        // Détecteur de changement des données Firebase
+        function setupDataListener() {
             const selectedLine = document.getElementById("lineSelector").value;
             const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
             const selectedSection = document.getElementById("sectionSelector").value;
-            const dataKey = document.getElementById("dataKey").value.trim();
-            const dataValue = document.getElementById("dataValue").value;
 
-            if (!dataKey || !dataValue) {
-                alert("Veuillez remplir tous les champs.");
-                return;
+            // Supprimer l'ancien listener si existant
+            if (dbListenerRef) dbListenerRef.off();
+
+            // Référence à la base de données
+            dbListenerRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
+
+            // Activer le listener pour détecter les changements
+            dbListenerRef.on("value", snapshot => {
+                const data = snapshot.val();
+                updateChart(data);
+            });
+        }
+
+        // Met à jour le graphique avec les nouvelles données
+        function updateChart(data) {
+            const labels = [];
+            const values = [];
+            const colors = [];
+
+            for (const key in data) {
+                labels.push(key);
+                values.push(data[key]);
+                colors.push(generateRandomColor());
             }
 
-            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
+            if (chart) chart.destroy();
 
-            dbRef.update({ [dataKey]: parseFloat(dataValue) })
-                .then(() => {
-                    alert("Donnée ajoutée avec succès !");
-                    updateLineData();
-                })
-                .catch(error => {
-                    console.error("Erreur lors de l'ajout de la donnée :", error);
-                    alert("Une erreur s'est produite lors de l'ajout de la donnée.");
-                });
+            const ctx = document.getElementById('barChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Valeurs',
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: colors.map(color => color.replace('0.6', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: { legend: { labels: { color: 'white' } } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: 'white' } },
+                        x: { ticks: { color: 'white' } }
+                    }
+                }
+            });
         }
 
-        function updateLineData() {
-            fetchDataAndPlot();
-        }
-
+        // Génère une couleur aléatoire
         function generateRandomColor() {
             const letters = '0123456789ABCDEF';
             let color = '#';
@@ -245,6 +181,7 @@ function fetchDataAndPlot() {
             return color;
         }
 
+        // Initialisation par défaut
         function initializeDefaultValues() {
             const date = new Date();
             const dateStr = date.toISOString().split('T')[0];
@@ -254,13 +191,15 @@ function fetchDataAndPlot() {
             if (currentHour >= 14 && currentHour < 22) section = '14h-22h';
             else if (currentHour >= 22 || currentHour < 6) section = '22h-6h';
 
-            document.getElementById("dateSelector").value = dateStr;
-            document.getElementById("sectionSelector").value = section;
-
-            updateLineData();
+            document.getElementById('dateSelector').value = dateStr;
+            document.getElementById('sectionSelector').value = section;
         }
 
-        initializeDefaultValues();
+        // Initialisation de la page
+        window.onload = () => {
+            initializeDefaultValues();
+            setupDataListener();
+        };
     </script>
 </body>
 </html>
