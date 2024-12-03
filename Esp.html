@@ -3,158 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualisation des Données Firebase</title>
+    <title>Graphique Firebase en 3D</title>
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js"></script>
     <style>
+        /* Style global */
         body {
-            background-color: #1e1e2f;
-            color: white;
             font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to bottom, #4facfe, #00f2fe);
+            color: white;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
+
         h1 {
-            margin-bottom: 20px;
-        }
-        .selectors {
-            margin-bottom: 20px;
-        }
-        select, input {
-            padding: 8px;
-            margin: 5px;
-            font-size: 16px;
-        }
-        canvas {
             margin-top: 20px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Spinner */
+        .spinner {
+            display: none;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1.5s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Boutons et sélecteurs */
+        .selector {
+            margin-top: 20px;
+            font-size: 1rem;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .selector:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Style du graphique */
+        canvas {
+            max-width: 90%;
+            height: auto;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Zone d'informations */
+        .info {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            width: 90%;
+        }
+
+        /* Responsivité */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .selector {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Visualisation des Données Firebase</h1>
-    <div class="selectors">
-        <label for="lineSelector">Ligne :</label>
-        <select id="lineSelector" onchange="fetchAndDisplayData()">
+    <h1>Graphique des Données de Production</h1>
+
+    <!-- Spinner de chargement -->
+    <div id="spinner" class="spinner"></div>
+
+    <!-- Sélecteurs pour les filtres -->
+    <div class="selectors-container">
+        <select id="lineSelector" class="selector" onchange="updateLineData();">
             <option value="ligne1">Ligne 1</option>
-            <!-- Ajoutez d'autres lignes ici si nécessaire -->
+            <option value="ligne2">Ligne 2</option>
+            <option value="ligne3">Ligne 3</option>
+            <option value="ligne4">Ligne 4</option>
+            <option value="ligne5">Ligne 5</option>
         </select>
-        
-        <label for="dateSelector">Date :</label>
-        <input type="date" id="dateSelector" value="2024-12-02" onchange="fetchAndDisplayData()">
-        
-        <label for="sectionSelector">Section :</label>
-        <select id="sectionSelector" onchange="fetchAndDisplayData()">
+
+        <input type="date" id="dateSelector" class="selector" onchange="updateLineData();" />
+
+        <select id="sectionSelector" class="selector" onchange="updateLineData();">
+            <option value="6h-14h">6h-14h</option>
+            <option value="14h-22h">14h-22h</option>
             <option value="22h-6h">22h-6h</option>
-            <!-- Ajoutez d'autres sections ici si nécessaire -->
         </select>
     </div>
 
-    <canvas id="chartCanvas" width="400" height="200"></canvas>
+    <!-- Graphique -->
+    <canvas id="barChart"></canvas>
+
+    <!-- Zone d'informations -->
+    <div id="infoSection" class="info">
+        Les informations s'afficheront ici.
+    </div>
 
     <script>
         // Configuration Firebase
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
+            authDomain: "herher-d121a.firebaseapp.com",
+            databaseURL: "https://herher-d121a.firebaseio.com",
+            projectId: "herher-d121a",
+            storageBucket: "herher-d121a.appspot.com",
+            messagingSenderId: "626438737297",
+            appId: "1:626438737297:web:bf6524275291ec695fde30"
         };
 
-        // Initialiser Firebase
-        firebase.initializeApp(firebaseConfig);
+        // Initialisation Firebase
+        const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        let chart; // Variable pour le graphique Chart.js
+        let chart = null;
 
-        /**
-         * Fonction pour récupérer et afficher les données depuis Firebase
-         */
-        function fetchAndDisplayData() {
-            // Récupérer les sélections utilisateur
+        // Récupération des données depuis Firebase
+        function fetchDataAndPlot() {
             const selectedLine = document.getElementById("lineSelector").value;
             const selectedDate = document.getElementById("dateSelector").value;
             const selectedSection = document.getElementById("sectionSelector").value;
 
-            // Référence à la base de données Firebase
-            const dbRef = firebase.database().ref(`${selectedLine}/${selectedDate}/${selectedSection}`);
+            // Référence Firebase pour récupérer les données de la ligne, la date et la section
+            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
+
+            document.getElementById("spinner").style.display = "inline-block"; // Affichage du spinner de chargement
 
             dbRef.once("value").then(snapshot => {
                 const data = snapshot.val();
+                const labels = [];
+                const values = [];
+                const colors = [];
 
-                // Vérifier si des données existent
-                if (!data) {
-                    alert("Aucune donnée disponible pour cette sélection.");
-                    return;
+                // Traitement des données récupérées
+                for (const key in data) {
+                    labels.push(key);
+                    values.push(data[key]);
+                    colors.push(generateRandomColor());
                 }
 
-                // Préparer les données pour le graphique
-                const labels = Object.keys(data);
-                const values = Object.values(data);
-                const colors = labels.map(() => generateRandomColor());
-
-                // Détruire l'ancien graphique s'il existe
+                // Suppression du graphique précédent s'il existe
                 if (chart) chart.destroy();
 
-                // Créer un nouveau graphique
-                const ctx = document.getElementById("chartCanvas").getContext("2d");
+                // Création du graphique
+                const ctx = document.getElementById('barChart').getContext('2d');
                 chart = new Chart(ctx, {
-                    type: "bar",
+                    type: 'bar',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: "Valeurs",
+                            label: 'Valeurs',
                             data: values,
                             backgroundColor: colors,
-                            borderColor: colors.map(color => color.replace("0.6", "1")),
+                            borderColor: colors.map(color => color.replace('0.6', '1')),
                             borderWidth: 1
                         }]
                     },
                     options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: "white"
-                                }
-                            }
-                        },
+                        plugins: { legend: { labels: { color: 'white' } } },
                         scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: "white"
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: "white"
-                                }
-                            }
+                            y: { beginAtZero: true, ticks: { color: 'white' } },
+                            x: { ticks: { color: 'white' } }
                         }
                     }
                 });
+
+                // Mise à jour de la zone d'information
+                let infoText = '';
+                for (const key in data) {
+                    infoText += `${key}: ${data[key]}<br>`;
+                }
+                document.getElementById("infoSection").innerHTML = infoText || "Aucune donnée disponible.";
+                document.getElementById("spinner").style.display = "none"; // Cacher le spinner une fois les données chargées
+
             }).catch(error => {
-                console.error("Erreur lors de la récupération des données :", error);
+                console.error("Erreur:", error);
+                document.getElementById("spinner").style.display = "none"; // Cacher le spinner en cas d'erreur
             });
         }
 
-        /**
-         * Génère une couleur aléatoire pour le graphique
-         * @returns {string} Une couleur RGBA aléatoire
-         */
+        // Mise à jour des données et affichage
+        function updateLineData() {
+            fetchDataAndPlot();
+        }
+
+        // Générateur de couleurs aléatoires
         function generateRandomColor() {
-            const r = Math.floor(Math.random() * 256);
-            const g = Math.floor(Math.random() * 256);
-            const b = Math.floor(Math.random() * 256);
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
             return `rgba(${r}, ${g}, ${b}, 0.6)`;
         }
 
-        // Charger les données par défaut au démarrage
-        document.addEventListener("DOMContentLoaded", fetchAndDisplayData);
+        // Initialisation des valeurs par défaut
+        function initializeDefaultValues() {
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            const currentHour = today.getHours();
+            let section = '';
+
+            if (currentHour >= 6 && currentHour < 14) section = '6h-14h';
+            else if (currentHour >= 14 && currentHour < 22) section = '14h-22h';
+            else section = '22h-6h';
+
+            document.getElementById("dateSelector").value = dateStr;
+            document.getElementById("sectionSelector").value = section;
+        }
+
+        window.onload = () => {
+            initializeDefaultValues();
+            fetchDataAndPlot(); // Récupérer et afficher les données au chargement de la page
+        };
     </script>
 </body>
 </html>
