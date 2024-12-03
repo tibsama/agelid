@@ -32,20 +32,12 @@
             justify-content: center;
         }
 
-        .selector {
-            font-size: 1rem;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
+        #dateSelector {
+            width: 150px;
+            text-align: center;
+            padding: 5px;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        #dateSelector {
-            width: 110px;
-            text-align: center;
         }
 
         canvas {
@@ -70,6 +62,18 @@
             max-width: 600px;
         }
 
+        .settings-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: url('https://cdn-icons-png.flaticon.com/512/565/565655.png') no-repeat center center;
+            background-size: cover;
+            border: none;
+            cursor: pointer;
+        }
+
         .modal {
             position: fixed;
             top: 50%;
@@ -81,6 +85,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             display: none;
+            width: 300px;
         }
 
         .modal input, .modal button {
@@ -118,7 +123,7 @@
 
     <!-- Sélecteurs -->
     <div class="selectors-container">
-        <select id="lineSelector" class="selector" onchange="updateLineData();">
+        <select id="lineSelector" class="selector" onchange="fetchDataAndPlot();">
             <option value="ligne1">Ligne 1</option>
             <option value="ligne2">Ligne 2</option>
             <option value="ligne3">Ligne 3</option>
@@ -126,9 +131,9 @@
             <option value="ligne5">Ligne 5</option>
         </select>
 
-        <input type="date" id="dateSelector" class="selector" onchange="updateLineData();" />
+        <input type="date" id="dateSelector" class="selector" onchange="fetchDataAndPlot();" />
 
-        <select id="sectionSelector" class="selector" onchange="updateLineData();">
+        <select id="sectionSelector" class="selector" onchange="fetchDataAndPlot();">
             <option value="6h-14h">6h-14h</option>
             <option value="14h-22h">14h-22h</option>
             <option value="22h-6h">22h-6h</option>
@@ -136,7 +141,7 @@
     </div>
 
     <!-- Bouton Paramètres -->
-    <button class="selector" onclick="showSettingsModal()">Paramètres</button>
+    <button class="settings-button" onclick="showSettingsModal()"></button>
 
     <!-- Graphique -->
     <canvas id="barChart"></canvas>
@@ -186,7 +191,7 @@
 
                 for (const key in data) {
                     labels.push(key);
-                    values.push(data[key] * getCoupledPacks()); // Multiplication par le nombre de paquets couplés
+                    values.push(data[key]);
                     colors.push(generateRandomColor());
                 }
 
@@ -203,8 +208,7 @@
                             borderColor: colors.map(color => color.replace('0.6', '1')),
                             borderWidth: 1
                         }]
-                    },
-                    options: { /* Configuration des options du graphique */ }
+                    }
                 });
             });
         }
@@ -217,11 +221,6 @@
             firebase.database().ref(`/${selectedLine}/settings`).set({ format, coupledPacks });
             closeSettingsModal();
             alert("Paramètres enregistrés !");
-        }
-
-        function getCoupledPacks() {
-            // Simulation de récupération du nombre de paquets (ajoutez votre logique ici)
-            return 1;
         }
 
         function showSettingsModal() {
