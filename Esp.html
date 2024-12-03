@@ -28,7 +28,6 @@
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
         }
 
-        /* Spinner */
         .spinner {
             display: none;
             border: 4px solid rgba(255, 255, 255, 0.3);
@@ -45,8 +44,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Boutons et sélecteurs */
-        .selector {
+        .selector, .add-btn {
             margin-top: 20px;
             font-size: 1rem;
             padding: 10px;
@@ -58,11 +56,10 @@
             transition: background 0.3s;
         }
 
-        .selector:hover {
+        .selector:hover, .add-btn:hover {
             background: rgba(0, 0, 0, 0.7);
         }
 
-        /* Style du graphique */
         canvas {
             max-width: 90%;
             height: auto;
@@ -72,7 +69,6 @@
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
         }
 
-        /* Zone d'informations */
         .info {
             margin-top: 20px;
             font-size: 1.2rem;
@@ -85,13 +81,57 @@
             width: 90%;
         }
 
-        /* Responsivité */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            text-align: center;
+            color: black;
+        }
+
+        .popup input, .popup select {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .popup button {
+            margin-top: 10px;
+            padding: 10px;
+            background: #4facfe;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8rem;
             }
 
-            .selector {
+            .selector, .add-btn {
                 font-size: 0.9rem;
             }
         }
@@ -100,10 +140,8 @@
 <body>
     <h1>Graphique des Données de Production</h1>
 
-    <!-- Spinner de chargement -->
     <div id="spinner" class="spinner"></div>
 
-    <!-- Sélecteurs pour les filtres -->
     <div class="selectors-container">
         <select id="lineSelector" class="selector" onchange="updateLineData();">
             <option value="ligne1">Ligne 1</option>
@@ -120,129 +158,68 @@
             <option value="14h-22h">14h-22h</option>
             <option value="22h-6h">22h-6h</option>
         </select>
+
+        <button class="add-btn" onclick="showPopup();">Ajouter une donnée</button>
     </div>
 
-    <!-- Graphique -->
     <canvas id="barChart"></canvas>
 
-    <!-- Zone d'informations -->
     <div id="infoSection" class="info">
         Les informations s'afficheront ici.
     </div>
 
+    <!-- Formulaire contextuel -->
+    <div class="overlay" id="overlay" onclick="closePopup();"></div>
+    <div class="popup" id="popup">
+        <h3>Ajouter une donnée</h3>
+        <select id="popupLineSelector">
+            <option value="ligne1">Ligne 1</option>
+            <option value="ligne2">Ligne 2</option>
+            <option value="ligne3">Ligne 3</option>
+            <option value="ligne4">Ligne 4</option>
+            <option value="ligne5">Ligne 5</option>
+        </select>
+        <input type="date" id="popupDateSelector" />
+        <select id="popupSectionSelector">
+            <option value="6h-14h">6h-14h</option>
+            <option value="14h-22h">14h-22h</option>
+            <option value="22h-6h">22h-6h</option>
+        </select>
+        <input type="text" id="popupValue" placeholder="Valeur" />
+        <button onclick="addData();">Enregistrer</button>
+    </div>
+
     <script>
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
-            authDomain: "herher-d121a.firebaseapp.com",
-            databaseURL: "https://herher-d121a.firebaseio.com",
-            projectId: "herher-d121a",
-            storageBucket: "herher-d121a.appspot.com",
-            messagingSenderId: "626438737297",
-            appId: "1:626438737297:web:bf6524275291ec695fde30"
-        };
+        function showPopup() {
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
 
-        // Initialisation Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
 
-        let chart = null;
+        function addData() {
+            const line = document.getElementById('popupLineSelector').value;
+            const date = normalizeDate(document.getElementById('popupDateSelector').value);
+            const section = document.getElementById('popupSectionSelector').value;
+            const value = document.getElementById('popupValue').value;
 
-        // Fonction pour normaliser la date au format YYYY-MM-DD
-        function normalizeDate(date) {
-            const parts = date.split("-");
-            if (parts.length === 3) {
-                const year = parts[0]; // Année
-                const month = parts[1].padStart(2, '0'); // Mois avec un zéro devant si nécessaire
-                const day = parts[2].padStart(2, '0'); // Jour avec un zéro devant si nécessaire
-                return `${year}-${month}-${day}`; // Retourne la date au format standard
+            if (!date || !value) {
+                alert('Veuillez saisir une date et une valeur valide.');
+                return;
             }
-            return date; // Si la date n'est pas au bon format, on retourne telle quelle
+
+            const dbRef = firebase.database().ref(`/${line}/${date}/${section}`);
+            dbRef.push(value)
+                .then(() => {
+                    alert('Donnée ajoutée avec succès.');
+                    closePopup();
+                    updateLineData();
+                })
+                .catch(error => console.error('Erreur :', error));
         }
-
-        // Récupération des données depuis Firebase
-        function fetchDataAndPlot() {
-            const selectedLine = document.getElementById("lineSelector").value;
-            const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
-            const selectedSection = document.getElementById("sectionSelector").value;
-            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
-
-            dbRef.once("value").then(snapshot => {
-                const data = snapshot.val();
-                const labels = [];
-                const values = [];
-                const colors = [];
-
-                for (const key in data) {
-                    labels.push(key);
-                    values.push(data[key]);
-                    colors.push(generateRandomColor());
-                }
-
-                if (chart) chart.destroy();
-
-                const ctx = document.getElementById('barChart').getContext('2d');
-                chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Valeurs',
-                            data: values,
-                            backgroundColor: colors,
-                            borderColor: colors.map(color => color.replace('0.6', '1')),
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        plugins: { legend: { labels: { color: 'white' } } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { color: 'white' } },
-                            x: { ticks: { color: 'white' } }
-                        }
-                    }
-                });
-            }).catch(console.error);
-        }
-
-        // Mise à jour des données et affichage
-        function updateLineData() {
-            const selectedLine = document.getElementById("lineSelector").value;
-            const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
-            const selectedSection = document.getElementById("sectionSelector").value;
-
-            fetchDataAndPlot();
-        }
-
-        // Fonction pour générer une couleur aléatoire
-        function generateRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
-        // Initialisation des valeurs par défaut et du graphique
-        function initializeDefaultValues() {
-            const date = new Date();
-            const dateStr = date.toISOString().split('T')[0];
-            const currentHour = date.getHours();
-            let section = '6h-14h';
-
-            if (currentHour >= 14 && currentHour < 22) section = '14h-22h';
-            else section = '22h-6h';
-
-            document.getElementById('dateSelector').value = dateStr;
-            document.getElementById('sectionSelector').value = section;
-        }
-
-        // Initialisation de la page
-        window.onload = () => {
-            initializeDefaultValues();
-            updateLineData();
-        };
     </script>
 </body>
 </html>
