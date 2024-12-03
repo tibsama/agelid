@@ -18,19 +18,20 @@
             background: linear-gradient(to bottom, #4facfe, #00f2fe);
             color: white;
             min-height: 100vh;
-            box-sizing: border-box;
         }
+
         h1 {
             margin-top: 20px;
             font-size: 2.5rem;
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
         }
+
         .selectors-container {
             display: flex;
             gap: 15px;
             margin-top: 20px;
             justify-content: center;
         }
+
         .selector {
             font-size: 1rem;
             padding: 10px;
@@ -43,10 +44,10 @@
         }
 
         #dateSelector {
-            width: 100px; /* Ajustez la largeur selon vos préférences */
-            text-align: center; /* Aligne le texte au centre pour un meilleur rendu */
-       }
-        
+            width: 110px;
+            text-align: center;
+        }
+
         canvas {
             max-width: 90%;
             height: auto;
@@ -55,6 +56,7 @@
             border-radius: 10px;
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
         }
+
         .info {
             margin-top: 20px;
             font-size: 1rem;
@@ -67,13 +69,56 @@
             width: 90%;
             max-width: 600px;
         }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .modal input, .modal button {
+            margin: 10px 0;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal button {
+            background: #4facfe;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal button:hover {
+            background: #00f2fe;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+        }
     </style>
 </head>
 <body>
     <h1>Graphique des Données de Production</h1>
 
+    <!-- Sélecteurs -->
     <div class="selectors-container">
-        <select id="lineSelector" class="selector" onchange="setupDataListener();">
+        <select id="lineSelector" class="selector" onchange="updateLineData();">
             <option value="ligne1">Ligne 1</option>
             <option value="ligne2">Ligne 2</option>
             <option value="ligne3">Ligne 3</option>
@@ -81,23 +126,37 @@
             <option value="ligne5">Ligne 5</option>
         </select>
 
-        <input type="date" id="dateSelector" class="selector" onchange="setupDataListener();" />
+        <input type="date" id="dateSelector" class="selector" onchange="updateLineData();" />
 
-        <select id="sectionSelector" class="selector" onchange="setupDataListener();">
+        <select id="sectionSelector" class="selector" onchange="updateLineData();">
             <option value="6h-14h">6h-14h</option>
             <option value="14h-22h">14h-22h</option>
             <option value="22h-6h">22h-6h</option>
         </select>
     </div>
 
+    <!-- Bouton Paramètres -->
+    <button class="selector" onclick="showSettingsModal()">Paramètres</button>
+
+    <!-- Graphique -->
     <canvas id="barChart"></canvas>
 
+    <!-- Zone d'informations -->
     <div id="infoSection" class="info">
         Les informations s'afficheront ici.
     </div>
 
+    <!-- Fenêtre modale -->
+    <div class="overlay" id="modalOverlay"></div>
+    <div class="modal" id="settingsModal">
+        <h3>Configurer les Paramètres</h3>
+        <input type="text" id="formatInput" placeholder="Format (ex : Format A)" />
+        <input type="number" id="coupledPacksInput" placeholder="Nombre de paquets couplés" />
+        <button onclick="saveSettings()">Enregistrer</button>
+        <button onclick="closeSettingsModal()">Annuler</button>
+    </div>
+
     <script>
-        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
             authDomain: "herher-d121a.firebaseapp.com",
@@ -108,128 +167,79 @@
             appId: "1:626438737297:web:bf6524275291ec695fde30"
         };
 
-        // Initialisation Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         let chart = null;
-        let dbListenerRef = null;
 
-        // Normalisation de la date (sans zéro inutile)
-        function normalizeDate(date) {
-            const parts = date.split("-");
-            if (parts.length === 3) {
-                const year = parts[0];
-                const month = parseInt(parts[1], 10); // Enlever le zéro inutile
-                const day = parseInt(parts[2], 10);   // Enlever le zéro inutile
-                return `${year}-${month}-${day}`;
-            }
-            return date;
-        }
-
-        // Détecteur de changement des données Firebase
-        function setupDataListener() {
+        function fetchDataAndPlot() {
             const selectedLine = document.getElementById("lineSelector").value;
-            const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
+            const selectedDate = document.getElementById("dateSelector").value;
             const selectedSection = document.getElementById("sectionSelector").value;
 
-            // Supprimer l'ancien listener si existant
-            if (dbListenerRef) dbListenerRef.off();
-
-            // Référence à la base de données
-            dbListenerRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
-
-            // Activer le listener pour détecter les changements
-            dbListenerRef.on("value", snapshot => {
+            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
+            dbRef.once("value").then(snapshot => {
                 const data = snapshot.val();
-                updateChart(data);
-                updateInfoSection(data);
-            });
-        }
+                const labels = [];
+                const values = [];
+                const colors = [];
 
-        // Met à jour le graphique avec les nouvelles données
-        function updateChart(data) {
-            const labels = [];
-            const values = [];
-            const colors = [];
-
-            for (const key in data) {
-                labels.push(key);
-                values.push(data[key]);
-                colors.push(generateRandomColor());
-            }
-
-            if (chart) chart.destroy();
-
-            const ctx = document.getElementById('barChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Valeurs',
-                        data: values,
-                        backgroundColor: colors,
-                        borderColor: colors.map(color => color.replace('0.6', '1')),
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    plugins: { legend: { labels: { color: 'white' } } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { color: 'white' } },
-                        x: { ticks: { color: 'white' } }
-                    }
+                for (const key in data) {
+                    labels.push(key);
+                    values.push(data[key] * getCoupledPacks()); // Multiplication par le nombre de paquets couplés
+                    colors.push(generateRandomColor());
                 }
+
+                if (chart) chart.destroy();
+                const ctx = document.getElementById('barChart').getContext('2d');
+                chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Valeurs',
+                            data: values,
+                            backgroundColor: colors,
+                            borderColor: colors.map(color => color.replace('0.6', '1')),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { /* Configuration des options du graphique */ }
+                });
             });
         }
 
-        // Met à jour la section des informations
-        function updateInfoSection(data) {
-            const infoSection = document.getElementById("infoSection");
+        function saveSettings() {
+            const selectedLine = document.getElementById("lineSelector").value;
+            const format = document.getElementById("formatInput").value;
+            const coupledPacks = document.getElementById("coupledPacksInput").value;
 
-            if (!data) {
-                infoSection.innerHTML = "Aucune donnée disponible pour la sélection.";
-                return;
-            }
-
-            let htmlContent = "<strong>Données récupérées :</strong><br>";
-            for (const key in data) {
-                htmlContent += `${key}: ${data[key]}<br>`;
-            }
-
-            infoSection.innerHTML = htmlContent;
+            firebase.database().ref(`/${selectedLine}/settings`).set({ format, coupledPacks });
+            closeSettingsModal();
+            alert("Paramètres enregistrés !");
         }
 
-        // Génère une couleur aléatoire
+        function getCoupledPacks() {
+            // Simulation de récupération du nombre de paquets (ajoutez votre logique ici)
+            return 1;
+        }
+
+        function showSettingsModal() {
+            document.getElementById("modalOverlay").style.display = "block";
+            document.getElementById("settingsModal").style.display = "block";
+        }
+
+        function closeSettingsModal() {
+            document.getElementById("modalOverlay").style.display = "none";
+            document.getElementById("settingsModal").style.display = "none";
+        }
+
         function generateRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgba(${r}, ${g}, ${b}, 0.6)`;
         }
-
-        // Initialisation par défaut
-        function initializeDefaultValues() {
-            const date = new Date();
-            const dateStr = date.toISOString().split('T')[0];
-            const currentHour = date.getHours();
-            let section = '6h-14h';
-
-            if (currentHour >= 14 && currentHour < 22) section = '14h-22h';
-            else if (currentHour >= 22 || currentHour < 6) section = '22h-6h';
-
-            document.getElementById('dateSelector').value = dateStr;
-            document.getElementById('sectionSelector').value = section;
-        }
-
-        // Initialisation de la page
-        window.onload = () => {
-            initializeDefaultValues();
-            setupDataListener();
-        };
     </script>
 </body>
 </html>
