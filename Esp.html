@@ -153,68 +153,72 @@
             const selectedLine = document.getElementById("lineSelector").value;
             const selectedDate = document.getElementById("dateSelector").value;
             const selectedSection = document.getElementById("sectionSelector").value;
+            console.log(`Récupération des données pour: ${selectedLine}, ${selectedDate}, ${selectedSection}`);
 
-            // Référence Firebase pour récupérer les données de la ligne, la date et la section
+            // Référence Firebase pour récupérer les données (nouvelle structure)
             const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
 
             document.getElementById("spinner").style.display = "inline-block"; // Affichage du spinner de chargement
 
-            dbRef.once("value").then(snapshot => {
-                const data = snapshot.val();
-                const labels = [];
-                const values = [];
-                const colors = [];
+            dbRef.once("value")
+                .then(snapshot => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        console.log('Données récupérées:', data);
+                        const labels = [];
+                        const values = [];
+                        const colors = [];
 
-                // Traitement des données récupérées
-                for (const key in data) {
-                    labels.push(key);
-                    values.push(data[key]);
-                    colors.push(generateRandomColor());
-                }
-
-                // Suppression du graphique précédent s'il existe
-                if (chart) chart.destroy();
-
-                // Création du graphique
-                const ctx = document.getElementById('barChart').getContext('2d');
-                chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Valeurs',
-                            data: values,
-                            backgroundColor: colors,
-                            borderColor: colors.map(color => color.replace('0.6', '1')),
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        plugins: { legend: { labels: { color: 'white' } } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { color: 'white' } },
-                            x: { ticks: { color: 'white' } }
+                        // Traitement des données récupérées (itération sur les clés et valeurs)
+                        for (const key in data) {
+                            labels.push(key);
+                            values.push(data[key]);
+                            colors.push(generateRandomColor());
                         }
+
+                        // Suppression du graphique précédent s'il existe
+                        if (chart) chart.destroy();
+
+                        // Création du graphique
+                        const ctx = document.getElementById('barChart').getContext('2d');
+                        chart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Valeurs',
+                                    data: values,
+                                    backgroundColor: colors,
+                                    borderColor: colors.map(color => color.replace('0.6', '1')),
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                plugins: { legend: { labels: { color: 'white' } } },
+                                scales: {
+                                    y: { beginAtZero: true, ticks: { color: 'white' } },
+                                    x: { ticks: { color: 'white' } }
+                                }
+                            }
+                        });
+
+                        // Mise à jour de la zone d'information
+                        let infoText = '';
+                        for (const key in data) {
+                            infoText += `${key}: ${data[key]}<br>`;
+                        }
+                        document.getElementById("infoSection").innerHTML = infoText || "Aucune donnée disponible.";
+                    } else {
+                        console.error("Aucune donnée trouvée pour cette combinaison de filtres.");
+                        document.getElementById("infoSection").innerHTML = "Aucune donnée disponible pour ces filtres.";
                     }
+                    document.getElementById("spinner").style.display = "none"; // Cacher le spinner une fois les données chargées
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la récupération des données:", error);
+                    document.getElementById("spinner").style.display = "none"; // Cacher le spinner en cas d'erreur
+                    document.getElementById("infoSection").innerHTML = "Erreur lors de la récupération des données.";
                 });
-
-                // Mise à jour de la zone d'information
-                let infoText = '';
-                for (const key in data) {
-                    infoText += `${key}: ${data[key]}<br>`;
-                }
-                document.getElementById("infoSection").innerHTML = infoText || "Aucune donnée disponible.";
-                document.getElementById("spinner").style.display = "none"; // Cacher le spinner une fois les données chargées
-
-            }).catch(error => {
-                console.error("Erreur:", error);
-                document.getElementById("spinner").style.display = "none"; // Cacher le spinner en cas d'erreur
-            });
-        }
-
-        // Mise à jour des données et affichage
-        function updateLineData() {
-            fetchDataAndPlot();
         }
 
         // Générateur de couleurs aléatoires
@@ -225,25 +229,21 @@
             return `rgba(${r}, ${g}, ${b}, 0.6)`;
         }
 
+        // Mise à jour des données et affichage
+        function updateLineData() {
+            fetchDataAndPlot();
+        }
+
         // Initialisation des valeurs par défaut
         function initializeDefaultValues() {
             const today = new Date();
             const dateStr = today.toISOString().split('T')[0];
-            const currentHour = today.getHours();
-            let section = '';
-
-            if (currentHour >= 6 && currentHour < 14) section = '6h-14h';
-            else if (currentHour >= 14 && currentHour < 22) section = '14h-22h';
-            else section = '22h-6h';
-
             document.getElementById("dateSelector").value = dateStr;
-            document.getElementById("sectionSelector").value = section;
+            updateLineData();
         }
 
-        window.onload = () => {
-            initializeDefaultValues();
-            fetchDataAndPlot(); // Récupérer et afficher les données au chargement de la page
-        };
+        // Appeler la fonction pour initialiser les valeurs par défaut au chargement
+        window.onload = initializeDefaultValues;
     </script>
 </body>
 </html>
