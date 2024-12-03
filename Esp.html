@@ -149,16 +149,17 @@
         const database = firebase.database();
         let chart = null;
 
-        function normalizeDate(date) {
-            const parts = date.split("-");
-            if (parts.length === 3) {
-                const year = parts[0];
-                const month = parts[1].padStart(2, '0');
-                const day = parts[2].padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            }
-            return date;
-        }
+       function normalizeDate(date) {
+    const parts = date.split("-");
+    if (parts.length === 3) {
+        const year = parts[0];
+        const month = parts[1].padStart(2, '0'); // Ajoute un '0' si le mois est inférieur à 10
+        const day = parts[2].padStart(2, '0');   // Ajoute un '0' si le jour est inférieur à 10
+        return `${year}-${month}-${day}`;
+    }
+    return date;
+}
+
 
         function fetchDataAndPlot() {
             const selectedLine = document.getElementById("lineSelector").value;
