@@ -3,60 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graphique Firebase en 3D</title>
+    <title>Graphique Firebase</title>
     <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: linear-gradient(to bottom, #4facfe, #00f2fe);
+            background-color: #282c34;
             color: white;
-            min-height: 100vh;
-            box-sizing: border-box;
+            text-align: center;
+            margin: 0;
         }
 
-        h1 {
-            margin-top: 20px;
-            font-size: 2rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        canvas {
+            max-width: 90%;
+            margin: 20px auto;
         }
 
-        .spinner {
+        #spinner {
             display: none;
             border: 4px solid #f3f3f3;
             border-top: 4px solid #3498db;
             border-radius: 50%;
             width: 50px;
             height: 50px;
-            animation: spin 2s linear infinite;
-
-            /* Centrer le spinner */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        canvas {
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
-    <h1>Graphique des Données de production</h1>
-    <div id="spinner" class="spinner"></div>
-    <canvas id="barChart" width="350" height="200"></canvas>
+    <h1>Graphique des Données Firebase</h1>
+    <div id="spinner"></div>
+    <canvas id="barChart"></canvas>
 
     <script>
         // Configuration Firebase
@@ -73,23 +57,26 @@
 
         let chart = null;
 
+        // Fonction pour charger les données et dessiner le graphique
         function fetchDataAndPlot() {
+            const spinner = document.getElementById("spinner");
+            spinner.style.display = "block"; // Afficher le spinner
+
             const dbRef = firebase.database().ref("/production/ligne1/2024-11-14/6h-14h/chx");
-
-            // Activer le spinner
-            document.getElementById("spinner").style.display = "inline-block";
-
+            
             dbRef.once("value").then(snapshot => {
                 const data = snapshot.val();
+
                 if (!data) {
                     alert("Aucune donnée trouvée !");
+                    spinner.style.display = "none"; // Cacher le spinner
                     return;
                 }
 
                 const labels = Object.keys(data);
                 const values = Object.values(data);
 
-                if (chart) chart.destroy();
+                if (chart) chart.destroy(); // Détruire le graphique précédent s'il existe
 
                 const ctx = document.getElementById('barChart').getContext('2d');
                 chart = new Chart(ctx, {
@@ -105,22 +92,38 @@
                         }]
                     },
                     options: {
+                        responsive: true,
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    color: 'white'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: 'white'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'white'
+                                }
                             }
                         }
                     }
                 });
 
-                document.getElementById("spinner").style.display = "none"; // Cacher le spinner
-            }).catch(err => {
-                console.error("Erreur :", err);
-                document.getElementById("spinner").style.display = "none"; // Cacher le spinner
+                spinner.style.display = "none"; // Cacher le spinner
+            }).catch(error => {
+                console.error("Erreur Firebase :", error);
+                spinner.style.display = "none"; // Cacher le spinner
             });
         }
 
-        fetchDataAndPlot();
+        fetchDataAndPlot(); // Charger les données au chargement de la page
     </script>
 </body>
 </html>
