@@ -148,16 +148,16 @@
 
         let chart = null;
 
-        // Fonction pour normaliser la date
+        // Fonction pour normaliser la date au format YYYY-MM-DD
         function normalizeDate(date) {
             const parts = date.split("-");
             if (parts.length === 3) {
-                const year = parts[0];
-                const month = parts[1].padStart(2, '0');
-                const day = parts[2].padStart(2, '0');
-                return `${year}-${month}-${day}`;
+                const year = parts[0]; // Année
+                const month = parts[1].padStart(2, '0'); // Mois avec un zéro devant si nécessaire
+                const day = parts[2].padStart(2, '0'); // Jour avec un zéro devant si nécessaire
+                return `${year}-${month}-${day}`; // Retourne la date au format standard
             }
-            return date;
+            return date; // Si la date n'est pas au bon format, on retourne telle quelle
         }
 
         // Récupération des données depuis Firebase
@@ -210,45 +210,28 @@
             const selectedLine = document.getElementById("lineSelector").value;
             const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
             const selectedSection = document.getElementById("sectionSelector").value;
-            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
-
-            document.getElementById("spinner").style.display = "inline-block";
-
-            dbRef.once("value").then(snapshot => {
-                const data = snapshot.val();
-                let infoText = "";
-
-                for (const key in data) {
-                    infoText += `${key}: ${data[key]}<br>`;
-                }
-
-                document.getElementById("infoSection").innerHTML = infoText || "Aucune donnée disponible.";
-                document.getElementById("spinner").style.display = "none";
-            }).catch(error => {
-                console.error("Erreur :", error);
-                document.getElementById("spinner").style.display = "none";
-            });
 
             fetchDataAndPlot();
         }
 
-        // Générateur de couleurs aléatoires
+        // Fonction pour générer une couleur aléatoire
         function generateRandomColor() {
-            const r = Math.floor(Math.random() * 255);
-            const g = Math.floor(Math.random() * 255);
-            const b = Math.floor(Math.random() * 255);
-            return `rgba(${r}, ${g}, ${b}, 0.6)`;
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
         }
 
-        // Initialisation des valeurs par défaut
+        // Initialisation des valeurs par défaut et du graphique
         function initializeDefaultValues() {
-            const today = new Date();
-            const dateStr = today.toISOString().split('T')[0];
-            const currentHour = today.getHours();
-            let section = '';
+            const date = new Date();
+            const dateStr = date.toISOString().split('T')[0];
+            const currentHour = date.getHours();
+            let section = '6h-14h';
 
-            if (currentHour >= 6 && currentHour < 14) section = '6h-14h';
-            else if (currentHour >= 14 && currentHour < 22) section = '14h-22h';
+            if (currentHour >= 14 && currentHour < 22) section = '14h-22h';
             else section = '22h-6h';
 
             document.getElementById('dateSelector').value = dateStr;
