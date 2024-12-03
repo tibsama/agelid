@@ -149,61 +149,63 @@
         const database = firebase.database();
         let chart = null;
 
-       function normalizeDate(date) {
+   function normalizeDate(date) {
     const parts = date.split("-");
     if (parts.length === 3) {
-        const year = parts[0];
-        const month = parts[1].padStart(2, '0'); // Ajoute un '0' si le mois est inférieur à 10
-        const day = parts[2].padStart(2, '0');   // Ajoute un '0' si le jour est inférieur à 10
+        const year = parts[0]; // Année
+        const month = parseInt(parts[1], 10); // Convertir en entier pour supprimer le zéro devant
+        const day = parseInt(parts[2], 10);   // Convertir en entier pour supprimer le zéro devant
         return `${year}-${month}-${day}`;
     }
-    return date;
+    return date; // Si la date n'est pas valide, on retourne telle quelle
 }
 
 
-        function fetchDataAndPlot() {
-            const selectedLine = document.getElementById("lineSelector").value;
-            const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
-            const selectedSection = document.getElementById("sectionSelector").value;
-            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
+function fetchDataAndPlot() {
+    const selectedLine = document.getElementById("lineSelector").value;
+    const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
+    const selectedSection = document.getElementById("sectionSelector").value;
 
-            dbRef.once("value").then(snapshot => {
-                const data = snapshot.val();
-                const labels = [];
-                const values = [];
-                const colors = [];
+    const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
+    dbRef.once("value").then(snapshot => {
+        const data = snapshot.val();
+        const labels = [];
+        const values = [];
+        const colors = [];
 
-                for (const key in data) {
-                    labels.push(key);
-                    values.push(data[key]);
-                    colors.push(generateRandomColor());
-                }
-
-                if (chart) chart.destroy();
-
-                const ctx = document.getElementById('barChart').getContext('2d');
-                chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Valeurs',
-                            data: values,
-                            backgroundColor: colors,
-                            borderColor: colors.map(color => color.replace('0.6', '1')),
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        plugins: { legend: { labels: { color: 'white' } } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { color: 'white' } },
-                            x: { ticks: { color: 'white' } }
-                        }
-                    }
-                });
-            }).catch(console.error);
+        for (const key in data) {
+            labels.push(key);
+            values.push(data[key]);
+            colors.push(generateRandomColor());
         }
+
+        if (chart) chart.destroy();
+
+        const ctx = document.getElementById('barChart').getContext('2d');
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Valeurs',
+                    data: values,
+                    backgroundColor: colors,
+                    borderColor: colors.map(color => color.replace('0.6', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: { legend: { labels: { color: 'white' } } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: 'white' } },
+                    x: { ticks: { color: 'white' } }
+                }
+            }
+        });
+    }).catch(console.error);
+}
+
+ 
 
         function addDataToFirebase() {
             const selectedLine = document.getElementById("lineSelector").value;
