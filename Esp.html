@@ -1,247 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graphique Firebase en 3D</title>
-    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: linear-gradient(to bottom, #4facfe, #00f2fe);
-            color: white;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: linear-gradient(to bottom, #4facfe, #00f2fe);
+        color: white;
+        min-height: 100vh;
+        box-sizing: border-box;
+    }
 
+    h1 {
+        margin-top: 10px;
+        font-size: 1.8rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        text-align: center;
+    }
+
+    .spinner {
+        display: none;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 2s linear infinite;
+        margin-top: 15px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .selectors-container {
+        display: flex;
+        flex-direction: column; /* Empile les sélecteurs */
+        gap: 10px;
+        margin: 20px 0;
+        width: 90%; /* Largeur adaptative */
+    }
+
+    .selector {
+        font-size: 1rem;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        width: 100%; /* Remplit la largeur */
+    }
+
+    canvas {
+        margin-top: 20px;
+        max-width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .info {
+        margin-top: 20px;
+        font-size: 1rem;
+        text-align: center;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        color: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        width: 90%;
+    }
+
+    @media (min-width: 768px) {
         h1 {
-            margin-top: 20px;
             font-size: 2rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
-
-        .spinner {
-            display: none;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 2s linear infinite;
-            margin-top: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .selector {
-            margin-top: 20px;
-            font-size: 1.2rem;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-
-        canvas {
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .info {
-            margin-top: 30px;
-            font-size: 1.2rem;
-            text-align: center;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            color: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            width: 80%;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-        }
-
-        /* Disposition horizontale */
         .selectors-container {
-            display: flex;
-            justify-content: center;
+            flex-direction: row; /* Alignement horizontal sur écrans plus larges */
             gap: 20px;
+            justify-content: center;
         }
-    </style>
-</head>
-<body>
-    <h1>Graphique des Données de production</h1>
-    
-    <!-- Spinner en haut -->
-    <div id="spinner" class="spinner"></div>
-
-    <!-- Sélecteurs horizontaux -->
-    <div class="selectors-container">
-        <!-- Sélecteur de ligne -->
-        <select id="lineSelector" class="selector" onchange="updateLineData();">
-            <option value="ligne1">Ligne 1</option>
-            <option value="ligne2">Ligne 2</option>
-            <option value="ligne3">Ligne 3</option>
-            <option value="ligne4">Ligne 4</option>
-            <option value="ligne5">Ligne 5</option>
-        </select>
-
-        <!-- Sélecteur de date -->
-        <input type="date" id="dateSelector" class="selector" onchange="updateLineData();" />
-
-        <!-- Sélecteur de section -->
-        <select id="sectionSelector" class="selector" onchange="updateLineData();">
-            <option value="6h-14h">6h-14h</option>
-            <option value="14h-22h">14h-22h</option>
-            <option value="22h-6h">22h-6h</option>
-        </select>
-    </div>
-
-    <canvas id="barChart" width="350" height="200"></canvas>
-
-    <!-- Section standard -->
-    <div id="infoSection" class="info">
-        Les informations s'afficheront ici.
-    </div>
-
-    <script>
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDNo-zAANxCw6c9b_4RQGtqQLGueeMQ8nA",
-            authDomain: "herher-d121a.firebaseapp.com",
-            databaseURL: "https://herher-d121a.firebaseio.com",
-            projectId: "herher-d121a",
-            storageBucket: "herher-d121a.appspot.com",
-            messagingSenderId: "626438737297",
-            appId: "1:626438737297:web:bf6524275291ec695fde30"
-        };
-
-        // Initialisation Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        let chart = null;
-
-        // Fonction pour récupérer et afficher les données graphiques
-        function fetchDataAndPlot() {
-            const selectedLine = document.getElementById("lineSelector").value;
-            const selectedDate = document.getElementById("dateSelector").value;
-            const selectedSection = document.getElementById("sectionSelector").value;
-            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
-
-            dbRef.once("value").then(snapshot => {
-                const data = snapshot.val();
-                const labels = [];
-                const values = [];
-                const colors = [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)',
-                    'rgba(153, 102, 255, 0.6)',
-                    'rgba(255, 159, 64, 0.6)'
-                ];
-
-                for (const key in data) {
-                    labels.push(key);
-                    values.push(data[key]);
-                }
-
-                if (chart) chart.destroy();
-
-                const ctx = document.getElementById('barChart').getContext('2d');
-                chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Valeurs',
-                            data: values,
-                            backgroundColor: colors.slice(0, values.length),
-                            borderColor: colors.slice(0, values.length).map(color => color.replace('0.6', '1')),
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        plugins: { legend: { labels: { color: 'white' } } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { color: 'white' } },
-                            x: { ticks: { color: 'white' } }
-                        }
-                    }
-                });
-            }).catch(console.error);
+        .selector {
+            max-width: 250px; /* Largeur limite sur grand écran */
         }
-
-        // Fonction pour mettre à jour les informations standards
-        function updateLineData() {
-            const selectedLine = document.getElementById("lineSelector").value;
-            const selectedDate = document.getElementById("dateSelector").value;
-            const selectedSection = document.getElementById("sectionSelector").value;
-            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
-
-            // Activer le spinner
-            document.getElementById("spinner").style.display = "inline-block";
-
-            dbRef.once("value").then(snapshot => {
-                const data = snapshot.val();
-                let infoText = "";
-
-                for (const key in data) {
-                    infoText += `${key} = ${data[key]}<br>`;
-                }
-
-                document.getElementById("infoSection").innerHTML = infoText;
-                document.getElementById("spinner").style.display = "none"; // Cacher le spinner
-            }).catch(error => {
-                console.error("Erreur lors de la récupération des données :", error);
-                document.getElementById("spinner").style.display = "none"; // Cacher le spinner
-            });
-
-            fetchDataAndPlot();
-        }
-
-        // Initialiser la date du jour et la section par défaut
-        function initializeDefaultValues() {
-            const today = new Date();
-            const dateStr = today.toISOString().split('T')[0]; // Formater en YYYY-MM-DD
-            const currentHour = today.getHours();
-            let section = '';
-
-            // Sélectionner la section basée sur l'heure actuelle
-            if (currentHour >= 6 && currentHour < 14) {
-                section = '6h-14h';
-            } else if (currentHour >= 14 && currentHour < 22) {
-                section = '14h-22h';
-            } else {
-                section = '22h-6h';
-            }
-
-            document.getElementById("dateSelector").value = dateStr;
-            document.getElementById("sectionSelector").value = section;
-        }
-
-        // Charger les données initiales et définir les valeurs par défaut
-        window.onload = () => {
-            initializeDefaultValues();
-            updateLineData();
-        };
-    </script>
-</body>
-</html>
+    }
+</style>
