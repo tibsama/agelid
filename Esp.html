@@ -135,6 +135,13 @@
                 font-size: 0.9rem;
             }
         }
+        .add-data-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
     </style>
 </head>
 <body>
@@ -220,6 +227,32 @@
                 })
                 .catch(error => console.error('Erreur :', error));
         }
+function addDataToFirebase() {
+    const selectedLine = document.getElementById("lineSelector").value;
+    const selectedDate = normalizeDate(document.getElementById("dateSelector").value);
+    const selectedSection = document.getElementById("sectionSelector").value;
+    const dataKey = document.getElementById("dataKey").value.trim();
+    const dataValue = document.getElementById("dataValue").value;
+
+    if (!dataKey || !dataValue) {
+        alert("Veuillez remplir tous les champs.");
+        return;
+    }
+
+    const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
+
+    dbRef.update({ [dataKey]: parseFloat(dataValue) })
+        .then(() => {
+            alert("Donnée ajoutée avec succès !");
+            updateLineData(); // Met à jour le graphique
+        })
+        .catch(error => {
+            console.error("Erreur lors de l'ajout de la donnée :", error);
+            alert("Une erreur s'est produite lors de l'ajout de la donnée.");
+        });
+}
+
+        
     </script>
 </body>
 </html>
