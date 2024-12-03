@@ -153,11 +153,7 @@
             const selectedLine = document.getElementById("lineSelector").value;
             const selectedDate = document.getElementById("dateSelector").value;
             const selectedSection = document.getElementById("sectionSelector").value;
-
-            // Référence Firebase pour récupérer les données de la ligne, la date et la section
             const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
-
-            document.getElementById("spinner").style.display = "inline-block"; // Affichage du spinner de chargement
 
             dbRef.once("value").then(snapshot => {
                 const data = snapshot.val();
@@ -165,17 +161,14 @@
                 const values = [];
                 const colors = [];
 
-                // Traitement des données récupérées
                 for (const key in data) {
                     labels.push(key);
                     values.push(data[key]);
                     colors.push(generateRandomColor());
                 }
 
-                // Suppression du graphique précédent s'il existe
                 if (chart) chart.destroy();
 
-                // Création du graphique
                 const ctx = document.getElementById('barChart').getContext('2d');
                 chart = new Chart(ctx, {
                     type: 'bar',
@@ -197,23 +190,33 @@
                         }
                     }
                 });
-
-                // Mise à jour de la zone d'information
-                let infoText = '';
-                for (const key in data) {
-                    infoText += `${key}: ${data[key]}<br>`;
-                }
-                document.getElementById("infoSection").innerHTML = infoText || "Aucune donnée disponible.";
-                document.getElementById("spinner").style.display = "none"; // Cacher le spinner une fois les données chargées
-
-            }).catch(error => {
-                console.error("Erreur:", error);
-                document.getElementById("spinner").style.display = "none"; // Cacher le spinner en cas d'erreur
-            });
+            }).catch(console.error);
         }
 
         // Mise à jour des données et affichage
         function updateLineData() {
+            const selectedLine = document.getElementById("lineSelector").value;
+            const selectedDate = document.getElementById("dateSelector").value;
+            const selectedSection = document.getElementById("sectionSelector").value;
+            const dbRef = firebase.database().ref(`/${selectedLine}/${selectedDate}/${selectedSection}`);
+
+            document.getElementById("spinner").style.display = "inline-block";
+
+            dbRef.once("value").then(snapshot => {
+                const data = snapshot.val();
+                let infoText = "";
+
+                for (const key in data) {
+                    infoText += `${key}: ${data[key]}<br>`;
+                }
+
+                document.getElementById("infoSection").innerHTML = infoText || "Aucune donnée disponible.";
+                document.getElementById("spinner").style.display = "none";
+            }).catch(error => {
+                console.error("Erreur :", error);
+                document.getElementById("spinner").style.display = "none";
+            });
+
             fetchDataAndPlot();
         }
 
@@ -225,25 +228,10 @@
             return `rgba(${r}, ${g}, ${b}, 0.6)`;
         }
 
-        // Initialisation des valeurs par défaut
-        function initializeDefaultValues() {
-            const today = new Date();
-            const dateStr = today.toISOString().split('T')[0];
-            const currentHour = today.getHours();
-            let section = '';
-
-            if (currentHour >= 6 && currentHour < 14) section = '6h-14h';
-            else if (currentHour >= 14 && currentHour < 22) section = '14h-22h';
-            else section = '22h-6h';
-
-            document.getElementById("dateSelector").value = dateStr;
-            document.getElementById("sectionSelector").value = section;
-        }
-
-        window.onload = () => {
-            initializeDefaultValues();
-            fetchDataAndPlot(); // Récupérer et afficher les données au chargement de la page
-        };
+        // Initialisation de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLineData();  // Charge les données initiales
+        });
     </script>
 </body>
 </html>
