@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <style>
+        /* Votre CSS existant */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -80,7 +81,6 @@
             cursor: pointer;
         }
 
-        /* Effet 3D pour les lignes du tableau */
         tr {
             transition: transform 0.3s ease;
         }
@@ -112,6 +112,7 @@
 
     <div class="input-container">
         <button id="redirectButton">An</button>
+        <button id="exportExcelButton">Exporter en Excel</button> <!-- Nouveau bouton -->
     </div>
 
     <div class="date-display" id="dateDisplay">Mois: </div>
@@ -125,7 +126,7 @@
                 <th>Ligne</th>
                 <th>Équipement</th>
                 <th>Nom de l'intervenant</th>
-                <th>date</th>
+                <th>Date</th>
             </tr>
         </thead>
         <tbody>
@@ -133,6 +134,8 @@
         </tbody>
     </table>
 
+    <!-- Ajout de la bibliothèque SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
     <script>
         // Configuration de Firebase
@@ -197,9 +200,7 @@
                         newRow.insertCell().textContent = data.ligne || '';
                         newRow.insertCell().textContent = data.equipment || '';
                         newRow.insertCell().textContent = data.nomIntervenant || '';
-
-                        // Add the "Vide" and "Reprise" columns
-                        newRow.insertCell().textContent =data.date || ''; 
+                        newRow.insertCell().textContent = data.date || '';
 
                         // Add event listener for row click
                         newRow.addEventListener('click', function() {
@@ -214,18 +215,30 @@
             });
         }
 
+        // Function to export table data to Excel
+        function exportTableToExcel() {
+            const table = document.getElementById('resultsTable');
+            const ws = XLSX.utils.table_to_sheet(table); // Convert table to worksheet
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Interventions"); // Add worksheet to workbook
+            XLSX.writeFile(wb, 'interventions.xlsx'); // Export file
+        }
+
         // Load interventions for the entire month when the page loads
         window.onload = loadInterventionsForMonth;
 
-        // Add event listener to the button
+        // Add event listener to the "An" button
         document.getElementById('redirectButton').addEventListener('click', function() {
             const dateObj = getMonthAndYearFromUrl();
             if (dateObj) {
                 const { month, year } = dateObj;
                 const url = `https://tibsama.github.io/agelid/fichintev.html#date=${year}-${month}`;
-               // window.location.href = url;
+                window.location.href = url;
             }
         });
+
+        // Add event listener to the "Exporter en Excel" button
+        document.getElementById('exportExcelButton').addEventListener('click', exportTableToExcel);
     </script>
 </body>
 </html>
