@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <style>
-        /* Votre CSS existant */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -112,7 +111,7 @@
 
     <div class="input-container">
         <button id="redirectButton">An</button>
-        <button id="exportExcelButton">Exporter en Excel</button> <!-- Nouveau bouton -->
+        <button id="exportExcelButton">Exporter en Excel</button>
     </div>
 
     <div class="date-display" id="dateDisplay">Mois: </div>
@@ -126,7 +125,6 @@
                 <th>Ligne</th>
                 <th>Équipement</th>
                 <th>Nom de l'intervenant</th>
-                <th>Date</th>
             </tr>
         </thead>
         <tbody>
@@ -200,7 +198,6 @@
                         newRow.insertCell().textContent = data.ligne || '';
                         newRow.insertCell().textContent = data.equipment || '';
                         newRow.insertCell().textContent = data.nomIntervenant || '';
-                        newRow.insertCell().textContent = data.date || '';
 
                         // Add event listener for row click
                         newRow.addEventListener('click', function() {
@@ -212,16 +209,33 @@
                         });
                     }
                 });
+
+                // Affichez les données dans la console pour vérification
+                console.log("Données chargées :", snapshot.val());
             });
         }
 
         // Function to export table data to Excel
         function exportTableToExcel() {
             const table = document.getElementById('resultsTable');
-            const ws = XLSX.utils.table_to_sheet(table); // Convert table to worksheet
+            const data = [];
+
+            // Parcourir les lignes du tableau
+            const rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+                const rowData = [];
+                const cells = row.querySelectorAll('th, td');
+                cells.forEach(cell => {
+                    rowData.push(cell.textContent);
+                });
+                data.push(rowData);
+            });
+
+            // Convertir les données en feuille Excel
+            const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Interventions"); // Add worksheet to workbook
-            XLSX.writeFile(wb, 'interventions.xlsx'); // Export file
+            XLSX.utils.book_append_sheet(wb, ws, "Interventions");
+            XLSX.writeFile(wb, 'interventions.xlsx');
         }
 
         // Load interventions for the entire month when the page loads
